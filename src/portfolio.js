@@ -20,26 +20,26 @@ const illustration = {
 };
 
 const greeting = {
-  username: "Saad Pasta",
-  title: "Hi all, I'm Saad",
+  username: "Osasumwen Raphael Imarhiagbe",
+  title: "Hi all, I'm Osasu",
   subTitle: emoji(
-    "A passionate Full Stack Software Developer 🚀 having an experience of building Web and Mobile applications with JavaScript / Reactjs / Nodejs / React Native and some other cool libraries and frameworks."
+    "A passionate Machine Learning Engineer and Software Engineer 🚀 having an experience Fullstack Software development and building Artificial Intelligence driven products using Python / JavaScript /TensorFlow / Jax /TFLite /Flask / Reactjs / Nodejs / React Native and some other cool libraries and frameworks."
   ),
   resumeLink:
-    "https://drive.google.com/file/d/1ofFdKF_mqscH8WvXkSObnVvC9kK7Ldlu/view?usp=sharing", // Set to empty to hide the button
+    "https://drive.google.com/file/d/1ExI2GXV4mmsJO-VXNQDSGqgq3cfZhklQ/view?usp=sharing", // Set to empty to hide the button
   displayGreeting: true // Set false to hide this section, defaults to true
 };
 
 // Social Media Links
 
 const socialMediaLinks = {
-  github: "https://github.com/saadpasta",
-  linkedin: "https://www.linkedin.com/in/saadpasta/",
-  gmail: "saadpasta70@gmail.com",
-  gitlab: "https://gitlab.com/saadpasta",
-  facebook: "https://www.facebook.com/saad.pasta7",
-  medium: "https://medium.com/@saadpasta",
-  stackoverflow: "https://stackoverflow.com/users/10422806/saad-pasta",
+  github: "https://github.com/sasumwen",
+  linkedin: "https://www.linkedin.com/in/osasumwen/",
+  gmail: "imarhiagbeosasumwen@gmail.com",
+  gitlab: "https://gitlab.com/sasumwen",
+  facebook: "https://www.facebook.com/ImarhiagbeOsasu",
+  medium: "https://osasu.medium.com/",
+  stackoverflow: "https://stackoverflow.com/users/14548507/sasumwen",
   // Instagram, Twitter and Kaggle are also supported in the links!
   // To customize icons and social links, tweak src/components/SocialMedia
   display: true // Set true to display this section, defaults to false
@@ -49,11 +49,12 @@ const socialMediaLinks = {
 
 const skillsSection = {
   title: "What I do",
-  subTitle: "CRAZY FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
+  subTitle: "PASSIONATE ARTIFICIAL INTELLIGENCE ADVOCATE || MACHINE LEARNING AND DEEP LEARNING ENGINEER || SOFTWARE ENGINEER. I ENJOY SOLUTIONS AND EXPLORING",
   skills: [
     emoji(
-      "⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications"
+      "⚡ Develop highly intuitive Machine Learning and Deep Learning Models"
     ),
+    emoji("⚡ Deployment of scalable AI products"),
     emoji("⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks"),
     emoji(
       "⚡ Integration of third party services such as Firebase/ AWS / Digital Ocean"
@@ -126,25 +127,18 @@ const educationInfo = {
   display: true, // Set false to hide this section, defaults to true
   schools: [
     {
-      schoolName: "Harvard University",
-      logo: require("./assets/images/harvardLogo.png"),
-      subHeader: "Master of Science in Computer Science",
-      duration: "September 2017 - April 2019",
-      desc: "Participated in the research of XXX and published 3 papers.",
+      schoolName: "Benson Idahosa University",
+      logo: require("./assets/images/BIULogo.png"),
+      subHeader: "Bachelor of Science in Computer Science",
+      duration: "September 2018 - July 2022",
+      desc: "Participated in the research of CoronaVirus spread and tracking using Models built with Machine learning and published 3 papers.",
       descBullets: [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        "Member of Institute of Electrical Electronics Engineering",
+        "Member of the Association of Computing Machinary"
+	"Member of the National Society of Black Engineer"
       ]
     },
-    {
-      schoolName: "Stanford University",
-      logo: require("./assets/images/stanfordLogo.png"),
-      subHeader: "Bachelor of Science in Computer Science",
-      duration: "September 2013 - April 2017",
-      desc: "Ranked top 10% in the program. Took courses about Software Engineering, Web Security, Operating Systems, ...",
-      descBullets: ["Lorem ipsum dolor sit amet, consectetur adipiscing elit"]
-    }
-  ]
+    ]
 };
 
 // Your top 3 proficient stacks/tech experience
@@ -153,16 +147,16 @@ const techStack = {
   viewSkillBars: true, //Set it to true to show Proficiency Section
   experience: [
     {
-      Stack: "Frontend/Design", //Insert stack or technology you have experience in
+      Stack: "Data Science", //Insert stack or technology you have experience in
       progressPercentage: "90%" //Insert relative proficiency in percentage
     },
     {
-      Stack: "Backend",
+      Stack: "Machine Learning & Deep learning",
       progressPercentage: "70%"
     },
     {
       Stack: "Programming",
-      progressPercentage: "60%"
+      progressPercentage: "85%"
     }
   ],
   displayCodersrank: false // Set true to display codersrank badges section need to changes your username in src/containers/skillProgress/skillProgress.js:17:62, defaults to false
@@ -174,29 +168,35 @@ const workExperiences = {
   display: true, //Set it to true to show workExperiences Section
   experience: [
     {
-      role: "Software Engineer",
-      company: "Facebook",
-      companylogo: require("./assets/images/facebookLogo.png"),
-      date: "June 2018 – Present",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      role: "ICT Administrator",
+      company: "Nigeria Startup Bill",
+      companylogo: require("./assets/images/nsalogo.jpeg"),
+      date: "March 2021 – Present",
+      desc: "The Nigeria Startup Bill project is a joint initiative by Nigeria’s tech startup ecosystem and the Presidency to harness the potential of our digital economy through co-created regulations. The Bill will ensure that Nigeria's laws and regulations are clear, planned and work for the tech ecosystem. This, we believe, will contribute to the creation of an enabling environment for growth, attraction and protection of investment in tech startups.",
       descBullets: [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        "Worked on drafting and reviewing the Nigeria Startup Bill with various teams and saw to the passage of the Bill across the Legislative chambers and the subsequent assent by the President of Nigeria.",
       ]
     },
     {
-      role: "Front-End Developer",
-      company: "Quora",
-      companylogo: require("./assets/images/quoraLogo.png"),
-      date: "May 2017 – May 2018",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      role: "Machine Learning Engineer",
+      company: "ALMA",
+      companylogo: require("./assets/images/almalogo.png"),
+      date: "May 2022 – Present",
+      desc: "CEO of a Networking and IT consultancy company that provides tech related services to small, medium and large scale firms in Edo State Nigeria."
+    }, 
+    {
+      role: "Startup Mentor",
+      company: "NewChip Accelerator",
+      companylogo: require("./assets/images/newchiplogo.png"),
+      date: "May 2022 – Present",
+      desc: "Advising startups on growth strategy to quickly gain market traction, and also help bridge the gap between strategy and execution thereby making a big impact for their customers and partners.."
     },
     {
-      role: "Software Engineer Intern",
-      company: "Airbnb",
-      companylogo: require("./assets/images/airbnbLogo.png"),
-      date: "Jan 2015 – Sep 2015",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      role: "Software Engineer",
+      company: "BritKay",
+      companylogo: require("./assets/images/britonkaylogo.png"),
+      date: "Jan 2020 – March 2022",
+      desc: "Worked on the an E-commerce brand of Britkay and saw the expansion of the eCommerce division by developing a responsive website to power the market space."
     }
   ]
 };
@@ -217,27 +217,16 @@ const bigProjects = {
   projects: [
     {
       image: require("./assets/images/saayaHealthLogo.webp"),
-      projectName: "Saayahealth",
-      projectDesc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      projectName: "Edo Global Art Foundation",
+      projectDesc: "",
       footerLink: [
         {
           name: "Visit Website",
-          url: "http://saayahealth.com/"
+          url: "http://edoglobalfoundation.com/"
         }
         //  you can add extra buttons here.
       ]
     },
-    {
-      image: require("./assets/images/nextuLogo.webp"),
-      projectName: "Nextu",
-      projectDesc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-      footerLink: [
-        {
-          name: "Visit Website",
-          url: "http://nextu.se/"
-        }
-      ]
-    }
   ],
   display: true // Set false to hide this section, defaults to true
 };
