@@ -52,15 +52,15 @@ round-avatar: true
 social-network-links:
   email: "imarhiagbeosasumwen@gmail.com"
   rss: true  # remove this line if you don't want to show an RSS link at the bottom
-  facebook: deanattali
-  github: https://github.com/sasumwen
-  twitter: https://x.com/Osasu_AI
-  patreon: DeanAttali
-  youtube: "@daattali"
-  whatsapp: 15551212
-  medium: https://osasu.medium.com/
+#  facebook: deanattali
+  github: sasumwen
+  twitter: Osasu_AI
+#  patreon: DeanAttali
+#  youtube: "@daattali"
+#  whatsapp: 15551212
+  medium: osasu
 #  reddit: yourname or r/yoursubreddit
-  linkedin: https://www.linkedin.com/in/osasumwen/
+  linkedin: osasumwen
 #  xing: yourname
 #  stackoverflow: "3943160/daattali"
 #  snapchat: deanat78
@@ -74,7 +74,7 @@ social-network-links:
 #  calendly: yourname
 #  mastodon: instance.url/@username
 #  bluesky: yourname
-#  ORCID: your ORCID ID
+  ORCID: 0000-0003-4193-8444
 #  google-scholar: your google scholar
 #  discord: "invite_code" or "users/userid" or "invite/invite_code"
 #  kaggle: yourname
