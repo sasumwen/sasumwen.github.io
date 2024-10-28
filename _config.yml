@@ -82,7 +82,7 @@ url-pretty: "sasumwen.github.io"  # eg. "deanattali.com/beautiful-jekyll"
 #disqus: "desh2608-github-io"
 
 # Fill in your Google Analytics ID to track your website using GA
-#google_analytics: "UA-121781547-1"
+google_analytics: "G-MBMZ051LW0"
 
 # Google Tag Manager ID
 #gtm: ""
@@ -101,7 +101,7 @@ title-separator: "-"
 # --- Don't need to touch anything below here (but you can if you want) --- #
 
 # Output options (more information on Jekyll's site)
-timezone: "America/New_York"
+timezone: "America/Edmonton"
 markdown: kramdown
 mathjax: true
 highlighter: rouge
