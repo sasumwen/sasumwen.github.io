@@ -65,6 +65,7 @@ footer-links-active:
   youtube: false
   spotify: false
   telephone: false
+  medium: true
 
 # Select which share links to show in posts
 share-links-active:
