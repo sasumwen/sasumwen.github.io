@@ -17,7 +17,7 @@ baseurl: ""
 title: Osasumwen Imarhiagbe
 
 # Short description of your site
-description: Personal Website
+description: Research
 
 # --- Navigation bar options --- #
 
@@ -47,6 +47,7 @@ author:
   github: sasumwen    # eg. daattali
   linkedin: osasumwen
   twitter: Osasu_AI
+  medium: osasu.medium.com
 
 # Select which links to show in the footer
 footer-links-active:
