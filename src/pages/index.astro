@@ -26,7 +26,7 @@ const lead = stories.find((j) => j.data.featured) ?? stories[0];
 const journal = lead ? [lead, ...stories.filter((j) => j.id !== lead.id).slice(0, 2)] : [];
 const latest = updates.slice(0, 5);
 const title = profile.name.preferred;
-const description = `${profile.positioning}`;
+const description = profile.positioning.replace(profile.name.preferred, `${profile.name.preferred} (${profile.name.full})`);
 const words = profile.name.preferred.split(' ');
 const heroRoles = profile.heroRoles.map((r) => {
   const ref = r.roleRef ? profile.current.find((c) => c.id === r.roleRef) : undefined;
@@ -51,7 +51,7 @@ const heroRoles = profile.heroRoles.map((r) => {
         <p class="overline hero__overline" data-reveal>{profile.headline} · {profile.location.city}</p>
         <h1 id="hero-title" class="display hero__title">
           {words.map((w, i) => (
-            <span class="hero__word" style={`--i:${i}`}>{w}</span>
+            <>{i > 0 && ' '}<span class="hero__word" style={`--i:${i}`}>{w}</span></>
           ))}
         </h1>
         <p class="hero__lede" data-reveal>{profile.tagline}</p>

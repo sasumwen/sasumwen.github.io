@@ -9,6 +9,9 @@ name:
   preferred: Osasu Imarhiagbe
   first: Osasu
   scholarly: Osasumwen R. Imarhiagbe
+  # Other ways the name is written or searched for. Used in structured data and on About.
+  variants:
+    - Osasumwen Imarhiagbe
   pronunciation: # e.g. "oh-SAH-soo", optional (Q22)
 
 # Q5: one public headline, used in the hero overline, <title>, JSON-LD and llms.txt.

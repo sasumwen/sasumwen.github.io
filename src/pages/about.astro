@@ -24,8 +24,8 @@ const bios = Object.entries(profile.bios).filter(([, b]) => b.status !== 'draft'
 const pressPortrait = await getImage({ src: suit, width: Math.min(suit.width, 2000), format: 'jpg', quality: 90 });
 const showNow = now.status !== 'draft' || SHOW_DRAFTS;
 const values = profile.values && (profile.values.status !== 'draft' || SHOW_DRAFTS) ? profile.values : null;
-const title = 'About';
-const description = `${profile.name.preferred}, from Benin City to Lethbridge to Calgary: the story behind the research, the companies and the public service. Facts, bios and a press kit.`;
+const title = `About ${profile.name.variants[0] ?? profile.name.full}`;
+const description = `${profile.name.preferred} (${profile.name.full}), from Benin City to Lethbridge to Calgary: the story behind the research, the companies and the public service. Facts, bios and a press kit.`;
 
 const chapters = [
   {
@@ -33,7 +33,7 @@ const chapters = [
     overline: 'Chapter 01 · Benin City',
     title: 'Where it starts',
     body: [
-      `I grew up in Benin City, Edo State, and studied computer science at Benson Idahosa University. Before I ever wrote a line of research code I spent eight years building software in Nigeria: enterprise back-ends, data-science models for churn, and the unglamorous integration work that keeps companies running.`,
+      `My name is ${profile.name.variants[0] ?? profile.name.full}, and I go by ${profile.name.first}. I grew up in Benin City, Edo State, and studied computer science at Benson Idahosa University. Before I ever wrote a line of research code I spent eight years building software in Nigeria: enterprise back-ends, data-science models for churn, and the unglamorous integration work that keeps companies running.`,
       `Along the way I became part of the country's startup community, and in 2021 that led to a seat on the drafting team of the Nigeria Startup Act, which became law in October 2022.`,
     ],
     image: null,
@@ -109,6 +109,7 @@ const chapters = [
 const facts = [
   { label: 'Full name', value: profile.name.full },
   { label: 'Goes by', value: profile.name.preferred },
+  ...(profile.name.variants.length ? [{ label: 'Also written', value: [...profile.name.variants, profile.name.scholarly].join(' · ') }] : []),
   { label: 'Based in', value: profile.location.display },
   { label: 'From', value: `${profile.origin.city}, ${profile.origin.region}, ${profile.origin.country}` },
   { label: 'Roles', value: profile.current.map((c) => `${roleTitle(c).title}, ${org(c.organisation).name}`).join(' · '), draft: profile.current.some((c) => roleTitle(c).draft) },

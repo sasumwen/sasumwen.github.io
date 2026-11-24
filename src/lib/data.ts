@@ -33,6 +33,7 @@ const profileSchema = z.object({
     preferred: z.string(),
     first: z.string(),
     scholarly: z.string(),
+    variants: z.array(z.string()).default([]),
     pronunciation: z.string().nullish(),
   }),
   headline: z.string(),
