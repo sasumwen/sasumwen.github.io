@@ -11,8 +11,7 @@
   title: AI Career Accelerator Program
   issuer: Alberta Machine Intelligence Institute (Amii)
   issued: 2025
-  status: draft
-  note: "D19: confirm dates and wording (Q16)."
+  status: self-reported
 - id: dlai-cnn-tf
   title: Convolutional Neural Networks in TensorFlow
   issuer: DeepLearning.AI · Coursera

@@ -22,7 +22,7 @@
   date: 2026-07-01
   kind: role
   text: "Appointed Chief Technology Officer at StudyRadar."
-  href: /work/
+  href: /work/studyradar/
   status: verified
   dayUnknown: true
 - id: 2026-04-cic-founder-table
@@ -87,7 +87,7 @@
   date: 2024-12-01
   kind: role
   text: "Joined StudyRadar as a machine-learning engineer, while finishing the MSc."
-  href: /work/
+  href: /work/studyradar/
   status: verified
   dayUnknown: true
 - id: 2024-05-tensorflow

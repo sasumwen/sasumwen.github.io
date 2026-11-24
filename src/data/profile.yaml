@@ -2,7 +2,6 @@
 # profile.yaml: identity, headline, bios, identifiers, contact.
 # Every page (hero, About facts, footer, JSON-LD, resume, llms.txt) reads from here.
 # Keys marked `status: draft` are hidden in production builds until confirmed.
-# Facts register: docs/redesign/01-profile-and-facts.md
 # ---------------------------------------------------------------------------
 
 name:
@@ -34,19 +33,18 @@ positioning: >-
   StudyRadar, founder of Xyricon Technologies, and the author of research on boundary-aware
   brain-MRI segmentation at the University of Lethbridge.
 
-# Bios (third person). `short`/`medium` are drafts derived from verified facts (M7).
-# `long` is the organiser bio used for the 15 November 2026 seminar.
-# All three stay `draft` until approved for the site.
+# Bios (third person), approved 2026-11-23. `long` is the organiser bio used for the
+# 15 November 2026 seminar.
 bios:
   short:
-    status: draft
+    status: self-reported
     text: >-
       Osasu Imarhiagbe is an AI engineer, researcher and founder based in Calgary. He is Chief
       Technology Officer at StudyRadar and the founder of Xyricon Technologies, and he holds an
       MSc in Computer Science from the University of Lethbridge, where his research focused on
       boundary-aware brain-MRI segmentation for schizophrenia analysis.
   medium:
-    status: draft
+    status: self-reported
     text: >-
       Osasu Imarhiagbe is an AI engineer, researcher and founder. As Chief Technology Officer at
       StudyRadar he leads the engineering of an AI-powered exam-preparation platform for
@@ -57,7 +55,7 @@ bios:
       software engineer and data scientist in Nigeria and served on the drafting team of the
       Nigeria Startup Act. He sits on the Board of Directors of the AIRI Foundation.
   long:
-    status: draft
+    status: self-reported
     text: >-
       Osasu Imarhiagbe is a computer scientist, AI researcher and technology entrepreneur based in
       Calgary, Alberta. He serves as the Chief Technology Officer of StudyRadar, an Alberta-based
@@ -91,7 +89,7 @@ heroRoles:
   - verb: Leads
     roleRef: studyradar-cto
     detail: Runs engineering, ML and product for an AI exam-preparation platform used by healthcare candidates.
-    href: /work/
+    href: /work/studyradar/
   - verb: Builds
     roleRef: xyricon-founder
     detail: Auron, a real-time AI co-pilot for emergency response, at the Calgary deep-tech studio I founded.
@@ -109,7 +107,7 @@ heroMeta:
 # Proof chips (kept for other placements)
 proof:
   - label: CTO · StudyRadar
-    href: /work/
+    href: /work/studyradar/
   - label: Founder · Xyricon
     href: /work/xyricon/
   - label: MSc CS · ULethbridge 2025
@@ -124,7 +122,7 @@ current:
     organisation: studyradar
     since: 2026-07
     summary: "Leading engineering of an AI exam-preparation platform for pharmacy and healthcare candidates: web, mobile, a voice-based OSCE simulator and AI-assisted assessment."
-    href: /work/
+    href: /work/studyradar/
     status: verified
   - id: xyricon-founder
     title: Founder & Principal
@@ -134,9 +132,7 @@ current:
     href: /work/xyricon/
     status: verified
   - id: airi-board
-    title: Member, Board of Directors
-    titleStatus: draft    # D6: Board of Directors (AIRI site) vs Board of Trustees (LinkedIn). Confirm (Q8)
-    titleSafe: Board of Directors   # AIRI's own public wording (airifoundation.org/about)
+    title: Member, Board of Directors   # AIRI's own public wording (airifoundation.org/about)
     organisation: airi
     since: 2026-03
     summary: AI literacy for underserved communities in Alberta; advising on AI and technology.
@@ -191,13 +187,12 @@ profiles:
   - label: Xyricon Technologies
     href: https://xyricon.com
 
-# Working principles shown on About → "How I work". Drafted in your voice from your public
-# writing; approve or rewrite before launch (hidden in production while status is draft).
+# Working principles shown on About → "How I work". Approved 2026-11-23.
 values:
-  status: draft
+  status: self-reported
   items:
     - lead: Evidence first.
-      text: Every claim on this site links to its source; every model I ship has an evaluation harness.
+      text: A claim comes with its source, and a model gets evaluated before anyone is asked to trust it.
     - lead: Humans in charge.
       text: From triage systems to exam feedback, the person stays accountable and the machine stays legible.
     - lead: Build for the people having the worst day.

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import FactTable from '../components/FactTable.astro';
@@ -11,7 +11,7 @@ import { profile, education, org, awards, memberships, now, fmtYM, fmtDate, role
 import { breadcrumbs } from '../lib/schema';
 import { SHOW_DRAFTS } from '../lib/drafts';
 import candid from '../assets/photos/candid-bw.jpg';
-import sweater from '../assets/photos/portrait-sweater.jpg';
+import suit from '../assets/photos/portrait-suit-01.jpg';
 import gym from '../assets/photos/gym.jpg';
 import convocation from '../assets/photos/convocation-regalia.jpg';
 import stage from '../assets/photos/bbva-stage-speaker.jpg';
@@ -19,8 +19,9 @@ import minds from '../assets/photos/meeting-of-the-minds-2025.jpg';
 
 const msc = education.find((e) => e.id === 'msc-uleth')!;
 const bsc = education.find((e) => e.id === 'bsc-biu')!;
-// Draft bios are shown (badged) in preview builds only.
 const bios = Object.entries(profile.bios).filter(([, b]) => b.status !== 'draft' || SHOW_DRAFTS);
+// Full-size portrait offered to organisers and editors in the bio kit.
+const pressPortrait = await getImage({ src: suit, width: Math.min(suit.width, 2000), format: 'jpg', quality: 90 });
 const showNow = now.status !== 'draft' || SHOW_DRAFTS;
 const values = profile.values && (profile.values.status !== 'draft' || SHOW_DRAFTS) ? profile.values : null;
 const title = 'About';
@@ -211,30 +212,35 @@ const facts = [
           {profile.links.map((l) => <a class="mono" href={l.href} rel="me noopener">{l.label} ↗</a>)}
         </div>
       </div>
-      <div>
-        {bios.length > 0
-          ? <SectionHeading overline="Bio kit" title="Ready-made bios" lede="For event organisers and editors. Copy the length you need." />
-          : <SectionHeading overline="Bio kit" title="Need a bio or a photo?" lede="For event organisers and editors: tell me the length you need and I will send it, with a portrait." />}
-        <div class="bios" data-reveal-group>
-          {bios.map(([key, b]) => (
-            <article class="bio card" data-reveal>
-              <header class="bio__head">
-                <p class="overline overline--muted">{key} bio · {b.text.split(/\s+/).length} words {b.status === 'draft' && <Draft badgeOnly q="M7" />}</p>
-                <button type="button" class="bio__copy mono" data-copy={`#bio-${key}`} data-copied-label="Copied"><span data-copy-label>Copy</span></button>
-              </header>
-              <p id={`bio-${key}`} class="bio__text">{b.text}</p>
-            </article>
-          ))}
+      {bios.length > 0 && (
+        <div>
+          <SectionHeading overline="Bio kit" title="Ready-made bios" lede="For event organisers and editors. Pick a length and copy it." />
+          <div class="bios" data-reveal>
+            {bios.map(([key, b], i) => (
+              <details class="bio card" name="bio" open={i === 0}>
+                <summary class="bio__head">
+                  <span class="bio__name">{key}</span>
+                  <span class="mono faint">{b.text.split(/\s+/).length} words{b.status === 'draft' && <Draft badgeOnly q="M7" />}</span>
+                </summary>
+                <p id={`bio-${key}`} class="bio__text">{b.text}</p>
+                <button type="button" class="bio__copy mono" data-copy={`#bio-${key}`} data-copied-label="Copied"><span data-copy-label>Copy this bio</span></button>
+              </details>
+            ))}
+          </div>
           <figure class="bio-portrait card" data-reveal>
-            <Image src={sweater} alt={`${profile.name.preferred}, casual portrait`} widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
-            <figcaption class="mono faint">{SHOW_DRAFTS ? 'Approved portraits for press use will be downloadable here (M4).' : `${profile.name.preferred}, Calgary`}</figcaption>
+            <Image src={suit} alt={`${profile.name.preferred}, portrait in a dark suit`} widths={[240, 480]} sizes="120px" />
+            <figcaption>
+              <span class="bio-portrait__title">Portrait</span>
+              <span class="mono faint">For use alongside a bio or an event listing.</span>
+              <a class="mono" href={pressPortrait.src} download="osasu-imarhiagbe-portrait.jpg">Download the photo (JPG)</a>
+            </figcaption>
           </figure>
+          <div class="cluster bio-kit__cta">
+            <Button href="/resume/" variant="secondary" arrow>Resume</Button>
+            <Button href="/contact/" variant="text">Get in touch →</Button>
+          </div>
         </div>
-        <div class="cluster bio-kit__cta">
-          <Button href="/resume/" variant="secondary" arrow>Resume</Button>
-          <Button href="/contact/" variant="text">Get in touch →</Button>
-        </div>
-      </div>
+      )}
     </div>
   </section>
 
@@ -497,19 +503,49 @@ const facts = [
   }
   .bios {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
   .bio {
-    padding: var(--space-5);
+    padding: 0;
   }
   .bio__head {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-3);
-    margin-bottom: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    cursor: pointer;
+    list-style: none;
+  }
+  .bio__head::-webkit-details-marker {
+    display: none;
+  }
+  .bio__head .mono {
+    font-size: var(--step--2);
+  }
+  .bio__name {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    text-transform: capitalize;
+  }
+  .bio__name::before {
+    content: '+';
+    display: inline-block;
+    width: 1.2em;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+  }
+  .bio[open] .bio__name::before {
+    content: '\2212';
+  }
+  .bio__text {
+    padding: 0 var(--space-5);
+    font-size: var(--step--1);
+    color: var(--ink-2);
   }
   .bio__copy {
+    margin: var(--space-4) var(--space-5) var(--space-5);
     font-size: var(--step--2);
     color: var(--amber);
     border-bottom: 1px solid currentColor;
@@ -517,26 +553,29 @@ const facts = [
   .bio__copy.is-copied {
     color: var(--lagoon);
   }
-  .bio__text {
-    font-size: var(--step--1);
-    color: var(--ink-2);
-  }
   .bio-portrait {
-    margin: 0;
+    margin: var(--space-4) 0 0;
     padding: var(--space-4);
     display: grid;
     grid-template-columns: 120px 1fr;
-    gap: var(--space-4);
+    gap: var(--space-5);
     align-items: center;
   }
   .bio-portrait :global(img) {
     width: 120px;
     aspect-ratio: 4 / 5;
     object-fit: cover;
+    object-position: center 20%;
     border-radius: var(--radius-1);
   }
   .bio-portrait figcaption {
+    display: grid;
+    gap: var(--space-2);
     font-size: var(--step--2);
+  }
+  .bio-portrait__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
   }
   .bio-kit__cta {
     margin-top: var(--space-6);

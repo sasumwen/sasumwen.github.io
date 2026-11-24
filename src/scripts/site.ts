@@ -9,8 +9,8 @@ const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)')
 /* ---------- theme ---------- */
 function currentTheme(): 'light' | 'dark' {
   const attr = document.documentElement.getAttribute('data-theme');
-  if (attr === 'light' || attr === 'dark') return attr;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Light is the default; dark is used only when the visitor has chosen it.
+  return attr === 'dark' ? 'dark' : 'light';
 }
 function applyTheme(theme: 'light' | 'dark') {
   document.documentElement.setAttribute('data-theme', theme);

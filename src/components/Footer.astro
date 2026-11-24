@@ -47,9 +47,9 @@ const email = profile.contact.email;
   </div>
   <div class="container site-footer__meta">
     <p class="mono faint">
-      © {year} {profile.name.full} · {profile.location.display} · <a href="/colophon/">Colophon</a> · <a href="/resume/">Resume</a>
+      © {year} {profile.name.full} · {profile.location.display}
     </p>
-    <p class="mono faint">Built with Astro. No trackers.</p>
+    <p class="mono faint"><a href="/resume/">Resume</a></p>
   </div>
 </footer>
 
@@ -116,10 +116,14 @@ const email = profile.contact.email;
     justify-content: space-between;
     gap: var(--space-4);
     flex-wrap: wrap;
+    align-items: baseline;
     border-top: 1px solid var(--line);
     padding-top: var(--space-5);
     padding-bottom: var(--space-6);
     font-size: var(--step--2);
+  }
+  .site-footer__meta p {
+    margin: 0;
   }
   .site-footer__meta a {
     color: inherit;

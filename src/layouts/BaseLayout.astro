@@ -74,8 +74,7 @@ const ld = bareJsonLd ? graph(...jsonLd) : graph(personNode(), websiteNode(), ..
     {!noindex && <link rel="canonical" href={canonical} />}
     <meta name="author" content={profile.name.full} />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3ec" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#15130f" />
+    <meta name="theme-color" content="#f7f3ec" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="preload" as="font" type="font/woff2" crossorigin href={frauncesUrl} />
     <link rel="preload" as="font" type="font/woff2" crossorigin href={instrumentUrl} />
@@ -104,7 +103,7 @@ const ld = bareJsonLd ? graph(...jsonLd) : graph(personNode(), websiteNode(), ..
     <script type="application/ld+json" set:html={JSON.stringify(ld)} />
     <slot name="head" />
 
-    {/* Theme: applied before paint to avoid a flash; persisted choice wins over system. */}
+    {/* Theme: light by default. A visitor's own choice is applied before paint to avoid a flash. */}
     <script is:inline>
       (function () {
         document.documentElement.classList.remove('no-js');

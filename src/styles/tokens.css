@@ -109,26 +109,3 @@
   --scrim-soft: rgba(21, 19, 15, 0.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --paper: #15130f;
-    --paper-2: #1d1a16;
-    --paper-3: #26221c;
-    --ink: #efe9df;
-    --ink-2: #b3aca1;
-    --ink-3: #948c7f;
-    --line: rgba(239, 233, 223, 0.14);
-    --line-strong: rgba(239, 233, 223, 0.32);
-    --amber: #e6a646;
-    --amber-bright: #f0b759;
-    --amber-wash: #2e2416;
-    --lagoon: #6cc8c0;
-    --lagoon-wash: #15302e;
-    --signal-red: #e0806f;
-    --amber-deep: #e6a646;
-    --on-amber: #15130f;
-    --scrim: rgba(21, 19, 15, 0.78);
-    --scrim-soft: rgba(21, 19, 15, 0.4);
-  }
-}

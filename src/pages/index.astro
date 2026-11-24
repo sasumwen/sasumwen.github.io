@@ -13,14 +13,17 @@ import BoundaryCompare from '../components/diagrams/BoundaryCompare.astro';
 import ThesisResults from '../components/ThesisResults.astro';
 import Draft from '../components/Draft.astro';
 import JourneyLine from '../components/JourneyLine.astro';
-import { profile, org, updates, fmtYM, roleTitle } from '../lib/data';
+import { profile, org, updates, roleTitle } from '../lib/data';
 import { notDraft } from '../lib/drafts';
 import portrait from '../assets/photos/portrait-suit-01.jpg';
 
 const work = (await getCollection('work', notDraft)).filter((w) => w.data.featured).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
 const pubs = (await getCollection('publications', notDraft)).filter((p) => p.data.featured).sort((a, b) => a.data.order - b.data.order);
 const spotlight = pubs[0];
-const journal = (await getCollection('journal', notDraft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2);
+const stories = (await getCollection('journal', notDraft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+// The newest featured story leads; the two most recent of the rest sit beside it.
+const lead = stories.find((j) => j.data.featured) ?? stories[0];
+const journal = lead ? [lead, ...stories.filter((j) => j.id !== lead.id).slice(0, 2)] : [];
 const latest = updates.slice(0, 5);
 const title = profile.name.preferred;
 const description = `${profile.positioning}`;
@@ -84,43 +87,16 @@ const heroRoles = profile.heroRoles.map((r) => {
       </figure>
     </div>
 
-    <a class="hero__scroll mono" href="#currently" aria-label="Scroll to content">
+    <a class="hero__scroll mono" href="#work" aria-label="Scroll to content">
       <span>Scroll</span>
       <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v13M5 11l5 5 5-5" /></svg>
     </a>
   </section>
 
-  <!-- ============ CURRENTLY ============ -->
-  <section class="section currently" id="currently" aria-labelledby="currently-title">
-    <div class="container">
-      <SectionHeading index="01" overline="Currently" title="Three hats, one thread" lede="Research, product and public service. Each of them is about putting intelligent systems where the consequences are real." id="currently-title" />
-      <ol class="roles" data-reveal-group>
-        {profile.current.map((c, i) => {
-          const o = org(c.organisation);
-          const t = roleTitle(c);
-          return (
-            <li class="role card" data-reveal>
-              <span class="role__index serif" aria-hidden="true">0{i + 1}</span>
-              <div class="role__body">
-                <p class="role__org mono">{o.name}<span class="faint"> · since {fmtYM(String(c.since))}</span></p>
-                <h3 class="role__title">
-                  {t.title}
-                  {t.draft && <Draft badgeOnly q={c.id === 'xyricon-founder' ? 'Q6' : 'Q8'} />}
-                </h3>
-                <p class="role__summary">{c.summary}</p>
-                <a class="role__link" href={c.href}>More <span aria-hidden="true">→</span></a>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
-  </section>
-
   <!-- ============ SELECTED WORK ============ -->
-  <section class="section" aria-labelledby="work-title">
+  <section class="section" id="work" aria-labelledby="work-title">
     <div class="container">
-      <SectionHeading index="02" overline="Selected work" title="Built, led and drafted" lede="Case studies rather than bullet points: the problem, my role, what we built and what came of it." action={{ label: 'All work', href: '/work/' }} id="work-title" />
+      <SectionHeading index="01" overline="Selected work" title="Built, led and drafted" lede="Case studies rather than bullet points: the problem, my role, what we built and what came of it." action={{ label: 'All work', href: '/work/' }} id="work-title" />
       <div class="work-grid" data-reveal-group>
         {work.map((w, i) => (
           <WorkCard entry={w} size={i === 0 ? 'large' : 'default'} class={i === 0 ? 'work-grid__lead' : ''} />
@@ -133,7 +109,7 @@ const heroRoles = profile.heroRoles.map((r) => {
   <section class="section research-spot" aria-labelledby="research-title">
     <div class="container research-spot__grid">
       <div class="research-spot__text">
-        <SectionHeading index="03" overline="Research" tone="lagoon" title="Segmenting the brain at its edges" lede="Where a structure ends matters as much as where it is. My MSc research taught a 3D U-Net to learn the boundary explicitly, and then used those boundaries to read structure and function together." id="research-title" />
+        <SectionHeading index="02" overline="Research" tone="lagoon" title="Segmenting the brain at its edges" lede="Where a structure ends matters as much as where it is. My MSc research taught a 3D U-Net to learn the boundary explicitly, and then used those boundaries to read structure and function together." id="research-title" />
         {spotlight && <PublicationEntry entry={spotlight} variant="feature" />}
         <div class="cluster research-spot__cta">
           <Button href="/research/" variant="secondary" arrow>Research hub</Button>
@@ -150,10 +126,10 @@ const heroRoles = profile.heroRoles.map((r) => {
   <!-- ============ JOURNAL ============ -->
   <section class="section journal-strip" aria-labelledby="journal-title">
     <div class="container">
-      <SectionHeading index="04" overline="Journal" title="Off the clock" lede="The person behind the work: the leap to Canada, the defence, the winters, the gym, the dragon boat, the road trips. Told in my own voice, with photographs." action={{ label: 'All stories', href: '/journal/' }} id="journal-title" />
+      <SectionHeading index="03" overline="Journal" title="Off the clock" lede="The person behind the work: the leap to Canada, the defence, the stage, the dragon boat, the road trips, the pilot's logbook. Told in my own voice, with photographs." action={{ label: 'All stories', href: '/journal/' }} id="journal-title" />
       <div class="journal-grid" data-reveal-group>
         {journal.map((j, i) => (
-          <JournalCard entry={j} variant={i === 0 ? 'wide' : 'default'} />
+          <JournalCard entry={j} variant={i === 0 ? 'default' : 'wide'} class={i === 0 ? 'journal-grid__lead' : ''} />
         ))}
       </div>
     </div>
@@ -163,7 +139,7 @@ const heroRoles = profile.heroRoles.map((r) => {
   <section class="section" aria-labelledby="updates-title">
     <div class="container updates-grid">
       <div>
-        <SectionHeading index="05" overline="Updates" title="Lately" action={{ label: 'All updates', href: '/updates/' }} id="updates-title" />
+        <SectionHeading index="04" overline="Updates" title="Lately" action={{ label: 'All updates', href: '/updates/' }} id="updates-title" />
         <UpdatesList items={latest} />
       </div>
       <aside class="elsewhere" aria-label="Elsewhere">
@@ -201,13 +177,6 @@ const heroRoles = profile.heroRoles.map((r) => {
     --panel: var(--paper-3);
     --panel-ink: var(--ink);
     --panel-ink-2: var(--ink-2);
-  }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .hero {
-      --panel: var(--paper-3);
-      --panel-ink: var(--ink);
-      --panel-ink-2: var(--ink-2);
-    }
   }
   /* the ink panel: the right-hand side of the boundary */
   .hero__panel {
@@ -474,88 +443,6 @@ const heroRoles = profile.heroRoles.map((r) => {
     }
   }
 
-  /* ---------- currently ---------- */
-  .roles {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-5);
-  }
-  .role {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    padding: var(--space-6);
-    position: relative;
-    overflow: hidden;
-  }
-  .role::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3px;
-    background: var(--amber-bright);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--dur-3) var(--ease);
-  }
-  .role:hover::after {
-    transform: scaleX(1);
-  }
-  .role__index {
-    font-size: var(--step-1);
-    line-height: 1;
-    color: var(--ink-3);
-    font-variation-settings: 'opsz' 72, 'SOFT' 60;
-    margin-bottom: var(--space-6);
-  }
-  .role__org {
-    font-size: var(--step--2);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--amber);
-  }
-  .role__title {
-    margin-top: var(--space-2);
-    font-size: var(--step-3);
-  }
-  .role__summary {
-    margin-top: var(--space-3);
-    color: var(--ink-2);
-    font-size: var(--step--1);
-    text-wrap: pretty;
-  }
-  .role__link {
-    display: inline-block;
-    margin-top: var(--space-5);
-    font-weight: 600;
-    text-decoration: none;
-    font-size: var(--step--1);
-  }
-  .role__link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-  @media (max-width: 900px) {
-    .roles {
-      grid-template-columns: 1fr;
-    }
-    .role {
-      grid-template-columns: 64px 1fr;
-      grid-template-rows: none;
-      gap: var(--space-4);
-      padding: var(--space-5);
-    }
-    .role__index {
-      font-size: var(--step-2);
-      margin: 0;
-    }
-  }
-
   /* ---------- work grid ---------- */
   .work-grid {
     display: grid;
@@ -603,6 +490,13 @@ const heroRoles = profile.heroRoles.map((r) => {
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--space-5);
   }
+  .journal-grid > :global(.journal-grid__lead) {
+    grid-row: span 2;
+  }
+  .journal-grid > :global(.journal-grid__lead .journal-card__media) {
+    aspect-ratio: auto;
+    min-height: 420px;
+  }
   .journal-grid > :global(:only-child) {
     grid-column: 1 / -1;
   }
@@ -612,6 +506,13 @@ const heroRoles = profile.heroRoles.map((r) => {
   @media (max-width: 760px) {
     .journal-grid {
       grid-template-columns: 1fr;
+    }
+    .journal-grid > :global(.journal-grid__lead) {
+      grid-row: auto;
+    }
+    .journal-grid > :global(.journal-grid__lead .journal-card__media) {
+      aspect-ratio: 4 / 5;
+      min-height: 0;
     }
   }
 
