@@ -1,0 +1,5 @@
+# osasumwen.com: crawling is welcome, including by AI assistants (discoverability is the point).
+User-agent: *
+Allow: /
+
+Sitemap: https://osasumwen.com/sitemap-index.xml

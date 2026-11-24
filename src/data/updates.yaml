@@ -1,0 +1,118 @@
+# Dated news items, newest first. Shown on Home (latest 5), /updates/ and the RSS feed.
+# kind: publication | talk | milestone | role | award | journal | press
+- id: 2026-11-beyond-the-prompt
+  date: 2026-11-15
+  kind: talk
+  text: "Gave a guest talk, “Beyond the Prompt: From AI Prototype to Real-World Product”, at the online seminar From Idea to App with Claude."
+  href: /writing/beyond-the-prompt/
+  status: self-reported
+- id: 2026-10-icict-published
+  date: 2026-10-06
+  kind: publication
+  text: "BoRefAttnNet chapter published online in Springer's Lecture Notes in Networks and Systems, vol. 2108 (ICICT 2026 proceedings)."
+  href: /research/borefattnnet/
+  status: verified
+- id: 2026-07-amii-level-up
+  date: 2026-07-28
+  kind: milestone
+  text: "StudyRadar named to the ninth cohort of Amii's Level Up program; I lead our technical sessions with Amii's machine-learning scientists."
+  href: https://www.linkedin.com/posts/amii_were-thrilled-to-welcome-the-newest-cohort-activity-7487877170879623168-2nwA
+  status: verified
+- id: 2026-07-studyradar-cto
+  date: 2026-07-01
+  kind: role
+  text: "Appointed Chief Technology Officer at StudyRadar."
+  href: /work/
+  status: verified
+  dayUnknown: true
+- id: 2026-04-cic-founder-table
+  date: 2026-04-15
+  kind: talk
+  text: "Brought Auron's edge-hardware challenge to the Calgary Innovation Coalition Founder Action Table."
+  href: /work/auron/
+  status: self-reported
+  dayUnknown: true
+- id: 2026-03-airi-board
+  date: 2026-03-01
+  kind: role
+  text: "Joined the Board of Directors of the AIRI Foundation."
+  href: /about/#service
+  status: verified
+  dayUnknown: true
+- id: 2026-02-bbva
+  date: 2026-02-05
+  kind: milestone
+  text: "Presented Auron on the main stage of the BBVA Innovation Expo 2026 at Platform Calgary, as one of seven Black founders showcased."
+  href: /work/auron/   # switch to /journal/bbva-innovation-expo-2026/ once that story is approved
+  status: verified
+  dayUnknown: true
+- id: 2026-02-icict-london
+  date: 2026-02-24
+  kind: publication
+  text: "BoRefAttnNet accepted to the 11th International Congress on Information and Communication Technology (ICICT 2026), London."
+  href: /research/borefattnnet/
+  status: verified
+- id: 2025-10-convocation
+  date: 2025-10-18
+  kind: milestone
+  text: "Convocation: Master of Science in Computer Science, University of Lethbridge."
+  href: /journal/two-years-three-hours/
+  status: verified
+- id: 2025-08-defence
+  date: 2025-08-12
+  kind: milestone
+  text: "Defended the MSc thesis: boundary-enhanced segmentation and spatial-temporal transformers for automated schizophrenia investigation."
+  href: /research/thesis/
+  status: verified   # date of defence printed on the deposited thesis (hdl.handle.net/10133/7170)
+- id: 2025-07-ihpcss
+  date: 2025-07-06
+  kind: talk
+  text: "Presented BoRefAttnNet at the International HPC Summer School 2025 in Lisbon as part of the Canadian delegation."
+  href: /speaking/
+  status: self-reported
+- id: 2025-05-upper-bound
+  date: 2025-05-20
+  kind: milestone
+  text: "Upper Bound 2025 (Amii, Edmonton) and Inventures 2025 (Calgary)."
+  status: self-reported
+  dayUnknown: true
+- id: 2025-04-xyricon
+  date: 2025-04-01
+  kind: role
+  text: "Founded Xyricon Technologies in Calgary."
+  href: /work/xyricon/
+  status: verified
+  dayUnknown: true
+- id: 2024-12-studyradar
+  date: 2024-12-01
+  kind: role
+  text: "Joined StudyRadar as a machine-learning engineer, while finishing the MSc."
+  href: /work/
+  status: verified
+  dayUnknown: true
+- id: 2024-05-tensorflow
+  date: 2024-05-26
+  kind: award
+  text: "Earned the Google TensorFlow Developer Certificate."
+  href: https://www.credential.net/9b2b1492-10bc-4d77-802e-416e0d9c44d4
+  status: verified
+- id: 2023-09-canada
+  date: 2023-09-01
+  kind: milestone
+  text: "Moved to Canada to begin the MSc at the University of Lethbridge as an Alberta Innovates scholar."
+  href: /about/
+  status: verified
+  dayUnknown: true
+- id: 2022-12-recognition
+  date: 2022-12-01
+  kind: award
+  text: "Received a Presidential Certificate of Recognition for contributions to the Nigeria Startup Act."
+  href: /work/nigeria-startup-act/
+  status: self-reported
+  dayUnknown: true
+- id: 2022-10-nsa-signed
+  date: 2022-10-19
+  kind: milestone
+  text: "The Nigeria Startup Act, which I helped draft, was signed into law."
+  href: /work/nigeria-startup-act/
+  status: verified

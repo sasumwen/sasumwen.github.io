@@ -1,0 +1,133 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Draft from './Draft.astro';
+
+interface Props {
+  entry: CollectionEntry<'journal'>;
+  variant?: 'default' | 'wide' | 'tall';
+  class?: string;
+}
+const { entry, variant = 'default', class: className } = Astro.props;
+const { title, dek, dateline, cover, coverAlt, coverPosition, draft } = entry.data;
+const href = `/journal/${entry.id}/`;
+---
+
+<article class:list={['journal-card', `journal-card--${variant}`, className]} data-reveal>
+  <a class="journal-card__link" href={href}>
+    <div class="journal-card__media">
+      <Image
+        src={cover}
+        alt={coverAlt}
+        widths={[480, 800, 1200]}
+        sizes={variant === 'wide' ? '(max-width: 900px) 100vw, 66vw' : '(max-width: 900px) 100vw, 40vw'}
+        style={`object-position:${coverPosition}`}
+      />
+      <div class="journal-card__scrim" aria-hidden="true"></div>
+    </div>
+    <div class="journal-card__text">
+      <p class="journal-card__dateline mono">{dateline}{draft && <Draft badgeOnly />}</p>
+      <h3 class="journal-card__title">{title}</h3>
+      <p class="journal-card__dek">{dek}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .journal-card {
+    position: relative;
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    /* Fixed dark, not var(--ink): the card is a photograph with light text in both themes. */
+    background: #15130f;
+    height: 100%;
+  }
+  .journal-card__link {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    color: #efe9df;
+    text-decoration: none;
+  }
+  .journal-card__media {
+    position: relative;
+    flex: 1 1 auto;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+  .journal-card--wide .journal-card__media {
+    aspect-ratio: 16 / 10;
+  }
+  .journal-card--tall .journal-card__media {
+    aspect-ratio: 3 / 4;
+  }
+  .journal-card__media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.4s var(--ease-out);
+  }
+  .journal-card:hover .journal-card__media :global(img) {
+    transform: scale(1.04);
+  }
+  .journal-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(21, 19, 15, 0.86) 0%, rgba(21, 19, 15, 0.35) 45%, rgba(21, 19, 15, 0) 70%);
+  }
+  .journal-card__text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--space-5);
+  }
+  .journal-card__dateline {
+    color: #f0b759;
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .journal-card__title {
+    margin-top: var(--space-2);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    color: #fffdf9;
+    text-wrap: balance;
+  }
+  .journal-card--wide .journal-card__title {
+    font-size: var(--step-2);
+  }
+  .journal-card__dek {
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+    color: #d9d3c8;
+    max-width: 48ch;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--dur-3) var(--ease), transform var(--dur-3) var(--ease);
+  }
+  .journal-card:hover .journal-card__dek,
+  .journal-card:focus-within .journal-card__dek {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: none) {
+    .journal-card__dek {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* On a phone a 16:10 frame is too short for the title, so every card goes portrait. */
+  @media (max-width: 600px) {
+    .journal-card .journal-card__media {
+      aspect-ratio: 4 / 5;
+    }
+    .journal-card--wide .journal-card__title {
+      font-size: var(--step-3);
+    }
+  }
+</style>

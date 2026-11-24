@@ -1,0 +1,59 @@
+---
+/** Light/dark toggle. State is set by src/scripts/site.ts; markup works without JS (hidden). */
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch theme">
+  <span class="theme-toggle__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <circle class="sun" cx="12" cy="12" r="4.2" />
+      <g class="rays">
+        <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5" />
+      </g>
+      <path class="moon" d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z" />
+    </svg>
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+    color: var(--ink);
+    transition: border-color var(--dur-1) var(--ease), background-color var(--dur-1) var(--ease);
+  }
+  .theme-toggle:hover {
+    border-color: var(--line-strong);
+    background: var(--paper-2);
+  }
+  .no-js .theme-toggle {
+    display: none;
+  }
+  .theme-toggle__icon {
+    display: inline-flex;
+  }
+  .moon {
+    opacity: 0;
+    transform: rotate(-30deg) scale(0.6);
+    transform-origin: center;
+    transition: opacity var(--dur-2) var(--ease), transform var(--dur-3) var(--ease);
+  }
+  .sun,
+  .rays {
+    transform-origin: center;
+    transition: opacity var(--dur-2) var(--ease), transform var(--dur-3) var(--ease);
+  }
+  .theme-toggle[aria-pressed='true'] .moon {
+    opacity: 1;
+    transform: none;
+  }
+  .theme-toggle[aria-pressed='true'] .sun,
+  .theme-toggle[aria-pressed='true'] .rays {
+    opacity: 0;
+    transform: rotate(60deg) scale(0.5);
+  }
+</style>

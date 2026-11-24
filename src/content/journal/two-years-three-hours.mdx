@@ -1,0 +1,68 @@
+---
+title: Two years, three hours, and a lifetime of lessons
+dek: Two years after leaving everything familiar behind, I stood in front of a panel for almost three hours. The defence, the convocation, and the people who got me there.
+date: 2025-10-18
+dateline: August – October 2025
+place: Lethbridge, Alberta
+cover: ../../assets/photos/convocation-regalia.jpg
+coverAlt: Osasu in convocation regalia at the University of Lethbridge, October 2025
+coverPosition: 12% 22%
+gallery:
+  - src: ../../assets/photos/convocation-regalia.jpg
+    alt: In convocation regalia at the University of Lethbridge
+    caption: Convocation day, 18 October 2025
+    span: tall
+  - src: ../../assets/photos/convocation-banner.jpg
+    alt: Holding the degree in front of the convocation banner
+    caption: Outside the ceremony
+  - alt: Thesis defence slide
+    placeholder: "Defence slide / committee photo: consent needed (M4)"
+  - alt: Family at convocation
+    placeholder: "Family at convocation: consent needed (M4)"
+    span: "2"
+  - alt: Graduation celebration
+    placeholder: "Graduation celebration: consent needed (M4)"
+  - src: ../../assets/photos/candid-bw.jpg
+    alt: Candid portrait, September 2025
+    caption: Lethbridge, September 2025
+peopleConsent: false
+people: [Dr. John Zhang, Wendy Osborn, Yllias Chali]
+tags: [Research, Milestones, Family]
+related: [ihpcss-lisbon-2025, bbva-innovation-expo-2026]
+featured: true
+readingTime: 6
+---
+
+import PullQuote from '../../components/PullQuote.astro';
+import Draft from '../../components/Draft.astro';
+import DraftSection from '../../components/DraftSection.astro';
+
+<p class="lead">Two years ago I left everything familiar behind to pursue my research in Canada. The journey has been far from smooth: moments of joy and pride, but also loneliness, setbacks, and the long, unyielding Alberta winters.</p>
+
+Today it all came to a head. I stood before a panel of domain experts for an almost three-hour examination of my thesis: *Advanced Boundary-Enhanced Instance Segmentation and Spatial-Temporal Transformer Models for Automated Schizophrenic Investigation.*
+
+The day before, I was restless. I hit the gym to calm my nerves and ran into one of my former students, who reminded me: "You're the same person who taught us Discrete Structures and Algorithms. You've got this."
+
+<PullQuote>Fight or flight? I chose to fight, because mama didn't raise a quitter.</PullQuote>
+
+## What the thesis is really about
+
+Strip away the title and the thesis asks two questions. The first is about *edges*. When a computer outlines small structures deep in the brain (the hippocampus, the amygdala, the basal ganglia) it tends to be confident in the middle of each structure and sloppy at the boundary. The boundary is exactly where researchers look when they compare the brains of people living with schizophrenia to those of people without it, so a blurry edge is not a cosmetic problem; it is where the science happens.
+
+So the first half of the work, **BoRefAttnNet**, teaches a standard 3D segmentation network to pay deliberate attention to boundaries. At every stage where the network rebuilds its picture of the scan, a small module asks "where does this structure end?" and sharpens the answer while quietening the noise around it. Trained and tested on a public dataset of MRI scans, it draws those small structures more faithfully than the conventional network it was built on.
+
+The second question is about *time*. A structural scan is a photograph; a functional scan is closer to a film of the brain at rest. **DySTTM**, a dynamic spatial-temporal transformer, reads the two together: where the structures are, and how activity moves between them over time. In the thesis experiments that combination separated patients from controls more accurately, and more interpretably, than the established models it was compared against. It is a first step rather than a last word, and I am fine with that.
+
+The thesis itself is open access at the University of Lethbridge; the boundary-attention work was later published in Springer's ICICT 2026 proceedings. [The research pages](/research/) have both, in more detail than any dinner guest has asked for.
+
+## Convocation
+
+The defence was in August; the degree became official on 18 October, at convocation in Lethbridge, two years and one month after I arrived.
+
+<DraftSection title="The people who came" q="M4">Two paragraphs on the family and friends who travelled for the day, the ceremony itself, and the celebration afterwards, written from your own notes, with photos once everyone pictured has said yes.</DraftSection>
+
+## Thank you
+
+My deepest appreciation goes to my supervisor, Dr. John Zhang, for his unwavering support and continued guidance, and to my committee members, Wendy Osborn and Yllias Chali, whose feedback has always been both invaluable and most sought-after.
+
+If you see me, pour some water on my head, because I'm still on fire.

@@ -1,0 +1,120 @@
+---
+/**
+ * The journey, in one line: Benin City → Lethbridge → Calgary.
+ * A single contour-style path with three stations; the path draws itself on first view.
+ * Labels are real text (not SVG) so they wrap, scale and read to assistive tech.
+ */
+interface Props {
+  class?: string;
+  stations?: { label: string; sub: string }[];
+}
+const {
+  class: className,
+  stations = [
+    { label: 'Benin City', sub: 'until 2023' },
+    { label: 'Lethbridge', sub: '2023 – 2025' },
+    { label: 'Calgary', sub: '2025 →' },
+  ],
+} = Astro.props;
+
+const W = 600;
+const H = 56;
+const pts = [
+  [24, 40],
+  [300, 16],
+  [576, 36],
+] as const;
+const d = `M${pts[0][0]} ${pts[0][1]} C 120 46, 210 8, ${pts[1][0]} ${pts[1][1]} S 470 44, ${pts[2][0]} ${pts[2][1]}`;
+---
+
+<div class:list={['journey', className]} role="img" aria-label="From Benin City, to Lethbridge from 2023 to 2025, to Calgary since 2025">
+  <svg class="journey__svg" viewBox={`0 0 ${W} ${H}`} fill="none" aria-hidden="true" focusable="false">
+    <path class="journey__path" d={d} stroke="var(--line-strong)" stroke-width="1.3" stroke-linecap="round" />
+    {pts.map(([x, y], i) => (
+      <g class="journey__dot" style={`--i:${i}`}>
+        <circle cx={x} cy={y} r="7" fill="var(--paper)" />
+        <circle cx={x} cy={y} r="4.5" fill={i === pts.length - 1 ? 'var(--amber-bright)' : 'var(--paper)'} stroke="var(--amber-bright)" stroke-width="2" />
+      </g>
+    ))}
+  </svg>
+  <ol class="journey__stations" aria-hidden="true">
+    {stations.map((s, i) => (
+      <li class="journey__station" style={`--i:${i}`}>
+        <span class="journey__label">{s.label}</span>
+        <span class="journey__sub mono">{s.sub}</span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .journey {
+    width: min(100%, 520px);
+  }
+  .journey__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .journey__path {
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+  }
+  .journey__dot {
+    opacity: 0;
+  }
+  .journey__stations {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .journey__station {
+    display: grid;
+    gap: 1px;
+    opacity: 0;
+    text-align: center;
+  }
+  .journey__station:first-child {
+    text-align: left;
+  }
+  .journey__station:last-child {
+    text-align: right;
+  }
+  .journey__label {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .journey__sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  /* draw-in, then stations appear in order (parent carries data-reveal) */
+  :global(.is-visible) .journey__path,
+  :global(.no-js) .journey__path {
+    animation: journeyDraw 1.6s var(--ease-out) 0.15s forwards;
+  }
+  :global(.is-visible) .journey__dot,
+  :global(.is-visible) .journey__station,
+  :global(.no-js) .journey__dot,
+  :global(.no-js) .journey__station {
+    animation: journeyPop 0.5s var(--ease-out) forwards;
+    animation-delay: calc(0.35s + var(--i) * 0.55s);
+  }
+  @keyframes journeyDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes journeyPop {
+    from { opacity: 0; translate: 0 5px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .journey__path { stroke-dashoffset: 0; animation: none !important; }
+    .journey__dot, .journey__station { opacity: 1; animation: none !important; }
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+/**
+ * Thin reading-progress bar under the header. CSS scroll-driven animation where
+ * supported (zero JS); a small scroll listener elsewhere (initProgress in site.ts).
+ * The article root must carry `data-progress-target`.
+ */
+---
+
+<div class="progress" aria-hidden="true"><span class="progress__bar" data-progress></span></div>
+
+<style>
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: calc(var(--z-header) + 1);
+    pointer-events: none;
+  }
+  .progress__bar {
+    display: block;
+    height: 100%;
+    background: var(--amber-bright);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  @supports (animation-timeline: scroll()) {
+    .progress__bar {
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+    @keyframes grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+  }
+</style>

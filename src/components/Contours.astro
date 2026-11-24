@@ -1,0 +1,106 @@
+---
+/**
+ * Contour-line motif. Rendered as inline SVG at build time (deterministic per seed).
+ * Decorative by default (aria-hidden); pass `title` to make it meaningful.
+ */
+import { rings, ridges } from '../lib/contours';
+
+interface Props {
+  variant?: 'rings' | 'ridges';
+  seed?: number | string;
+  class?: string;
+  width?: number;
+  height?: number;
+  lines?: number;
+  stroke?: string;
+  strokeWidth?: number;
+  /** rings only */
+  rMin?: number;
+  rMax?: number;
+  wobble?: number;
+  aspect?: number;
+  /** ridges only */
+  amplitude?: number;
+  spread?: number;
+  /** Fade the strokes from strong to faint across the set. */
+  fade?: boolean;
+  title?: string;
+  /** Draw strokes in one after another on reveal (CSS, honours reduced-motion). */
+  animate?: boolean;
+}
+
+const {
+  variant = 'rings',
+  seed = 7,
+  class: className,
+  width = variant === 'rings' ? 600 : 1200,
+  height = variant === 'rings' ? 600 : 400,
+  lines = variant === 'rings' ? 9 : 8,
+  stroke = 'currentColor',
+  strokeWidth = 1,
+  rMin = 36,
+  rMax = Math.min(width, height) * 0.47,
+  wobble = 0.22,
+  aspect = 1.08,
+  amplitude = 0.22,
+  spread = 0.9,
+  fade = true,
+  title,
+  animate = false,
+} = Astro.props;
+
+const paths =
+  variant === 'rings'
+    ? rings({ seed, cx: width / 2, cy: height / 2, rings: lines, rMin, rMax, wobble, aspect })
+    : ridges({ seed, width, height, lines, amplitude, spread });
+---
+
+<svg
+  class:list={['contours', className, { 'contours--animate': animate }]}
+  viewBox={`0 0 ${width} ${height}`}
+  preserveAspectRatio={variant === 'rings' ? 'xMidYMid meet' : 'none'}
+  fill="none"
+  stroke={stroke}
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  vector-effect="non-scaling-stroke"
+  aria-hidden={title ? undefined : 'true'}
+  role={title ? 'img' : undefined}
+  focusable="false"
+>
+  {title && <title>{title}</title>}
+  {
+    paths.map((d, i) => (
+      <path
+        d={d}
+        style={`--i:${i};opacity:${fade ? (0.95 - (i / Math.max(1, paths.length - 1)) * 0.65).toFixed(2) : 1}`}
+        vector-effect="non-scaling-stroke"
+      />
+    ))
+  }
+</svg>
+
+<style>
+  .contours {
+    display: block;
+    /* colour is inherited from the parent so each placement decides the tone */
+  }
+  .contours--animate path {
+    stroke-dasharray: 2400;
+    stroke-dashoffset: 2400;
+    animation: draw 2.4s var(--ease-out) forwards;
+    animation-delay: calc(var(--i) * 90ms);
+  }
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contours--animate path {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

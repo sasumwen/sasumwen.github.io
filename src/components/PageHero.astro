@@ -1,0 +1,91 @@
+---
+/** Standard page header: overline, big title, lede, optional meta row + contour backdrop. */
+import Contours from './Contours.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+
+interface Props {
+  overline?: string;
+  title: string;
+  lede?: string;
+  tone?: 'amber' | 'lagoon' | 'muted';
+  crumbs?: { name: string; href: string }[];
+  contours?: boolean;
+  seed?: string;
+  size?: 'default' | 'large';
+  align?: 'start' | 'center';
+  class?: string;
+}
+const { overline, title, lede, tone = 'amber', crumbs, contours = true, seed = title, size = 'default', align = 'start', class: className } = Astro.props;
+---
+
+<header class:list={['page-hero', `page-hero--${size}`, `page-hero--${align}`, className]}>
+  {contours && (
+    <div class="page-hero__art" aria-hidden="true">
+      <Contours variant="rings" seed={seed} lines={10} width={900} height={900} wobble={0.26} class="page-hero__contours" />
+    </div>
+  )}
+  <div class="container page-hero__inner">
+    {crumbs && <Breadcrumbs items={crumbs} />}
+    {overline && <p class:list={['overline', { 'overline--lagoon': tone === 'lagoon', 'overline--muted': tone === 'muted' }]} data-reveal>{overline}</p>}
+    <h1 class:list={['page-hero__title', { display: size === 'large' }]} data-reveal>{title}</h1>
+    {lede && <p class="page-hero__lede" data-reveal>{lede}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .page-hero {
+    position: relative;
+    padding-top: clamp(var(--space-7), 6vw, var(--space-9));
+    padding-bottom: clamp(var(--space-6), 5vw, var(--space-8));
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .page-hero__art {
+    position: absolute;
+    right: -12%;
+    top: -40%;
+    width: min(760px, 70vw);
+    aspect-ratio: 1;
+    pointer-events: none;
+    color: var(--line-strong);
+    opacity: 0.9;
+    mask-image: radial-gradient(closest-side, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent 100%);
+  }
+  .page-hero__contours {
+    width: 100%;
+    height: 100%;
+  }
+  .page-hero__inner {
+    position: relative;
+  }
+  .page-hero--center .page-hero__inner {
+    text-align: center;
+  }
+  .page-hero--center .page-hero__lede {
+    margin-inline: auto;
+  }
+  .overline {
+    margin-bottom: var(--space-4);
+  }
+  .page-hero__title {
+    font-size: var(--step-1);
+    line-height: 1.05;
+    max-width: 20ch;
+  }
+  .page-hero--center .page-hero__title {
+    margin-inline: auto;
+  }
+  .page-hero__title.display {
+    max-width: 16ch;
+  }
+  .page-hero__lede {
+    margin-top: var(--space-5);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+</style>

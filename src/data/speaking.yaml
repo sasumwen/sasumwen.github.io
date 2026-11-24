@@ -1,0 +1,84 @@
+# Talks, presentations, panels and showcases, newest first.
+# role: speaker | presenter | panelist | showcase | participant
+- id: beyond-the-prompt-2026
+  date: 2026-11
+  event: "From Idea to App with Claude (free community seminar, hosted by Chigozie Ezemba)"
+  city: Online
+  title: "Beyond the Prompt: From AI Prototype to Real-World Product"
+  role: speaker
+  status: self-reported
+  summary: "Guest talk for first-time builders: a working app is the beginning, not the finish line. Three lessons from shipping AI products at StudyRadar, and a thirty-day plan for a first application."
+  links:
+    - { label: "Read the talk", href: /writing/beyond-the-prompt/ }
+- id: cic-founder-action-table-2026
+  date: 2026-04
+  event: "Calgary Innovation Coalition: Founder Action Table (kick-off)"
+  city: Calgary, Alberta
+  title: "Auron: the edge-hardware challenge"
+  role: presenter
+  status: self-reported
+  summary: Brought Auron's real-time edge-AI hardware problem to a room of founders and operators.
+  links: []
+- id: bbva-innovation-expo-2026
+  date: 2026-02
+  event: BBVA Innovation Expo 2026
+  city: Platform Calgary, Calgary
+  title: "Auron: a real-time AI co-pilot for emergency response"
+  role: showcase
+  status: verified
+  summary: Main-stage presentation as one of seven Black founders showcased.
+  links:
+    - label: Event
+      href: https://luma.com/htwt0irm
+    - label: Auron case study
+      href: /work/auron/
+- id: icict-2026
+  date: 2026-02
+  event: 11th International Congress on Information and Communication Technology (ICICT 2026)
+  city: London, United Kingdom
+  title: "BoRefAttnNet: Boundary-Refined 3D Brain MRI Segmentation with Multi-Scale Attention for Schizophrenia Analysis"
+  role: presenter
+  status: draft
+  note: "D14: accepted for oral presentation; confirm whether it was presented in person or online (Q13)."
+  links:
+    - label: Paper
+      href: /research/borefattnnet/
+- id: ihpcss-2025
+  date: 2025-07
+  event: International HPC Summer School 2025
+  city: Lisbon, Portugal
+  title: "BoRefAttnNet: boundary-refined segmentation for schizophrenia research"
+  role: presenter
+  status: self-reported
+  summary: Research presentation and mentoring week as part of the Canadian delegation (Digital Research Alliance of Canada).
+  links:
+    - label: Event
+      href: https://www.fct.pt/en/portugal-acolhe-a-international-hpc-summer-school-2025/
+- id: meeting-of-the-minds-2025
+  date: 2025-03
+  event: "Meeting of the Minds, University of Lethbridge Graduate Students' Association conference"
+  city: Lethbridge, Alberta
+  title: "Organising committee"
+  role: organiser
+  status: self-reported
+  summary: "Helped organise the university's graduate research conference as a graduate representative on the Graduate Students' Association council."
+  links: []
+- id: nsa-workshop-2021
+  date: 2021
+  event: "Federal Ministry of Communications and Digital Economy: workshop on the Nigeria Startup Bill"
+  city: Nigeria
+  title: "The Nigeria Startup Bill and the venture capital firm"
+  role: speaker
+  status: self-reported
+  note: "M10: exact date wanted."
+  links:
+    - label: Article (Medium, 2022)
+      href: https://osasu.medium.com/the-nigerian-startup-bill-and-the-venture-capital-firm-a3de0664a538
+- id: biu-metaverse-2021
+  date: 2021
+  event: Faculty of Science, Benson Idahosa University
+  city: Benin City, Nigeria
+  title: "Metaverse, the future of now"
+  role: speaker
+  status: self-reported
+  note: "M10: exact date wanted."

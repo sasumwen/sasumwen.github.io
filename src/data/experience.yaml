@@ -1,0 +1,154 @@
+# ---------------------------------------------------------------------------
+# experience.yaml: every role, newest first. Drives the Work timeline, the
+# resume and JSON-LD. Dates are YYYY-MM; `end: present` for current roles.
+# kind: leadership | engineering | research | policy | teaching | community
+# status: verified (public record) | self-reported (your documents) | draft (unresolved, see note)
+# ---------------------------------------------------------------------------
+- id: studyradar-cto
+  organisation: studyradar
+  title: Chief Technology Officer
+  kind: leadership
+  start: 2026-07
+  end: present
+  location: Calgary, Alberta
+  status: verified
+  summary: Lead the engineering organisation behind StudyRadar's AI exam-preparation platform.
+  bullets:
+    - Own the technical roadmap for the web and mobile products, the voice-based OSCE simulator and AI-assisted assessment.
+    - Lead StudyRadar's technical sessions with machine-learning scientists at the Alberta Machine Intelligence Institute (Amii) as part of the ninth Level Up cohort.
+  links:
+    - label: Team page
+      href: https://studyradar.ai/team
+    - label: Amii Level Up cohort announcement
+      href: https://www.linkedin.com/posts/amii_were-thrilled-to-welcome-the-newest-cohort-activity-7487877170879623168-2nwA
+  featured: true
+
+- id: studyradar-lead
+  organisation: studyradar
+  title: Technical Project Lead
+  kind: leadership
+  start: 2025-09
+  end: 2026-07
+  location: Calgary, Alberta
+  status: verified
+  summary: Led the build of the platform and the engineering team.
+
+- id: studyradar-mle
+  organisation: studyradar
+  title: Machine Learning Engineer
+  kind: engineering
+  start: 2024-12
+  end: 2025-09
+  location: Calgary, Alberta (remote)
+  status: verified
+  summary: Joined on contract while completing the MSc, before the platform's first release; worked on the AI behind the question banks and the voice-based clinical simulations.
+
+- id: xyricon-founder
+  organisation: xyricon
+  title: Founder & Principal
+  kind: leadership
+  start: 2025-04
+  end: present
+  location: Calgary, Alberta
+  status: verified
+  summary: Founded a deep-tech studio; leading the development of Auron, a real-time AI co-pilot for emergency response.
+  bullets:
+    - Presented Auron on the main stage of the BBVA Innovation Expo 2026 at Platform Calgary.
+    - Brought Auron's edge-hardware challenge to the Calgary Innovation Coalition Founder Action Table.
+  featured: true
+
+- id: airi-board
+  organisation: airi
+  title: Member, Board of Directors
+  kind: community
+  start: 2026-03
+  end: present
+  location: Alberta
+  status: verified
+  summary: Governance and AI & technology advice for a non-profit advancing AI literacy in underserved communities.
+
+- id: airi-advisor
+  organisation: airi
+  title: Board Advisor & Strategic Contributor
+  kind: community
+  start: 2025-10
+  end: 2026-02
+  location: Alberta
+  status: verified
+  summary: Advised the board ahead of joining it.
+
+- id: uleth-researcher
+  organisation: uleth
+  title: Graduate Researcher (Alberta Innovates scholar)
+  kind: research
+  start: 2023-09
+  end: 2025-08
+  location: Lethbridge, Alberta
+  status: verified
+  summary: MSc research on boundary-aware brain-MRI segmentation and multimodal detection for schizophrenia, supervised by Dr. John Z. Zhang.
+  bullets:
+    - Introduced BoRefAttnNet (boundary-refined 3D U-Net with multi-scale boundary attention) and DySTTM (dynamic spatial-temporal transformer fusing sMRI and rs-fMRI).
+    - Trained and evaluated both models on the public COBRE dataset (174 subjects) using four NVIDIA L4 GPUs on Google Cloud.
+  featured: true
+
+- id: uleth-ta
+  organisation: uleth
+  title: Teaching Assistant
+  kind: teaching
+  start: 2023-09
+  end: 2025-08
+  location: Lethbridge, Alberta
+  status: self-reported
+  summary: "Five terms: Discrete Structures; Introduction to Statistics & Probability; Mathematical Concepts; Fundamentals of Programming II."
+
+- id: newchip-mentor
+  organisation: newchip
+  title: Startup Mentor
+  kind: community
+  start: 2022-05
+  end: 2023-04
+  location: Austin, Texas (remote)
+  status: self-reported
+  summary: Mentored early-stage founders in an accelerator programme.
+
+- id: nsa-consultant
+  organisation: nsa
+  title: "Specialist Consultant, drafting and review"
+  kind: policy
+  start: 2021-03
+  end: 2023-12
+  location: Abuja, Nigeria
+  status: self-reported
+  summary: Member of the drafting team for the Nigeria Startup Act, signed into law in October 2022; recognised with a Presidential Certificate of Recognition.
+  note: "Dates to confirm (Q9)."
+  featured: true
+
+- id: zair-ds
+  organisation: zair
+  title: Founder & Data Scientist
+  kind: engineering
+  start: 2018-04
+  end: 2023-08
+  location: Nigeria
+  status: self-reported
+  summary: Founded a data-science practice; built customer-churn models (XGBoost) and deployed them with Docker on Cloud Run.
+
+- id: alma-ceo
+  organisation: alma
+  title: Co-founder; CEO (2019–2023)
+  kind: leadership
+  start: 2017-01
+  end: 2023-12
+  location: Nigeria
+  status: self-reported
+  summary: Co-founded a network-solutions company; led it as CEO from 2019.
+
+- id: gygital-se
+  organisation: gygital
+  title: Software Engineer
+  kind: engineering
+  start: 2015-07
+  end: 2018-03
+  location: Nigeria
+  status: self-reported
+  summary: Enterprise back-end and integration engineering.

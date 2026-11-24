@@ -1,0 +1,224 @@
+---
+import { experience, org, fmtRange, roleKinds, type Role } from '../lib/data';
+import Draft from './Draft.astro';
+
+interface Props {
+  roles?: Role[];
+  filters?: boolean;
+  id?: string;
+}
+const { roles = experience, filters = true, id = 'timeline' } = Astro.props;
+const kindLabel: Record<(typeof roleKinds)[number], string> = {
+  leadership: 'Leadership',
+  engineering: 'Engineering',
+  research: 'Research',
+  policy: 'Policy',
+  teaching: 'Teaching',
+  community: 'Community',
+};
+const present = roles.filter((r) => r.end === 'present').length;
+const kindsUsed = roleKinds.filter((k) => roles.some((r) => r.kind === k));
+---
+
+{
+  filters && (
+    <div class="tl-filters" data-filter-group={`#${id}`} role="group" aria-label="Filter the timeline">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      {kindsUsed.map((k) => (
+        <button type="button" data-filter={k} aria-pressed="false">
+          {kindLabel[k]}
+        </button>
+      ))}
+      <span class="tl-filters__live mono faint" data-filter-live aria-live="polite">
+        {roles.length} entries · {present} current
+      </span>
+    </div>
+  )
+}
+
+<ol class="tl" id={id} data-reveal-group>
+  {
+    roles.map((r) => {
+      const o = org(r.organisation);
+      return (
+        <li class:list={['tl__item', { 'tl__item--current': r.end === 'present', 'tl__item--featured': r.featured }]} data-kind={r.kind} data-reveal>
+          <div class="tl__when">
+            <span class="mono">{fmtRange(r.start, r.end)}</span>
+            <span class="tl__kind mono faint">{kindLabel[r.kind]}</span>
+          </div>
+          <div class="tl__dot" aria-hidden="true" />
+          <div class="tl__what">
+            <h3 class="tl__title">
+              {r.title}
+              {(r.status === 'draft' || r.titleIsProposed) && <Draft badgeOnly q={r.note?.match(/\((Q\d+)\)/)?.[1]} />}
+            </h3>
+            <p class="tl__org">
+              {o.url ? <a href={o.url} rel="noopener">{o.name}</a> : o.name}
+              {r.location && <span class="faint"> · {r.location}</span>}
+            </p>
+            <p class="tl__summary">{r.summary}</p>
+            {r.bullets.length > 0 && (
+              <ul class="tl__bullets">
+                {r.bullets.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            )}
+            {r.note && (
+              <p class="tl__note mono">
+                {r.status === 'draft' || /\((Q|D)\d+/.test(r.note) ? <Draft>{r.note}</Draft> : <span class="faint">{r.note}</span>}
+              </p>
+            )}
+          </div>
+        </li>
+      );
+    })
+  }
+</ol>
+
+<style>
+  .tl-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+  .tl-filters button {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-1);
+    background: var(--paper-2);
+    color: var(--ink-2);
+    transition: border-color var(--dur-1) var(--ease), background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .tl-filters button:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .tl-filters button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .tl-filters__live {
+    margin-left: auto;
+    font-size: var(--step--2);
+  }
+  .tl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .tl::before {
+    content: '';
+    position: absolute;
+    left: calc(176px + 11px);
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--line);
+  }
+  .tl__item {
+    display: grid;
+    grid-template-columns: 176px 24px minmax(0, 1fr);
+    gap: 0 var(--space-5);
+    padding: var(--space-5) 0 var(--space-6);
+  }
+  .tl__item[hidden] {
+    display: none;
+  }
+  .tl__when {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--step--2);
+    color: var(--ink-2);
+    padding-top: 4px;
+  }
+  .tl__dot {
+    width: 11px;
+    height: 11px;
+    margin-top: 8px;
+    justify-self: center;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1.5px solid var(--ink-3);
+    position: relative;
+    z-index: 1;
+  }
+  .tl__item--current .tl__dot {
+    background: var(--amber-bright);
+    border-color: var(--amber-bright);
+    box-shadow: 0 0 0 5px var(--amber-wash);
+  }
+  .tl__item--featured .tl__dot {
+    border-color: var(--ink);
+  }
+  .tl__title {
+    font-size: var(--step-3);
+    line-height: 1.2;
+  }
+  .tl__org {
+    margin-top: 4px;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .tl__org a {
+    color: var(--ink);
+    text-decoration-color: var(--line-strong);
+  }
+  .tl__summary {
+    margin-top: var(--space-3);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  .tl__bullets {
+    margin: var(--space-3) 0 0;
+    padding-left: 1.2em;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    max-width: 62ch;
+  }
+  .tl__bullets li + li {
+    margin-top: 4px;
+  }
+  .tl__bullets li::marker {
+    color: var(--amber);
+  }
+  .tl__note {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    max-width: 62ch;
+  }
+  @media (max-width: 720px) {
+    .tl::before {
+      left: 5px;
+    }
+    .tl__item {
+      grid-template-columns: 12px minmax(0, 1fr);
+      gap: 0 var(--space-4);
+    }
+    .tl__when {
+      grid-column: 2;
+      order: -1;
+      flex-direction: row;
+      gap: var(--space-3);
+      padding-top: 0;
+      margin-bottom: var(--space-2);
+    }
+    .tl__dot {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      margin-top: 4px;
+    }
+    .tl__what {
+      grid-column: 2;
+    }
+  }
+</style>

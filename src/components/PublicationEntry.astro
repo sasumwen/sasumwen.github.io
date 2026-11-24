@@ -1,0 +1,182 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Chip from './Chip.astro';
+import Draft from './Draft.astro';
+
+interface Props {
+  entry: CollectionEntry<'publications'>;
+  /** Compact list row (Research hub) or feature block (Home). */
+  variant?: 'row' | 'feature';
+  showAbstract?: boolean;
+}
+const { entry, variant = 'row', showAbstract = false } = Astro.props;
+const d = entry.data;
+const href = `/research/${entry.id}/`;
+const typeLabel: Record<string, string> = {
+  conference: 'Conference paper',
+  journal: 'Journal article',
+  thesis: 'MSc thesis',
+  preprint: 'Preprint',
+  note: 'Research note',
+  talk: 'Talk',
+};
+const venueLine = [d.venueShort ?? d.venue, d.series && d.volume ? `${d.series} ${d.volume}` : d.series, d.pages ? `pp. ${d.pages}` : null, d.publisher]
+  .filter(Boolean)
+  .join(' · ');
+const bibId = `bib-${entry.id}`;
+---
+
+<article class:list={['pub', `pub--${variant}`]} data-reveal>
+  <div class="pub__meta">
+    <span class="pub__year serif">{d.year}</span>
+    <div class="pub__badges">
+      <Chip tone="lagoon" size="small">{typeLabel[d.type]}</Chip>
+      {d.openAccess && <Chip size="small">Open access</Chip>}
+      {d.pubStatus !== 'published' && <Chip tone="amber" size="small">{d.pubStatus}</Chip>}
+      {d.draft && <Draft badgeOnly />}
+    </div>
+  </div>
+  <div class="pub__body">
+    <h3 class="pub__title"><a href={href}>{d.title}</a></h3>
+    <p class="pub__authors">
+      {d.authors.map((a, i) => (
+        <>
+          <span class:list={{ 'pub__me': a.me }}>{a.name}</span>{i < d.authors.length - 1 ? ', ' : ''}
+        </>
+      ))}
+    </p>
+    <p class="pub__venue">{venueLine}</p>
+    {showAbstract && <p class="pub__abstract">{d.abstract}</p>}
+    {d.verification === 'draft' && d.note && <p class="pub__note mono"><Draft>{d.note}</Draft></p>}
+    <div class="pub__actions">
+      {d.doi && <a href={`https://doi.org/${d.doi}`} rel="noopener">DOI</a>}
+      {d.handle && <a href={d.handle} rel="noopener">Repository</a>}
+      {d.pdf && <a href={d.pdf} rel="noopener">PDF</a>}
+      {d.code && <a href={d.code} rel="noopener">Code</a>}
+      {d.slides && <a href={d.slides} rel="noopener">Slides</a>}
+      {d.bibtex && (
+        <button type="button" class="pub__copy" data-copy={`#${bibId}`} data-copied-label="BibTeX copied">
+          <span data-copy-label>Copy BibTeX</span>
+        </button>
+      )}
+      <a href={href} class="pub__more">Details →</a>
+    </div>
+    {d.bibtex && <pre id={bibId} class="visually-hidden" aria-hidden="true">{d.bibtex}</pre>}
+  </div>
+</article>
+
+<style>
+  .pub {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--line);
+  }
+  .pub--feature {
+    grid-template-columns: 1fr;
+    padding: 0;
+    border-top: 0;
+  }
+  .pub__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+  .pub--feature .pub__meta {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .pub__year {
+    font-size: var(--step-2);
+    line-height: 1;
+    font-variation-settings: 'opsz' 48, 'SOFT' 50;
+    color: var(--ink);
+  }
+  .pub__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pub__title {
+    font-size: var(--step-3);
+    line-height: 1.25;
+  }
+  .pub--feature .pub__title {
+    font-size: var(--step-2);
+  }
+  .pub__title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .pub__title a:hover {
+    color: var(--amber);
+  }
+  .pub__authors {
+    margin-top: var(--space-3);
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+  .pub__me {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pub__venue {
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+  .pub__abstract {
+    margin-top: var(--space-4);
+    color: var(--ink-2);
+    max-width: 68ch;
+  }
+  .pub__note {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+  }
+  .pub__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-4);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .pub__actions a,
+  .pub__copy {
+    text-decoration: none;
+    color: var(--amber);
+    border-bottom: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+    padding-bottom: 2px;
+    font-weight: 600;
+    font-size: var(--step--1);
+    line-height: 1.3;
+  }
+  .pub__actions a:hover,
+  .pub__copy:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .pub__copy.is-copied {
+    color: var(--lagoon);
+    border-color: var(--lagoon);
+  }
+  .pub__more {
+    margin-left: auto;
+  }
+  @media (max-width: 700px) {
+    .pub {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+    .pub__meta {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-4);
+    }
+  }
+</style>

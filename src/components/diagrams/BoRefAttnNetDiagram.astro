@@ -1,0 +1,147 @@
+---
+/**
+ * Schematic of BoRefAttnNet: a 3D U-Net encoder–decoder whose decoder stages carry
+ * multi-scale Boundary Attention Modules (BAM). Conceptual, drawn from the published
+ * abstract (ICICT 2026) and the thesis abstract: not an exact layer listing.
+ */
+interface Props { class?: string }
+const { class: className } = Astro.props;
+
+const W = 940;
+const cy = 170;
+const w = 38;
+const enc = [
+  { x: 150, h: 150, label: '1×' },
+  { x: 250, h: 112, label: '½' },
+  { x: 350, h: 80, label: '¼' },
+];
+const bottleneck = { x: 450, h: 54 };
+const dec = [
+  { x: 550, h: 80, label: '¼' },
+  { x: 650, h: 112, label: '½' },
+  { x: 750, h: 150, label: '1×' },
+];
+---
+
+<figure class:list={['bn', className]} data-reveal>
+  <svg viewBox={`0 0 ${W} 360`} role="img" aria-labelledby="bn-title bn-desc" class="bn__svg">
+    <title id="bn-title">BoRefAttnNet architecture schematic</title>
+    <desc id="bn-desc">A structural MRI volume enters a three-level encoder that halves resolution at each level, passes through a bottleneck, and is rebuilt by a decoder. Each decoder level receives a skip connection from the encoder and carries a Boundary Attention Module that emphasises anatomical edges before the final segmentation of subcortical structures is produced.</desc>
+    <defs>
+      <marker id="bn-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L10 5 0 10z" fill="var(--ink-3)" />
+      </marker>
+      <pattern id="bn-grid" width="6" height="6" patternUnits="userSpaceOnUse">
+        <path d="M6 0H0V6" fill="none" stroke="var(--line)" stroke-width=".6" />
+      </pattern>
+    </defs>
+
+    <!-- section headings -->
+    <text x="250" y="34" text-anchor="middle" class="bn__t bn__t--head">Encoder</text>
+    <text x="250" y="50" text-anchor="middle" class="bn__t bn__t--faint">3D convolutions · downsampling</text>
+    <text x={bottleneck.x + w / 2} y="34" text-anchor="middle" class="bn__t bn__t--head">Bottleneck</text>
+    <text x="650" y="34" text-anchor="middle" class="bn__t bn__t--head">Decoder + boundary attention</text>
+    <text x="650" y="50" text-anchor="middle" class="bn__t bn__t--faint">upsampling · skip fusion · edge emphasis</text>
+
+    <!-- input volume -->
+    <g transform="translate(44 112)">
+      <rect x="8" y="8" width="60" height="116" fill="var(--paper-3)" stroke="var(--line-strong)" />
+      <rect x="0" y="0" width="60" height="116" fill="url(#bn-grid)" stroke="var(--ink)" />
+      <text x="34" y="140" text-anchor="middle" class="bn__t">sMRI volume</text>
+      <text x="34" y="155" text-anchor="middle" class="bn__t bn__t--faint">FastSurfer-processed</text>
+    </g>
+    <line x1={114} y1={cy} x2={enc[0]!.x} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />
+
+    <!-- encoder -->
+    {enc.map((s, i) => (
+      <g>
+        <rect x={s.x} y={cy - s.h / 2} width={w} height={s.h} rx="2" fill="var(--lagoon-wash)" stroke="var(--lagoon)" />
+        <text x={s.x + w / 2} y={cy + s.h / 2 + 16} text-anchor="middle" class="bn__t">{s.label}</text>
+        {i < enc.length - 1 && <line x1={s.x + w} y1={cy} x2={enc[i + 1]!.x} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />}
+      </g>
+    ))}
+
+    <!-- bottleneck -->
+    <line x1={enc[2]!.x + w} y1={cy} x2={bottleneck.x} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />
+    <rect x={bottleneck.x} y={cy - bottleneck.h / 2} width={w} height={bottleneck.h} rx="2" fill="var(--ink)" />
+    <text x={bottleneck.x + w / 2} y={cy + bottleneck.h / 2 + 16} text-anchor="middle" class="bn__t">⅛</text>
+
+    <!-- decoder with BAM inside each block -->
+    <line x1={bottleneck.x + w} y1={cy} x2={dec[0]!.x} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />
+    {dec.map((s, i) => (
+      <g>
+        <rect x={s.x} y={cy - s.h / 2} width={w} height={s.h} rx="2" fill="var(--amber-wash)" stroke="var(--amber)" />
+        <g transform={`translate(${s.x + w / 2} ${cy - s.h / 2 + 18})`}>
+          <g class="bn__bam" style={`--i:${i}`}>
+            <rect x="-22" y="-10" width="44" height="20" rx="2" fill="var(--amber-bright)" />
+            <text x="0" y="4" text-anchor="middle" class="bn__t bn__t--bam">BAM</text>
+          </g>
+        </g>
+        <text x={s.x + w / 2} y={cy + s.h / 2 + 16} text-anchor="middle" class="bn__t">{s.label}</text>
+        {i < dec.length - 1 && <line x1={s.x + w} y1={cy} x2={dec[i + 1]!.x} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />}
+      </g>
+    ))}
+
+    <!-- skip connections, routed above the row -->
+    <g fill="none" stroke="var(--lagoon)" stroke-width="1.2" stroke-dasharray="4 4">
+      <path d={`M${enc[2]!.x + w / 2} ${cy - 40} v-16 H${dec[0]!.x + w / 2} v16`} />
+      <path d={`M${enc[1]!.x + w / 2} ${cy - 56} v-22 H${dec[1]!.x + w / 2} v22`} />
+      <path d={`M${enc[0]!.x + w / 2} ${cy - 75} v-28 H${dec[2]!.x + w / 2} v28`} />
+    </g>
+
+    <!-- legend -->
+    <g transform="translate(150 300)">
+      <rect x="0" y="-9" width="14" height="14" fill="var(--lagoon-wash)" stroke="var(--lagoon)" /><text x="22" y="2" class="bn__t">encoder block</text>
+      <rect x="130" y="-9" width="14" height="14" fill="var(--amber-wash)" stroke="var(--amber)" /><text x="152" y="2" class="bn__t">decoder block</text>
+      <rect x="262" y="-9" width="22" height="14" rx="2" fill="var(--amber-bright)" /><text x="292" y="2" class="bn__t">Boundary Attention Module</text>
+      <path d="M470 -2 h22" stroke="var(--lagoon)" stroke-width="1.2" stroke-dasharray="4 4" /><text x="500" y="2" class="bn__t">skip connection</text>
+    </g>
+    <text x="470" y="340" text-anchor="middle" class="bn__t bn__t--faint">Skip connections carry fine spatial detail to each decoder level · resolution shown relative to the input (1× → ⅛ → 1×)</text>
+
+    <!-- output -->
+    <line x1={dec[2]!.x + w} y1={cy} x2={832} y2={cy} stroke="var(--ink-3)" marker-end="url(#bn-arrow)" />
+    <g transform="translate(836 112)">
+      <rect x="0" y="0" width="64" height="116" fill="var(--paper-2)" stroke="var(--ink)" />
+      <ellipse cx="24" cy="40" rx="11" ry="16" fill="var(--amber-bright)" />
+      <ellipse cx="43" cy="64" rx="8" ry="10" fill="var(--lagoon)" />
+      <ellipse cx="30" cy="88" rx="14" ry="9" fill="var(--ink-2)" />
+      <text x="32" y="140" text-anchor="middle" class="bn__t">Segmentation</text>
+      <text x="32" y="155" text-anchor="middle" class="bn__t bn__t--faint">subcortical masks</text>
+    </g>
+  </svg>
+  <figcaption class="mono">BoRefAttnNet, a boundary-refined 3D U-Net. Boundary Attention Modules (BAM) at each decoder scale highlight anatomically critical edges while suppressing background noise; the outputs are masks of the hippocampus, amygdala and basal ganglia. Schematic drawn from the published description; exact layer configuration is in the thesis.</figcaption>
+</figure>
+
+<style>
+  .bn { margin: 0; }
+  .bn__svg {
+    width: 100%;
+    height: auto;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+  }
+  .bn__t {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-2);
+  }
+  .bn__t--head {
+    font-family: var(--font-text);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .bn__t--faint { fill: var(--ink-3); font-size: 10px; }
+  .bn__t--bam { fill: var(--on-amber); font-weight: 500; font-size: 10px; letter-spacing: .08em; }
+  .bn__bam { opacity: 0; transform: scale(0.8); }
+  .is-visible .bn__bam {
+    animation: bnIn .5s var(--ease-out) forwards;
+    animation-delay: calc(.4s + var(--i) * .18s);
+  }
+  @keyframes bnIn { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .bn__bam { opacity: 1; transform: none; animation: none; }
+  }
+  figcaption { margin-top: var(--space-3); font-size: var(--step--2); color: var(--ink-2); }
+</style>

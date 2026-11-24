@@ -1,0 +1,145 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import Timeline from '../../components/Timeline.astro';
+import Button from '../../components/Button.astro';
+import { profile, org, fmtYM, roleTitle } from '../../lib/data';
+import { notDraft, SHOW_DRAFTS } from '../../lib/drafts';
+import { breadcrumbs } from '../../lib/schema';
+
+const studies = (await getCollection('work', notDraft)).sort((a, b) => a.data.order - b.data.order);
+const capabilities = [
+  { group: 'Machine learning', items: ['Medical image segmentation', 'Multimodal transformers', 'LLM evaluation & agentic systems', 'Retrieval-augmented generation', 'Speech interfaces', 'MLOps (MLflow, GCP)'] },
+  { group: 'Engineering', items: ['Python · TypeScript', 'Cloud architecture (Google Cloud)', 'Edge & real-time systems', 'Data pipelines', 'Docker · Cloud Run'] },
+  { group: 'Leadership', items: ['Technical strategy & roadmaps', 'Team building (0 → team)', 'Research partnerships', 'Founder & board experience', 'Policy drafting'] },
+];
+---
+
+<BaseLayout title="Work" description={`Case studies and career timeline of ${profile.name.preferred}: StudyRadar, Xyricon and Auron, the Nigeria Startup Act, consulting on frontier-model evaluation, and earlier software engineering in Nigeria.`} jsonLd={[breadcrumbs([{ name: 'Work', url: '/work/' }])]}>
+  <PageHero overline="Work" title="From engineer to CTO; from an idea to an incorporated company." lede="Products I have built and led, the company I founded, the law I helped draft. Told as case studies, with the career timeline underneath." seed="work" size="large">
+    <ul class="roles-strip" aria-label="Current roles" data-reveal>
+      {profile.current.map((c) => (
+        <li><a href={c.href}><span class="mono faint">since {fmtYM(String(c.since))}</span><strong>{roleTitle(c).title}</strong><span>{org(c.organisation).name}</span></a></li>
+      ))}
+    </ul>
+  </PageHero>
+
+  <section class="section" aria-labelledby="cs-title">
+    <div class="container">
+      <SectionHeading overline="Case studies" title="Problem → role → what we built → what came of it" id="cs-title" />
+      <div class="cs-grid" data-reveal-group>
+        {studies.map((s, i) => <WorkCard entry={s} size={i === 0 ? 'large' : 'default'} class={i === 0 ? 'cs-grid__lead' : ''} priority={i === 0} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tl-title">
+    <div class="container">
+      <SectionHeading overline="Timeline" title="Every role, in order" lede={SHOW_DRAFTS ? 'Filter by the kind of work. Entries marked draft are awaiting confirmation and are hidden from the public site.' : 'Filter by the kind of work.'} id="tl-title" />
+      <Timeline />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cap-title">
+    <div class="container">
+      <SectionHeading overline="Capabilities" title="What I bring" id="cap-title" />
+      <div class="caps" data-reveal-group>
+        {capabilities.map((c) => (
+          <div class="caps__group" data-reveal>
+            <h3 class="caps__title">{c.group}</h3>
+            <ul>
+              {c.items.map((it) => <li>{it}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div class="cluster caps__cta" data-reveal>
+        <Button href="/resume/" arrow>Resume</Button>
+        <Button href="/contact/" variant="secondary">Contact</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .roles-strip {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .roles-strip a {
+    display: grid;
+    gap: 4px;
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--line-strong);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--step--1);
+  }
+  .roles-strip a:hover strong {
+    color: var(--amber);
+  }
+  .roles-strip strong {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .roles-strip span:last-child {
+    color: var(--ink-2);
+  }
+  @media (max-width: 760px) {
+    .roles-strip {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+  .cs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  .cs-grid :global(.cs-grid__lead) {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 760px) {
+    .cs-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+  .caps__title {
+    font-size: var(--step-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .caps ul {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+  }
+  .caps li {
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .caps__cta {
+    margin-top: var(--space-7);
+  }
+  @media (max-width: 760px) {
+    .caps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

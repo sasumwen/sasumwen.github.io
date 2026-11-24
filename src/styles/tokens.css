@@ -1,0 +1,134 @@
+/* ------------------------------------------------------------------
+   Boundary: design tokens
+   Source of truth: docs/redesign/05-design-direction.md §3
+   ------------------------------------------------------------------ */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces + ink (light) */
+  --paper: #f7f3ec;
+  --paper-2: #fffdf9;
+  --paper-3: #ede7dc;
+  --ink: #17161a;
+  --ink-2: #55525b;
+  --ink-3: #6a6670; /* ≥ 4.5:1 on paper, paper-2 and paper-3: safe for small metadata text */
+  --line: rgba(23, 22, 26, 0.14);
+  --line-strong: rgba(23, 22, 26, 0.32);
+
+  /* accents */
+  --amber: #9a5a12;
+  --amber-bright: #d98c2b;
+  --amber-wash: #f3e3c9;
+  --lagoon: #146c68;
+  --lagoon-wash: #d9ece9;
+  --signal-red: #a33a2a;
+  --amber-deep: #7a4610; /* small text on amber-wash (badges) */
+  --on-amber: #17161a;
+
+  /* photo scrims */
+  --scrim: rgba(23, 22, 26, 0.72);
+  --scrim-soft: rgba(23, 22, 26, 0.35);
+
+
+  /* type */
+  --font-display: 'Fraunces Variable', Fraunces, Georgia, 'Times New Roman', serif;
+  --font-text: 'Instrument Sans Variable', 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* fluid type scale: 360px → 1280px viewports */
+  --step-display: clamp(3.25rem, 1.9rem + 6vw, 6.5rem);
+  --step-1: clamp(2.375rem, 1.7rem + 3vw, 4rem);
+  --step-2: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+  --step-3: clamp(1.375rem, 1.2rem + 0.75vw, 1.75rem);
+  --step-0: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step--1: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+  --step--2: 0.8125rem;
+
+  --leading-display: 1.02;
+  --leading-tight: 1.12;
+  --leading-snug: 1.3;
+  --leading-body: 1.6;
+
+  /* space (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --section: clamp(var(--space-8), 6vw + 1rem, var(--space-10));
+  --gutter: clamp(16px, 2.5vw, 24px);
+
+  /* shape */
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --radius-3: 8px;
+
+  /* measure + containers */
+  --measure: 68ch;
+  --measure-narrow: 60ch;
+  --container: 1200px;
+  --container-wide: 1440px;
+
+  /* motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 160ms;
+  --dur-2: 240ms;
+  --dur-3: 600ms;
+
+  /* z */
+  --z-header: 50;
+  --z-lightbox: 100;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #15130f;
+  --paper-2: #1d1a16;
+  --paper-3: #26221c;
+  --ink: #efe9df;
+  --ink-2: #b3aca1;
+  --ink-3: #948c7f;
+  --line: rgba(239, 233, 223, 0.14);
+  --line-strong: rgba(239, 233, 223, 0.32);
+  --amber: #e6a646;
+  --amber-bright: #f0b759;
+  --amber-wash: #2e2416;
+  --lagoon: #6cc8c0;
+  --lagoon-wash: #15302e;
+  --signal-red: #e0806f;
+  --amber-deep: #e6a646;
+  --on-amber: #15130f;
+  --scrim: rgba(21, 19, 15, 0.78);
+  --scrim-soft: rgba(21, 19, 15, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: #15130f;
+    --paper-2: #1d1a16;
+    --paper-3: #26221c;
+    --ink: #efe9df;
+    --ink-2: #b3aca1;
+    --ink-3: #948c7f;
+    --line: rgba(239, 233, 223, 0.14);
+    --line-strong: rgba(239, 233, 223, 0.32);
+    --amber: #e6a646;
+    --amber-bright: #f0b759;
+    --amber-wash: #2e2416;
+    --lagoon: #6cc8c0;
+    --lagoon-wash: #15302e;
+    --signal-red: #e0806f;
+    --amber-deep: #e6a646;
+    --on-amber: #15130f;
+    --scrim: rgba(21, 19, 15, 0.78);
+    --scrim-soft: rgba(21, 19, 15, 0.4);
+  }
+}

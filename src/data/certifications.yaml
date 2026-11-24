@@ -1,0 +1,55 @@
+# Certifications and training. Credential IDs are never published; link to the credential page instead.
+- id: tensorflow-developer
+  title: TensorFlow Developer Certificate
+  issuer: Google / TensorFlow
+  issued: 2024-05-26
+  expires: 2027-05-26
+  url: https://www.credential.net/9b2b1492-10bc-4d77-802e-416e0d9c44d4
+  status: verified
+  featured: true
+- id: amii-career-accelerator
+  title: AI Career Accelerator Program
+  issuer: Alberta Machine Intelligence Institute (Amii)
+  issued: 2025
+  status: draft
+  note: "D19: confirm dates and wording (Q16)."
+- id: dlai-cnn-tf
+  title: Convolutional Neural Networks in TensorFlow
+  issuer: DeepLearning.AI · Coursera
+  issued: 2022-12
+  status: self-reported
+- id: dlai-nlp-tf
+  title: Natural Language Processing in TensorFlow
+  issuer: DeepLearning.AI · Coursera
+  issued: 2022-12
+  status: self-reported
+- id: dlai-intro-tf
+  title: Introduction to TensorFlow for AI, ML and Deep Learning
+  issuer: DeepLearning.AI · Coursera
+  issued: 2022-12
+  status: self-reported
+- id: dlai-nn-dl
+  title: Neural Networks and Deep Learning
+  issuer: DeepLearning.AI · Coursera
+  issued: 2022-07
+  status: self-reported
+- id: ztm-tf
+  title: TensorFlow Developer
+  issuer: Zero To Mastery
+  issued: 2022-11
+  status: self-reported
+- id: ztm-python
+  title: Complete Python Developer
+  issuer: Zero To Mastery
+  issued: 2021-07
+  status: self-reported
+- id: nand2tetris
+  title: Build a Modern Computer from First Principles (Nand2Tetris)
+  issuer: Hebrew University of Jerusalem · Coursera
+  issued: 2020-07
+  status: self-reported
+- id: tef-business
+  title: Business Management Training
+  issuer: Tony Elumelu Foundation
+  issued: 2022-09
+  status: self-reported

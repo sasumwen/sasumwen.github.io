@@ -1,0 +1,181 @@
+---
+/**
+ * The thesis in one picture: two imaging modalities, two models, one decision.
+ *   sMRI ─ FastSurfer ─▶ BoRefAttnNet ─▶ subcortical masks ─┐
+ *                                                             ├─▶ DySTTM ─▶ patient / control
+ *   rs-fMRI ─ time series ─────────────────────────────────┘
+ * Drawn from the published description (abstract, ICICT chapter); conceptual, no patient data.
+ * Animates the data flow on first reveal; honours prefers-reduced-motion.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<figure class:list={['tp', className]} data-reveal>
+  <svg class="tp__svg" viewBox="0 0 1000 384" role="img" aria-labelledby="tp-title tp-desc">
+    <title id="tp-title">Thesis pipeline: structural and functional MRI to a schizophrenia decision</title>
+    <desc id="tp-desc">
+      Structural MRI is pre-processed with FastSurfer and segmented by BoRefAttnNet into subcortical masks. Resting-state functional MRI
+      provides time series. DySTTM fuses the masks with the time series using spatial and temporal attention and outputs a patient-versus-control decision.
+    </desc>
+    <defs>
+      <marker id="tp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L10 5 0 10z" fill="var(--ink-3)" />
+      </marker>
+      <pattern id="tp-grid" width="8" height="8" patternUnits="userSpaceOnUse">
+        <path d="M8 0H0V8" fill="none" stroke="var(--line)" stroke-width="0.6" />
+      </pattern>
+    </defs>
+
+    <!-- lane labels -->
+    <g class="tp__label" fill="var(--ink-3)">
+      <text x="20" y="62">STRUCTURE</text>
+      <text x="20" y="256">FUNCTION</text>
+    </g>
+
+    <!-- structural lane -->
+    <g class="tp__node">
+      <rect x="20" y="78" width="112" height="84" rx="4" fill="url(#tp-grid)" stroke="var(--ink-2)" />
+      <text x="76" y="108" text-anchor="middle" class="tp__t">sMRI</text>
+      <text x="76" y="126" text-anchor="middle" class="tp__s">T1 volume</text>
+      <text x="76" y="142" text-anchor="middle" class="tp__s">COBRE dataset</text>
+    </g>
+    <path class="tp__flow" d="M132 120 H176" marker-end="url(#tp-arrow)" />
+    <g class="tp__node">
+      <rect x="178" y="88" width="104" height="64" rx="4" fill="var(--paper-2)" stroke="var(--line-strong)" />
+      <text x="230" y="116" text-anchor="middle" class="tp__t">FastSurfer</text>
+      <text x="230" y="134" text-anchor="middle" class="tp__s">pre-processing</text>
+    </g>
+    <path class="tp__flow" d="M282 120 H326" marker-end="url(#tp-arrow)" />
+    <g class="tp__node tp__node--model">
+      <rect x="328" y="70" width="176" height="100" rx="4" fill="var(--lagoon-wash)" stroke="var(--lagoon)" stroke-width="1.5" />
+      <text x="416" y="102" text-anchor="middle" class="tp__t">BoRefAttnNet</text>
+      <text x="416" y="121" text-anchor="middle" class="tp__s">3D U-Net + boundary</text>
+      <text x="416" y="137" text-anchor="middle" class="tp__s">attention at each scale</text>
+      <path d="M352 158c12-8 30-10 44-3s26 7 40 0 26-6 40 2" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round" />
+    </g>
+    <path class="tp__flow" d="M504 120 H548" marker-end="url(#tp-arrow)" />
+    <g class="tp__node">
+      <rect x="550" y="82" width="150" height="76" rx="4" fill="var(--paper-2)" stroke="var(--line-strong)" />
+      <text x="625" y="110" text-anchor="middle" class="tp__t">Subcortical masks</text>
+      <text x="625" y="128" text-anchor="middle" class="tp__s">hippocampus · amygdala</text>
+      <text x="625" y="143" text-anchor="middle" class="tp__s">basal ganglia</text>
+    </g>
+
+    <!-- functional lane -->
+    <g class="tp__node">
+      <rect x="20" y="272" width="112" height="60" rx="4" fill="url(#tp-grid)" stroke="var(--ink-2)" />
+      <text x="76" y="297" text-anchor="middle" class="tp__t">rs-fMRI</text>
+      <text x="76" y="315" text-anchor="middle" class="tp__s">resting state</text>
+    </g>
+    <path class="tp__flow" d="M132 302 H176" marker-end="url(#tp-arrow)" />
+    <g class="tp__node">
+      <rect x="178" y="266" width="522" height="72" rx="4" fill="var(--paper-2)" stroke="var(--line-strong)" />
+      <text x="206" y="294" class="tp__t">Regional time series</text>
+      <text x="206" y="312" class="tp__s">activity per structure, over the scan</text>
+      <g fill="none" stroke="var(--lagoon)" stroke-width="1.4" stroke-linecap="round" class="tp__trace">
+        <path d="M440 318c10-14 18-14 28 0s18 14 28 0 18-14 28 0 18 14 28 0 18-14 28 0 18 14 28 0 18-14 28 0 18 14 28 0" />
+        <path d="M440 298c8-8 14-8 22 2s16 10 26-2 14-10 24 0 16 8 26 0 14-10 24-2 18 8 28 0 14-8 24 0 16 6 26 0" opacity=".6" />
+      </g>
+    </g>
+
+    <!-- fusion bus → DySTTM -->
+    <path class="tp__flow" d="M700 120 H712 Q722 120 722 130 V200 H738" marker-end="url(#tp-arrow)" />
+    <path class="tp__flow" d="M700 302 H712 Q722 302 722 292 V222 H738" marker-end="url(#tp-arrow)" />
+    <g class="tp__node tp__node--model">
+      <rect x="740" y="180" width="124" height="64" rx="4" fill="var(--amber-wash)" stroke="var(--amber)" stroke-width="1.5" />
+      <text x="802" y="204" text-anchor="middle" class="tp__t">DySTTM</text>
+      <text x="802" y="220" text-anchor="middle" class="tp__s">spatial × temporal</text>
+      <text x="802" y="233" text-anchor="middle" class="tp__s">attention</text>
+    </g>
+    <path class="tp__flow" d="M864 212 H896" marker-end="url(#tp-arrow)" />
+    <g class="tp__node">
+      <rect x="898" y="182" width="88" height="60" rx="4" fill="var(--ink)" />
+      <text x="942" y="208" text-anchor="middle" class="tp__t" fill="var(--paper)">Decision</text>
+      <text x="942" y="224" text-anchor="middle" class="tp__s" fill="var(--paper)" fill-opacity=".8">patient /</text>
+      <text x="942" y="235" text-anchor="middle" class="tp__s" fill="var(--paper)" fill-opacity=".8">control</text>
+    </g>
+
+    <!-- footnote -->
+    <text x="20" y="368" class="tp__foot">Compared against 3D U-Net (segmentation) and 3D ResNet / XGBoost (classification) baselines in the thesis.</text>
+  </svg>
+  <figcaption class="mono">
+    The two contributions as one pipeline. BoRefAttnNet turns structural scans into boundary-faithful masks of small subcortical structures; DySTTM reads those masks together with resting-state functional signals to detect schizophrenia. Conceptual figure drawn from the published description.
+  </figcaption>
+</figure>
+
+<style>
+  .tp {
+    margin: 0;
+  }
+  .tp__svg {
+    width: 100%;
+    height: auto;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+  }
+  .tp__label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+  }
+  .tp__t {
+    font-family: var(--font-text);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .tp__s {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--ink-2);
+  }
+  .tp__foot {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--ink-3);
+  }
+  .tp__flow {
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+  .tp__node {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  }
+  .is-visible .tp__node {
+    opacity: 1;
+    transform: none;
+  }
+  /* first <g> is the lane label, so nodes start at 2 */
+  .is-visible .tp__node:nth-of-type(2) { transition-delay: 0.05s; }
+  .is-visible .tp__node:nth-of-type(3) { transition-delay: 0.2s; }
+  .is-visible .tp__node:nth-of-type(4) { transition-delay: 0.35s; }
+  .is-visible .tp__node:nth-of-type(5) { transition-delay: 0.5s; }
+  .is-visible .tp__node:nth-of-type(6) { transition-delay: 0.2s; }
+  .is-visible .tp__node:nth-of-type(7) { transition-delay: 0.35s; }
+  .is-visible .tp__node:nth-of-type(8) { transition-delay: 0.75s; }
+  .is-visible .tp__node:nth-of-type(9) { transition-delay: 0.95s; }
+  .is-visible .tp__flow {
+    animation: tpFlow 1.2s linear infinite;
+  }
+  @keyframes tpFlow {
+    to { stroke-dashoffset: -16; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tp__node { opacity: 1; transform: none; transition: none; }
+    .is-visible .tp__flow { animation: none; }
+  }
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+</style>

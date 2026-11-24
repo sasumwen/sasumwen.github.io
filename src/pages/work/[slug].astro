@@ -1,0 +1,325 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FactTable from '../../components/FactTable.astro';
+import Chip from '../../components/Chip.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import Contours from '../../components/Contours.astro';
+import Draft from '../../components/Draft.astro';
+import Callout from '../../components/Callout.astro';
+import Figure from '../../components/Figure.astro';
+import { notDraft, SHOW_DRAFTS } from '../../lib/drafts';
+import { breadcrumbs, PERSON_ID } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('work', notDraft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const all = await getCollection('work', notDraft);
+const related = d.related.map((id) => all.find((e) => e.id === id)).filter(Boolean) as typeof all;
+const metrics = d.metrics.filter((m) => m.approved || SHOW_DRAFTS);
+const facts = [
+  { label: 'Organisation', value: d.organisation },
+  { label: 'Role', value: d.role },
+  { label: 'Period', value: d.period },
+  { label: 'Status', value: d.status },
+  ...(d.location ? [{ label: 'Location', value: d.location }] : []),
+  ...(d.sectors.length ? [{ label: 'Sectors', value: d.sectors.join(' · ') }] : []),
+];
+const jsonLd = [
+  {
+    '@type': 'CreativeWork',
+    name: d.title,
+    headline: d.tagline,
+    author: { '@id': PERSON_ID },
+    about: d.sectors,
+    url: `https://osasumwen.com/work/${entry.id}/`,
+    ...(d.updated ? { dateModified: d.updated.toISOString().slice(0, 10) } : {}),
+  },
+  breadcrumbs([{ name: 'Work', url: '/work/' }, { name: d.title, url: `/work/${entry.id}/` }]),
+];
+---
+
+<BaseLayout title={d.title} description={d.tagline} type="article" jsonLd={jsonLd} image={d.cover ? d.cover.src : undefined} modifiedTime={d.updated}>
+  <article class="cs">
+    <header class:list={['cs__hero', `cs__hero--${d.accent}`, { 'cs__hero--inset': d.cover && d.coverKind === 'inset' }]}>
+      <div class="cs__hero-art" aria-hidden="true">
+        {d.cover ? (
+          <Image src={d.cover} alt="" widths={[800, 1400, 2000]} sizes="100vw" loading="eager" fetchpriority="high" class="cs__cover" />
+        ) : (
+          <Contours variant="rings" seed={entry.id} lines={12} width={1000} height={1000} class="cs__contours" />
+        )}
+      </div>
+      <div class="container cs__hero-inner">
+        <Breadcrumbs items={[{ name: 'Work', href: '/work/' }, { name: d.title, href: `/work/${entry.id}/` }]} />
+        <p class="overline cs__overline" data-reveal>
+          {d.kind} · {d.organisation}
+          {d.draft && <Draft badgeOnly />}
+        </p>
+        <h1 class="display cs__title" data-reveal>{d.title}</h1>
+        <p class="cs__tagline" data-reveal>{d.tagline}</p>
+      </div>
+    </header>
+
+    <div class="container cs__layout">
+      <aside class="cs__aside">
+        <FactTable rows={facts} />
+        {d.stack.length > 0 && (
+          <div class="cs__stack">
+            <p class="overline overline--muted">Stack & methods</p>
+            <ul class="cluster">
+              {d.stack.map((s) => <li><Chip size="small">{s}</Chip></li>)}
+            </ul>
+          </div>
+        )}
+        {metrics.length > 0 && (
+          <div class="cs__metrics">
+            <p class="overline overline--muted">Results {metrics.some((m) => !m.approved) && <Draft badgeOnly q="M1" />}</p>
+            <dl>
+              {metrics.map((m) => (
+                <div class:list={['cs__metric', { 'cs__metric--draft': !m.approved }]}>
+                  <dd class="serif">{m.value}</dd>
+                  <dt>{m.label}{!m.approved && <span class="faint"> · awaiting approval</span>}</dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+        {d.links.length > 0 && (
+          <div class="cs__links">
+            <p class="overline overline--muted">Links</p>
+            <ul>
+              {d.links.map((l) => <li><a href={l.href} rel={l.href.startsWith('http') ? 'noopener' : undefined}>{l.label} ↗</a></li>)}
+            </ul>
+          </div>
+        )}
+        {SHOW_DRAFTS && d.approvals.length > 0 && (
+          <div class="cs__approvals">
+            <p class="overline overline--muted">Needs approval before launch</p>
+            <ul class="mono">
+              {d.approvals.map((a) => <li>{a}</li>)}
+            </ul>
+          </div>
+        )}
+      </aside>
+      <div class="cs__body prose">
+        <Content components={{ Draft, Callout, Figure }} />
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="section cs__related" aria-labelledby="related-title">
+        <div class="container">
+          <p class="overline">Related</p>
+          <h2 id="related-title" class="cs__related-title">Keep reading</h2>
+          <div class="cs__related-grid" data-reveal-group>
+            {related.map((r) => <WorkCard entry={r} />)}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .cs__hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    min-height: 420px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .cs__hero-art {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .cs__hero :global(.cs__cover) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+  }
+  .cs__hero-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--paper) 8%, color-mix(in srgb, var(--paper) 55%, transparent) 55%, color-mix(in srgb, var(--paper) 25%, transparent) 100%);
+  }
+  /* Inset cover: a real photograph takes the right side of the hero, with a clean edge. No text runs over it. */
+  .cs__hero--inset .cs__hero-art {
+    left: auto;
+    width: 44%;
+    border-left: 1px solid var(--line);
+  }
+  .cs__hero--inset :global(.cs__cover) {
+    object-position: center 30%;
+  }
+  .cs__hero--inset .cs__hero-art::after {
+    content: none;
+  }
+  .cs__hero--inset .cs__hero-inner > :global(*) {
+    max-width: min(100%, 50%);
+  }
+  @media (min-width: 901px) {
+    .cs__hero--inset .cs__title {
+      font-size: clamp(2.75rem, 5vw, 4.75rem);
+    }
+  }
+  /* Small screens: the image becomes a band above the title. */
+  @media (max-width: 900px) {
+    .cs__hero--inset {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cs__hero--inset .cs__hero-art {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: clamp(150px, 46vw, 300px);
+    }
+    .cs__hero--inset :global(.cs__cover) {
+      object-position: center 30%;
+    }
+    .cs__hero--inset .cs__hero-art {
+      border-left: 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cs__hero--inset .cs__hero-inner > :global(*) {
+      max-width: 100%;
+    }
+    .cs__hero--inset .cs__hero-inner {
+      padding-top: var(--space-4);
+    }
+    .cs__hero--inset .cs__tagline {
+      max-width: 50ch;
+    }
+  }
+  .cs__contours {
+    position: absolute;
+    right: -10%;
+    top: -50%;
+    width: min(900px, 90vw);
+    height: auto;
+    color: var(--amber-bright);
+    opacity: 0.8;
+  }
+  .cs__hero--lagoon .cs__contours {
+    color: var(--lagoon);
+  }
+  .cs__hero--ink .cs__contours {
+    color: var(--ink-3);
+  }
+  .cs__hero-inner {
+    position: relative;
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+  .cs__overline {
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+  .cs__title {
+    max-width: 14ch;
+  }
+  .cs__tagline {
+    margin-top: var(--space-5);
+    font-size: var(--step-3);
+    line-height: 1.4;
+    color: var(--ink-2);
+    max-width: 50ch;
+    text-wrap: pretty;
+  }
+  .cs__layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+  .cs__aside {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .cs__stack ul,
+  .cs__links ul,
+  .cs__approvals ul {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+  }
+  .cs__links li + li {
+    margin-top: 6px;
+  }
+  .cs__links a {
+    font-size: var(--step--1);
+    text-decoration: none;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .cs__links a:hover {
+    color: var(--amber);
+  }
+  .cs__metrics dl {
+    margin: var(--space-3) 0 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .cs__metric dd {
+    margin: 0;
+    font-size: var(--step-1);
+    line-height: 1;
+    font-variation-settings: 'opsz' 72, 'SOFT' 50;
+  }
+  .cs__metric dt {
+    font-size: var(--step--2);
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+  .cs__metric--draft dd {
+    color: var(--ink-3);
+    text-decoration: underline dotted var(--amber);
+  }
+  .cs__approvals li {
+    font-size: 12px;
+    color: var(--ink-2);
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .cs__body {
+    max-width: var(--measure);
+  }
+  .cs__body :global(h2) {
+    position: relative;
+  }
+  .cs__related-title {
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+  .cs__related-grid {
+    display: grid;
+    /* auto-fill keeps a lone related card at card width; auto-fit would stretch it across the page. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: var(--space-5);
+  }
+  @media (max-width: 900px) {
+    .cs__layout {
+      grid-template-columns: 1fr;
+    }
+    .cs__aside {
+      position: static;
+      order: 2;
+      border-top: 1px solid var(--line);
+      padding-top: var(--space-6);
+    }
+  }
+</style>

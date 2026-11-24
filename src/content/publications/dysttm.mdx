@@ -1,0 +1,39 @@
+---
+title: "DySTTM: a dynamic spatial-temporal transformer for multimodal schizophrenia detection"
+shortTitle: DySTTM
+type: note
+authors:
+  - name: Osasumwen R. Imarhiagbe
+    me: true
+  - name: John Z. Zhang
+venue: "Research note: a contribution of the MSc thesis (University of Lethbridge, 2025)"
+venueShort: Thesis contribution · research note
+year: 2025
+openAccess: true
+pubStatus: thesis contribution
+order: 3
+verification: draft
+note: "No standalone DySTTM paper is on record (Springer, Scholar, arXiv). Presented here as a thesis contribution until a manuscript exists (Q14)."
+keywords: [transformer, multimodal fusion, fMRI, dynamic connectivity, schizophrenia]
+abstract: >-
+  DySTTM integrates structural and functional MRI for schizophrenia detection. Spatial attention
+  captures anatomical interdependencies from BoRefAttnNet-segmented sMRI; temporal attention models
+  dynamic connectivity patterns from resting-state fMRI. In the thesis experiments the fused
+  representation reached a ROC-AUC of 0.94, against 0.90 for a 3D ResNet and 0.88 for XGBoost.
+---
+
+import ThesisResults from '../../components/ThesisResults.astro';
+
+## Why fuse structure and function
+
+Structural MRI tells you how a region is shaped; resting-state fMRI tells you how it behaves over the course of a scan. Schizophrenia research has long reported signals in both, and models that look at one modality alone leave information on the table. DySTTM is designed to read the two together, and to be interpretable about which regions and which moments mattered.
+
+## What it measured
+
+<ThesisResults variant="classification" />
+
+DySTTM is the most accurate of the three models and has the best ROC-AUC. The 3D ResNet keeps a small lead on recall and F1, which means it catches slightly more of the true cases. On a dataset of 174 people from one site, that is a result to build on rather than one to deploy.
+
+## Status
+
+DySTTM is documented in full in the [thesis](/research/thesis/). <Draft q="Q14">A standalone manuscript is in preparation.</Draft>

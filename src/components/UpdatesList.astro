@@ -1,0 +1,108 @@
+---
+import { fmtDate, type Update } from '../lib/data';
+import Draft from './Draft.astro';
+
+interface Props {
+  items: Update[];
+  /** Show the year as a running header when it changes. */
+  groupYears?: boolean;
+  class?: string;
+}
+const { items, groupYears = false, class: className } = Astro.props;
+const kindGlyph: Record<string, string> = {
+  publication: '¶',
+  talk: '◎',
+  milestone: '◆',
+  role: '→',
+  award: '✶',
+  journal: '✎',
+  press: '❝',
+};
+let lastYear = 0;
+---
+
+<ol class:list={['updates', className]} data-reveal-group>
+  {
+    items.map((u) => {
+      const year = u.date.getUTCFullYear();
+      const showYear = groupYears && year !== lastYear;
+      lastYear = year;
+      const dateLabel = u.dayUnknown ? fmtDate(u.date, { day: false }) : fmtDate(u.date);
+      return (
+        <>
+          {showYear && (
+            <li class="updates__year" aria-hidden="true">
+              <span class="serif">{year}</span>
+            </li>
+          )}
+          <li class="updates__item" data-reveal>
+            <time class="updates__date mono" datetime={u.date.toISOString().slice(0, 10)}>
+              {dateLabel}
+            </time>
+            <span class="updates__glyph" aria-hidden="true">{kindGlyph[u.kind] ?? '·'}</span>
+            <p class="updates__text">
+              {u.href ? <a href={u.href}>{u.text}</a> : u.text}
+              {u.status === 'draft' && <Draft badgeOnly />}
+            </p>
+          </li>
+        </>
+      );
+    })
+  }
+</ol>
+
+<style>
+  .updates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .updates__year {
+    padding: var(--space-6) 0 var(--space-3);
+    font-size: var(--step-2);
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--line);
+  }
+  .updates__item {
+    display: grid;
+    grid-template-columns: 112px 24px minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .updates__date {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .updates__glyph {
+    color: var(--amber);
+    font-size: 12px;
+    text-align: center;
+  }
+  .updates__text {
+    font-size: var(--step--1);
+    text-wrap: pretty;
+  }
+  .updates__text a {
+    color: var(--ink);
+    text-decoration-color: var(--line-strong);
+  }
+  .updates__text a:hover {
+    color: var(--amber);
+  }
+  @media (max-width: 560px) {
+    .updates__item {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+    .updates__date {
+      grid-column: 2;
+      order: -1;
+      margin-bottom: 2px;
+    }
+    .updates__glyph {
+      grid-row: span 2;
+    }
+  }
+</style>

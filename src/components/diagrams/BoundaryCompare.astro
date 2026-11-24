@@ -1,0 +1,232 @@
+---
+/**
+ * Interactive before/after: drag the handle (or use the arrow keys) to reveal how
+ * boundary attention changes a segmentation. Left of the handle: a soft, voxel-wise
+ * prediction. Right of the handle: the same structure with its boundary learned explicitly.
+ *
+ * Conceptual illustration: not a rendering of real MRI data. Zero dependencies:
+ * one <input type="range"> drives a CSS custom property (see initCompare in site.ts).
+ */
+import { rings } from '../../lib/contours';
+
+interface Props {
+  class?: string;
+  caption?: string;
+  /** Initial split, 0–100 (% of the frame showing the refined version from the right). */
+  start?: number;
+  id?: string;
+}
+const { class: className, caption, start = 50, id = 'bc-' + Math.random().toString(36).slice(2, 7) } = Astro.props;
+
+const seed = 'boundary-compare';
+const W = 640;
+const H = 440;
+const cx = W / 2;
+const cy = H / 2 + 6;
+const outer = rings({ seed, cx, cy, rings: 1, rMin: 138, rMax: 138, wobble: 0.3, aspect: 1.25, segments: 44 })[0]!;
+const inner = rings({ seed, cx, cy, rings: 1, rMin: 92, rMax: 92, wobble: 0.3, aspect: 1.25, segments: 44 })[0]!;
+const halo = rings({ seed, cx, cy, rings: 5, rMin: 150, rMax: 205, wobble: 0.3, aspect: 1.25, segments: 44 });
+// scattered "uncertain voxels" around the soft edge (deterministic positions)
+const dots = Array.from({ length: 26 }, (_, i) => {
+  const a = (i / 26) * Math.PI * 2 + 0.3;
+  const r = 128 + ((i * 37) % 40);
+  return { x: cx + Math.cos(a) * r * 1.25, y: cy + Math.sin(a) * r, s: 2 + ((i * 7) % 3) };
+});
+// attention ticks normal to the edge
+const ticks = Array.from({ length: 12 }, (_, i) => {
+  const a = (i / 12) * Math.PI * 2;
+  const r0 = 141, r1 = 158;
+  return { x1: cx + Math.cos(a) * r0 * 1.25, y1: cy + Math.sin(a) * r0, x2: cx + Math.cos(a) * r1 * 1.25, y2: cy + Math.sin(a) * r1 };
+});
+const gridLines = Array.from({ length: 15 }, (_, i) => (i + 1) * 40);
+---
+
+<figure class:list={['bc', className]} data-reveal>
+  <div class="bc__stage" style={`--split-start:${start}%`} data-compare-stage>
+    <!-- soft / voxel-wise -->
+    <svg class="bc__layer" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id={`${id}-soft`} cx="50%" cy="50%" r="50%">
+          <stop offset="50%" stop-color="var(--lagoon)" stop-opacity=".55" />
+          <stop offset="78%" stop-color="var(--lagoon)" stop-opacity=".2" />
+          <stop offset="100%" stop-color="var(--lagoon)" stop-opacity="0" />
+        </radialGradient>
+        <filter id={`${id}-blur`} x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="9" /></filter>
+      </defs>
+      <g class="bc__grid" stroke="var(--line)" stroke-width="1">
+        {gridLines.map((x) => <line x1={x} y1="0" x2={x} y2={H} />)}
+        {gridLines.filter((y) => y < H).map((y) => <line x1="0" y1={y} x2={W} y2={y} />)}
+      </g>
+      <g filter={`url(#${id}-blur)`}>
+        <path d={outer} fill={`url(#${id}-soft)`} />
+        <path d={inner} fill="var(--lagoon)" fill-opacity=".32" />
+      </g>
+      <g fill="var(--lagoon)" fill-opacity=".5">
+        {dots.map((d) => <circle cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={d.s} />)}
+      </g>
+    </svg>
+
+    <!-- sharp / boundary-refined (clipped from the left by --split) -->
+    <svg class="bc__layer bc__layer--sharp" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+      <rect width={W} height={H} fill="var(--paper-2)" />
+      <g class="bc__grid" stroke="var(--line)" stroke-width="1">
+        {gridLines.map((x) => <line x1={x} y1="0" x2={x} y2={H} />)}
+        {gridLines.filter((y) => y < H).map((y) => <line x1="0" y1={y} x2={W} y2={y} />)}
+      </g>
+      <path d={outer} fill="var(--lagoon)" fill-opacity=".18" />
+      <g fill="none" stroke="var(--amber-bright)" stroke-width="1">
+        {halo.map((d, i) => <path d={d} style={`opacity:${(0.55 - i * 0.1).toFixed(2)}`} />)}
+      </g>
+      <path d={outer} fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round" />
+      <path d={inner} fill="none" stroke="var(--ink)" stroke-width="1" stroke-opacity=".35" stroke-dasharray="3 5" />
+      <g stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round">
+        {ticks.map((t) => <line x1={t.x1.toFixed(1)} y1={t.y1.toFixed(1)} x2={t.x2.toFixed(1)} y2={t.y2.toFixed(1)} />)}
+      </g>
+    </svg>
+
+    <span class="bc__tag bc__tag--l mono" aria-hidden="true">Voxel-wise prediction</span>
+    <span class="bc__tag bc__tag--r mono" aria-hidden="true">Boundary attention</span>
+
+    <div class="bc__divider" aria-hidden="true">
+      <span class="bc__handle">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5 2 10l5 5M13 5l5 5-5 5" /></svg>
+      </span>
+    </div>
+
+    <label class="visually-hidden" for={id}>Compare the two segmentations: move right to see more of the voxel-wise prediction, left to see more of the boundary-refined result</label>
+    <input class="bc__range" id={id} type="range" min="0" max="100" step="1" value={start} data-compare aria-valuetext={`${start}% of the frame shows the boundary-refined result`} />
+  </div>
+  <figcaption class="mono">
+    {caption ?? 'Drag the handle. Left: a plain voxel-wise prediction, confident in the middle and vague at the edge. Right: the same structure with its boundary learned explicitly. Conceptual illustration, not patient data.'}
+  </figcaption>
+</figure>
+
+<style>
+  @property --split {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 50%;
+  }
+  .bc {
+    margin: 0;
+  }
+  .bc__stage {
+    --split: var(--split-start, 50%);
+    position: relative;
+    aspect-ratio: 640 / 440;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    background: var(--paper-2);
+    user-select: none;
+    touch-action: pan-y;
+    transition: --split 1.1s var(--ease-out);
+  }
+  .bc__layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .bc__layer--sharp {
+    clip-path: inset(0 0 0 var(--split));
+  }
+  .bc__grid {
+    opacity: 0.55;
+  }
+  .bc__divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--ink);
+    pointer-events: none;
+  }
+  .bc__handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--paper) 70%, transparent);
+    transition: transform var(--dur-2) var(--ease);
+  }
+  .bc__stage:has(.bc__range:active) .bc__handle,
+  .bc__stage:has(.bc__range:focus-visible) .bc__handle {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  .bc__stage:has(.bc__range:focus-visible) .bc__divider {
+    background: var(--amber);
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+  .bc__tag {
+    position: absolute;
+    top: 12px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 8px;
+    border-radius: var(--radius-1);
+    background: color-mix(in srgb, var(--paper) 85%, transparent);
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    pointer-events: none;
+  }
+  .bc__tag--l {
+    left: 12px;
+  }
+  .bc__tag--r {
+    right: 12px;
+    color: var(--amber);
+  }
+  .bc__range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+  }
+  .bc__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 44px;
+    height: 100%;
+  }
+  .bc__range::-moz-range-thumb {
+    width: 44px;
+    height: 100%;
+    border: 0;
+    background: transparent;
+  }
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  /* draw-in on first reveal: from "all soft" to the starting split */
+  .bc:not(.is-visible) .bc__stage {
+    --split: 100%;
+  }
+  .bc__stage.is-live {
+    transition: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bc__stage {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,26 @@
+# Professional memberships and community (names only, never membership numbers).
+professional:
+  - name: "IEEE: Computer Society and Computational Intelligence Society"
+    url: https://www.ieee.org
+  - name: Association for Computing Machinery (ACM)
+    url: https://www.acm.org
+  - name: "CIPS, Canada's Association of IT Professionals"
+    url: https://www.cips.ca
+  - name: Canadian Artificial Intelligence Association
+    url: https://www.caiac.ca
+  - name: National Society of Black Engineers
+    url: https://www.nsbe.org
+  - name: Black in AI
+    url: https://www.blackinai.org
+  - name: Google Developer Groups
+  - name: YYC Data Community
+  - name: Alberta Machine Intelligence Institute (Amii) community
+
+volunteering:
+  - name: Volunteer Lethbridge
+    status: self-reported
+  - name: Edo Global Art Foundation
+    role: Teaching computer appreciation and programming; advocacy on the restitution of Benin artefacts
+    status: self-reported
+  - name: Teleios Health International
+    status: self-reported

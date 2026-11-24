@@ -1,0 +1,36 @@
+- id: msc-uleth
+  degree: MSc, Computer Science
+  institution: uleth
+  start: 2023-09
+  end: 2025-08
+  status: verified
+  details:
+    - "Supervisor: Dr. John Z. Zhang"
+    - "Committee: Wendy Osborn, Yllias Chali"
+    - Alberta Innovates Graduate Student Scholarship
+  gpa:
+    value: "3.93 / 4.00"
+    status: self-reported
+  thesis:
+    title: Advanced boundary-enhanced instance segmentation and spatial-temporal transformer models for automated schizophrenic investigation
+    url: https://hdl.handle.net/10133/7170
+    page: /research/thesis/
+  milestones:
+    - label: Thesis defence
+      date: 2025-08
+      status: verified   # 12 August 2025, printed on the deposited thesis (D13 half-resolved)
+    - label: Convocation
+      date: 2025-10
+      status: verified   # 18 October 2025
+
+- id: bsc-biu
+  degree: BSc, Computer Science (Software Engineering)
+  institution: biu
+  start: 2018-09
+  end: 2022-08
+  status: verified
+  details:
+    - "Thesis: Classification and Categorization of COVID-19 Treatment Drugs and Vaccines Using a Data Mining Approach (UBTH case study, 2022)"
+  gpa:
+    value: "4.84 / 5.00"
+    status: self-reported

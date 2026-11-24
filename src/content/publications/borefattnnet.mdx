@@ -1,0 +1,78 @@
+---
+title: "BoRefAttnNet: Boundary-Refined 3D Brain MRI Segmentation with Multi-Scale Attention for Schizophrenia Analysis"
+shortTitle: BoRefAttnNet
+type: conference
+authors:
+  - name: Osasumwen R. Imarhiagbe
+    me: true
+  - name: John Z. Zhang
+    url: https://www.ulethbridge.ca/artsci/math-computer-science
+venue: Proceedings of the 11th International Congress on Information and Communication Technology (ICICT 2026), London, 24–27 February 2026
+venueShort: ICICT 2026 proceedings
+series: Lecture Notes in Networks and Systems
+volume: vol. 2108
+pages: 223–232
+publisher: Springer, Cham
+year: 2026
+published: 2026-10-06
+doi: 10.1007/978-3-032-34132-7_19
+isbn:
+  - 978-3-032-34131-0 (print)
+  - 978-3-032-34132-7 (online)
+openAccess: false
+pubStatus: published
+featured: true
+order: 1
+verification: verified
+keywords: [machine learning, deep learning, attention network, 3D U-Net, image segmentation, schizophrenia]
+abstract: >-
+  Accurate segmentation of subcortical brain structures from structural MRI is a prerequisite for
+  studying schizophrenia, yet small, low-contrast regions such as the hippocampus and amygdala are
+  where conventional 3D U-Nets err most: at the boundary. BoRefAttnNet is a boundary-refined 3D
+  U-Net variant that adds multi-scale boundary attention modules to the decoder, explicitly
+  highlighting anatomically critical edges while suppressing background noise. Evaluated on
+  FastSurfer-processed sMRI from the public COBRE dataset, it improves the delineation of key
+  subcortical structures over 3D U-Net baselines.
+highlights:
+  - Short paper / extended abstract in the ICICT 2026 proceedings; the thesis is the full treatment.
+  - "Editors: X.-S. Yang, R. S. Sherratt, N. Dey, A. Joshi."
+  - "Author affiliation on record: University of Lethbridge. First and corresponding author."
+bibtex: |
+  @inproceedings{imarhiagbe2026borefattnnet,
+    author    = {Imarhiagbe, Osasumwen R. and Zhang, John Z.},
+    title     = {{BoRefAttnNet}: Boundary-Refined 3D Brain {MRI} Segmentation with Multi-Scale Attention for Schizophrenia Analysis},
+    booktitle = {Proceedings of 11th International Congress on Information and Communication Technology (ICICT 2026)},
+    series    = {Lecture Notes in Networks and Systems},
+    volume    = {2108},
+    pages     = {223--232},
+    publisher = {Springer, Cham},
+    year      = {2026},
+    doi       = {10.1007/978-3-032-34132-7_19}
+  }
+---
+
+import ThesisResults from '../../components/ThesisResults.astro';
+
+## In plain language
+
+Most brain-segmentation networks decide, voxel by voxel, which structure each point belongs to. That works well in the middle of a structure and badly at its edges, which is exactly where researchers look when they compare a patient group with controls. BoRefAttnNet makes the network pay attention to the boundary itself: at each scale of the decoder, a boundary attention module sharpens the edge signal and quietens the background, so the final mask follows anatomy rather than blur.
+
+## What the paper covers
+
+- The boundary attention module and where it sits in a 3D U-Net decoder.
+- Training and evaluation on sMRI scans from the Centre for Biomedical Research Excellence (COBRE) dataset, pre-processed with FastSurfer.
+- Comparison against conventional 3D U-Net baselines on subcortical structures implicated in schizophrenia: hippocampus, amygdala and basal ganglia.
+
+The chapter is an extended abstract. It presents the architecture, and leaves data preparation, experiments and results to the [MSc thesis](/research/thesis/), which also covers the downstream classification work (DySTTM).
+
+## What it measured
+
+These are the thesis results for the model the paper describes.
+
+<ThesisResults variant="segmentation" />
+
+Adding boundary attention to the network does more than adding a boundary term to the loss, and the two together do best. The full discussion, with the per-structure scores and the limits of the dataset, is on the [thesis page](/research/thesis/#results).
+
+## Presentation
+
+Accepted for oral presentation at ICICT 2026 in London (24–27 February 2026). <Draft q="Q13">Whether it was presented in person or online, and by whom, is being confirmed.</Draft>

@@ -1,0 +1,351 @@
+---
+/**
+ * The measured results of the MSc thesis, read from src/data/research-results.yaml.
+ * Every number carries the thesis table it comes from. No number lives in this file.
+ *
+ *   <ThesisResults variant="headline" />        three figures, for Home and the Research hub
+ *   <ThesisResults variant="segmentation" />    Table 4.2, with a bar for the boundary error
+ *   <ThesisResults variant="classification" />  Table 5.1
+ *   <ThesisResults variant="limits" />          what the numbers do not show
+ */
+import { researchResults as r } from '../lib/data';
+
+interface Props {
+  variant?: 'headline' | 'segmentation' | 'classification' | 'limits';
+  class?: string;
+}
+const { variant = 'headline', class: className } = Astro.props;
+
+const hdMax = Math.max(...r.segmentation.rows.map((row) => row.hd));
+const cols = ['accuracy', 'precision', 'recall', 'f1', 'auc'] as const;
+const colLabel: Record<(typeof cols)[number], string> = { accuracy: 'Accuracy', precision: 'Precision', recall: 'Recall', f1: 'F1', auc: 'ROC-AUC' };
+// Shorter column heads for phones, so the whole table fits without sideways scrolling.
+const colShort: Record<(typeof cols)[number], string> = { accuracy: 'Acc.', precision: 'Prec.', recall: 'Rec.', f1: 'F1', auc: 'AUC' };
+const best = Object.fromEntries(cols.map((c) => [c, Math.max(...r.classification.rows.map((row) => row[c]))]));
+const fmt = (n: number, d: number) => n.toFixed(d);
+---
+
+{variant === 'headline' && (
+  <div class:list={['tr tr--headline', className]} data-reveal>
+    <p class="overline overline--lagoon tr__kicker">Measured, not claimed</p>
+    <dl class="tr__stats">
+      {r.headline.map((h) => (
+        <div class="tr__stat">
+          <dd class="tr__value serif">{h.value}{h.unit && <span class="tr__unit"> {h.unit}</span>}</dd>
+          <dt class="tr__label">{h.label}</dt>
+          <dd class="tr__compare mono">{h.compare}</dd>
+        </div>
+      ))}
+    </dl>
+    <p class="tr__source mono">
+      Held-out test set, {r.dataset.name} ({r.dataset.subjects} subjects). <a href="/research/thesis/#results">Thesis, {r.segmentation.ref.replace('Table ', 'Tables ')} and {r.classification.ref.replace('Table ', '')}</a>
+    </p>
+  </div>
+)}
+
+{variant === 'segmentation' && (
+  <figure class:list={['tr tr--table', className]} data-reveal>
+    <div class="tr__scroll" tabindex="0" role="region" aria-label="Segmentation results">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Loss</th>
+            <th scope="col" class="num">Dice</th>
+            <th scope="col"><span class="tr__long">Hausdorff (mm)</span><span class="tr__short" aria-hidden="true">HD mm</span></th>
+            <th scope="col" class="num"><span class="tr__long">ASD (mm)</span><span class="tr__short" aria-hidden="true">ASD mm</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {r.segmentation.rows.map((row) => (
+            <tr class:list={{ 'is-ours': row.ours, 'is-best': row.best }}>
+              <th scope="row">{row.model}</th>
+              <td class="tr__wrap">{row.loss}</td>
+              <td class="num">{fmt(row.dice, 4)}</td>
+              <td>
+                <span class="tr__bar">
+                  <span class="tr__bar-fill" style={`width:${((row.hd / hdMax) * 100).toFixed(1)}%`} aria-hidden="true"></span>
+                  <span class="tr__bar-num">{fmt(row.hd, 2)}</span>
+                </span>
+              </td>
+              <td class="num">{fmt(row.asd, 2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <figcaption>{r.segmentation.caption} Source: thesis, {r.segmentation.ref}.</figcaption>
+  </figure>
+)}
+
+{variant === 'classification' && (
+  <figure class:list={['tr tr--table', className]} data-reveal>
+    <div class="tr__scroll" tabindex="0" role="region" aria-label="Classification results">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            {cols.map((c) => (
+              <th scope="col" class="num">
+                {colShort[c] === colLabel[c] ? colLabel[c] : <Fragment><span class="tr__long">{colLabel[c]}</span><span class="tr__short" aria-hidden="true">{colShort[c]}</span></Fragment>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {r.classification.rows.map((row) => (
+            <tr class:list={{ 'is-ours': row.ours }}>
+              <th scope="row">{row.model}</th>
+              {cols.map((c) => (
+                <td class="num">{row[c] === best[c] ? <strong>{fmt(row[c], c === 'f1' ? 3 : 2)}</strong> : fmt(row[c], c === 'f1' ? 3 : 2)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <figcaption>{r.classification.caption} Source: thesis, {r.classification.ref}. {r.classification.tests.note}</figcaption>
+  </figure>
+)}
+
+{variant === 'limits' && (
+  <aside class:list={['tr tr--limits', className]} role="note" data-reveal>
+    <p class="overline overline--muted">What these numbers do not show</p>
+    <ul>
+      {r.limits.map((l) => <li>{l}</li>)}
+    </ul>
+  </aside>
+)}
+
+<style>
+  /* ---------- headline ---------- */
+  .tr--headline {
+    border-top: 1px solid var(--line-strong);
+    padding-top: var(--space-5);
+  }
+  .tr__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: var(--space-4) 0 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .tr__stat {
+    padding: var(--space-5) var(--space-4) var(--space-5) 0;
+  }
+  .tr__stat + .tr__stat {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--line);
+  }
+  .tr__value {
+    margin: 0;
+    font-size: var(--step-2);
+    line-height: 1;
+    color: var(--lagoon);
+    font-variant-numeric: tabular-nums;
+    font-variation-settings: 'opsz' 72, 'SOFT' 30;
+  }
+  .tr__unit {
+    font-size: 0.5em;
+    color: var(--ink-2);
+  }
+  .tr__label {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .tr__compare {
+    margin: var(--space-1) 0 0;
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+  .tr__source {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+  .tr__source a {
+    color: var(--lagoon);
+  }
+  @media (max-width: 520px) {
+    .tr__stats {
+      grid-template-columns: 1fr;
+    }
+    .tr__stat {
+      display: grid;
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      column-gap: var(--space-4);
+      align-items: baseline;
+      padding: var(--space-4) 0;
+    }
+    .tr__stat + .tr__stat {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .tr__value {
+      grid-row: span 2;
+    }
+    .tr__label {
+      margin-top: 0;
+    }
+  }
+
+  /* ---------- tables ---------- */
+  .tr--table {
+    margin: var(--space-6) 0;
+  }
+  .tr__scroll {
+    overflow-x: auto;
+    border-top: 1px solid var(--line-strong);
+  }
+  .tr--table table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  .tr--table th,
+  .tr--table td {
+    text-align: left;
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .tr--table th:first-child,
+  .tr--table td:first-child {
+    padding-left: 0;
+  }
+  .tr--table thead th {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .tr--table tbody th {
+    font-family: var(--font-text);
+    font-size: inherit;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-2);
+  }
+  .tr--table tbody td {
+    color: var(--ink-2);
+  }
+  .tr--table .num {
+    text-align: right;
+  }
+  .tr--table tr.is-ours th,
+  .tr--table tr.is-ours td {
+    color: var(--ink);
+  }
+  .tr--table tr.is-ours th {
+    color: var(--lagoon);
+    font-weight: 600;
+  }
+  .tr--table tr.is-best td {
+    font-weight: 600;
+  }
+  .tr--table td strong {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .tr__bar {
+    display: grid;
+    grid-template-columns: minmax(60px, 1fr) 3.2em;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 150px;
+  }
+  .tr__bar-fill {
+    display: block;
+    height: 8px;
+    border-radius: 1px;
+    background: var(--ink-3);
+  }
+  tr.is-ours .tr__bar-fill {
+    background: var(--lagoon);
+  }
+  .tr__bar-num {
+    text-align: right;
+  }
+  .tr__short {
+    display: none;
+  }
+  /* Phones: tighten until both tables fit the column; the scroll region stays as a fallback. */
+  @media (max-width: 560px) {
+    .tr--table table {
+      min-width: 0;
+      font-size: var(--step--2);
+    }
+    .tr--table th,
+    .tr--table td {
+      padding: var(--space-3) 5px;
+    }
+    .tr--table th:last-child,
+    .tr--table td:last-child {
+      padding-right: 0;
+    }
+    .tr--table thead th {
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+    }
+    .tr--table .tr__wrap {
+      white-space: normal;
+      line-height: 1.3;
+    }
+    .tr__long {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .tr__short {
+      display: inline;
+    }
+    .tr__bar {
+      display: block;
+      min-width: 0;
+    }
+    .tr__bar-fill {
+      display: none;
+    }
+    .tr__bar-num {
+      text-align: left;
+    }
+  }
+  .tr--table figcaption {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  /* ---------- limits ---------- */
+  .tr--limits {
+    margin: var(--space-6) 0;
+    padding: var(--space-5) var(--space-5) var(--space-5) var(--space-6);
+    border-left: 3px solid var(--line-strong);
+    background: var(--paper-3);
+    border-radius: 0 var(--radius-2) var(--radius-2) 0;
+  }
+  .tr--limits ul {
+    margin: var(--space-3) 0 0;
+    padding-left: 1.1em;
+    font-size: var(--step--1);
+    color: var(--ink);
+  }
+  .tr--limits li + li {
+    margin-top: 0.4em;
+  }
+</style>

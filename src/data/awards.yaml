@@ -1,0 +1,73 @@
+# Grants, awards, fellowships, recognitions, newest first.
+# `amount` is only displayed when profile `showAmounts` is enabled (Q20); kept here for the record.
+- id: bbva-2026
+  title: "Founder showcase, BBVA Innovation Expo 2026"
+  issuer: Black Business Ventures Association (BBVA)
+  date: 2026-02
+  kind: recognition
+  status: verified
+  summary: One of seven Black founders selected to present on the main stage; presented Auron.
+  url: https://www.linkedin.com/posts/osasumwen_bbva-bbva-ai-ugcPost-7424647865576300544-oUSx/
+- id: ihpcss-2025
+  title: "International HPC Summer School 2025, Canadian delegation"
+  issuer: Digital Research Alliance of Canada
+  date: 2025-07
+  kind: fellowship
+  status: self-reported
+  summary: Selected to the ten-person Canadian delegation; presented BoRefAttnNet in Lisbon (6–11 July 2025). Travel award.
+  amount: "CA$4,978"
+- id: sgs-award-2025
+  title: School of Graduate Studies award
+  issuer: University of Lethbridge
+  date: 2025-08
+  kind: award
+  status: self-reported
+  amount: "CA$1,500"
+  minor: true
+- id: gsa-award-2025
+  title: Graduate Students' Association award
+  issuer: University of Lethbridge
+  date: 2025-05
+  kind: award
+  status: self-reported
+  amount: "CA$500"
+  minor: true
+- id: black-in-ai-2025
+  title: Emerging Leader in AI Fellow
+  issuer: Black in AI
+  date: 2025
+  kind: fellowship
+  status: draft
+  note: "Q17: confirm programme name, year and link."
+- id: alberta-innovates-gss
+  title: Graduate Student Scholarship
+  issuer: Alberta Innovates
+  date: 2023-09
+  endDate: 2025-08
+  kind: scholarship
+  status: self-reported
+  summary: Two-year scholarship supporting the MSc research.
+  amount: "CA$52,000"
+  url: https://albertainnovates.ca
+- id: uleth-gra
+  title: Graduate Research Award
+  issuer: University of Lethbridge
+  date: 2023
+  endDate: 2025
+  kind: award
+  status: self-reported
+  amount: "CA$15,000"
+- id: coca-cola-2023
+  title: Coca-Cola MSc Graduate Admission Scholarship
+  issuer: University of Lethbridge
+  date: 2023-10
+  kind: scholarship
+  status: self-reported
+  amount: "CA$2,000"
+- id: presidential-recognition-2022
+  title: "Presidential Certificate of Recognition, Nigeria Startup Act"
+  issuer: "Nigeria Startup Act Secretariat, Office of the Senior Special Assistant to the President on Digital Transformation"
+  date: 2022-12
+  kind: recognition
+  status: self-reported
+  summary: For contributions to the drafting of the Nigeria Startup Act.

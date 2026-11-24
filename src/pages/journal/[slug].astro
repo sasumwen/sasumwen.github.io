@@ -1,0 +1,203 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Gallery from '../../components/Gallery.astro';
+import PullQuote from '../../components/PullQuote.astro';
+import Draft from '../../components/Draft.astro';
+import Callout from '../../components/Callout.astro';
+import Figure from '../../components/Figure.astro';
+import JournalCard from '../../components/JournalCard.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+import { notDraft, SHOW_DRAFTS } from '../../lib/drafts';
+import { breadcrumbs, PERSON_ID } from '../../lib/schema';
+import { fmtDate } from '../../lib/data';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('journal', notDraft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const all = await getCollection('journal', notDraft);
+const related = d.related.map((id) => all.find((e) => e.id === id)).filter(Boolean) as typeof all;
+const minutes = d.readingTime ?? Math.max(2, Math.round((entry.body?.split(/\s+/).length ?? 400) / 220));
+const jsonLd = [
+  {
+    '@type': 'BlogPosting',
+    headline: d.title,
+    description: d.dek,
+    datePublished: d.date.toISOString().slice(0, 10),
+    author: { '@id': PERSON_ID },
+    image: new URL(d.cover.src, 'https://osasumwen.com').href,
+    keywords: d.tags.join(', '),
+    url: `https://osasumwen.com/journal/${entry.id}/`,
+  },
+  breadcrumbs([{ name: 'Journal', url: '/journal/' }, { name: d.title, url: `/journal/${entry.id}/` }]),
+];
+---
+
+<BaseLayout title={d.title} description={d.dek} type="article" image={d.cover.src} imageAlt={d.coverAlt} jsonLd={jsonLd} publishedTime={d.date} headerOverlay>
+  <ReadingProgress />
+  <article class="story" data-progress-target>
+    <header class="story__cover">
+      <Image src={d.cover} alt={d.coverAlt} widths={[800, 1200, 1800, 2400]} sizes="100vw" loading="eager" fetchpriority="high" class="story__cover-img" style={`object-position:${d.coverPosition}`} />
+      <div class="story__scrim" aria-hidden="true"></div>
+      <div class="container story__cover-text">
+        <p class="overline story__dateline" data-reveal>
+          Journal · {d.dateline}{d.place && ` · ${d.place}`}
+          {d.draft && <Draft badgeOnly />}
+        </p>
+        <h1 class="display story__title" data-reveal>{d.title}</h1>
+        <p class="story__dek" data-reveal>{d.dek}</p>
+      </div>
+    </header>
+
+    <div class="container story__layout">
+      <aside class="story__meta mono">
+        <p><span class="faint">Published</span><br /><time datetime={d.date.toISOString().slice(0, 10)}>{fmtDate(d.date)}</time></p>
+        <p><span class="faint">Reading time</span><br />{minutes} min</p>
+        {d.place && <p><span class="faint">Place</span><br />{d.place}</p>}
+        {d.tags.length > 0 && <p><span class="faint">Tagged</span><br />{d.tags.join(' · ')}</p>}
+        <p><a href="/journal/">← All stories</a></p>
+      </aside>
+
+      <div class="story__body prose">
+        <Content components={{ PullQuote, Draft, Callout, Figure }} />
+
+        {d.gallery.length > 0 && <Gallery items={d.gallery} consent={d.peopleConsent} columns={3} />}
+
+        <p class="story__credits mono">
+          Photos: family and friends, used with permission.
+          {d.people.length > 0 && <> People named in this story are named as in my public posts{SHOW_DRAFTS && !d.peopleConsent && <>; <Draft q="M4">consent for photos still to be confirmed</Draft></>}.</>}
+        </p>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="section" aria-labelledby="related-title">
+        <div class="container">
+          <p class="overline">Keep reading</p>
+          <h2 id="related-title" class="story__related-title">Related stories</h2>
+          <div class="story__related" data-reveal-group>
+            {related.map((r) => <JournalCard entry={r} />)}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .story__cover {
+    position: relative;
+    min-height: min(88vh, 860px);
+    display: flex;
+    align-items: flex-end;
+    background: #15130f;
+    overflow: hidden;
+  }
+  .story__cover :global(.story__cover-img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .story__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(21, 19, 15, 0.9) 0%, rgba(21, 19, 15, 0.35) 50%, rgba(21, 19, 15, 0.1) 100%);
+  }
+  .story__cover-text {
+    position: relative;
+    padding-top: var(--space-10);
+    padding-bottom: clamp(var(--space-7), 6vw, var(--space-9));
+    color: #efe9df;
+  }
+  .story__dateline {
+    color: #f0b759;
+    margin-bottom: var(--space-4);
+  }
+  .story__title {
+    color: #fffdf9;
+    max-width: 16ch;
+  }
+  .story__dek {
+    margin-top: var(--space-5);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    color: #d9d3c8;
+    max-width: 50ch;
+    text-wrap: pretty;
+  }
+  .story__layout {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+  .story__meta {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    font-size: var(--step--2);
+    line-height: 1.6;
+  }
+  .story__meta p + p {
+    margin-top: var(--space-4);
+  }
+  .story__meta a {
+    text-decoration: none;
+  }
+  .story__body {
+    max-width: var(--measure-narrow);
+    font-size: calc(var(--step-0) * 1.04);
+  }
+  .story__body :global(.lead) {
+    font-size: var(--step-3);
+  }
+  /* drop cap on the opening paragraph */
+  .story__body :global(.lead::first-letter) {
+    float: left;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 3.6em;
+    line-height: 0.82;
+    padding: 0.08em 0.12em 0 0;
+    color: var(--amber);
+    font-variation-settings: 'opsz' 144, 'SOFT' 60;
+  }
+  .story__credits {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+  .story__related-title {
+    margin: var(--space-2) 0 var(--space-6);
+  }
+  .story__related {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-5);
+  }
+  @media (max-width: 900px) {
+    .story__layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .story__meta {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-5);
+    }
+    .story__meta p + p {
+      margin-top: 0;
+    }
+  }
+</style>

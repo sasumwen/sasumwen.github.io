@@ -1,0 +1,55 @@
+---
+/**
+ * Inline placeholder for an unconfirmed fact.
+ * Preview builds: renders the content with an amber dotted underline and a badge.
+ * Production builds: renders `fallback` (default: nothing).
+ *
+ *   <Draft q="Q6">Founder &amp; Principal</Draft>
+ */
+import { SHOW_DRAFTS } from '../lib/drafts';
+
+interface Props {
+  /** Question / discrepancy id from docs/redesign/07-open-questions.md, e.g. "Q6" or "D1". */
+  q?: string;
+  fallback?: string;
+  /** Show only the badge (no underline), e.g. next to a heading. */
+  badgeOnly?: boolean;
+  label?: string;
+}
+const { q, fallback = '', badgeOnly = false, label = 'draft' } = Astro.props;
+const title = q ? `Draft: awaiting confirmation (${q})` : 'Draft: awaiting confirmation';
+---
+
+{
+  SHOW_DRAFTS ? (
+    badgeOnly ? (
+      <span class="draft-badge" title={title}>
+        {label}
+        {q && <span class="draft-badge__q">{q}</span>}
+      </span>
+    ) : (
+      <mark class="draft" title={title}>
+        <slot />
+        <span class="draft-badge" aria-label={title}>
+          {label}
+          {q && <span class="draft-badge__q">{q}</span>}
+        </span>
+      </mark>
+    )
+  ) : (
+    <Fragment set:html={fallback} />
+  )
+}
+
+<style>
+  mark.draft .draft-badge {
+    margin-left: 6px;
+    font-size: 10px;
+    padding: 1px 6px;
+    position: relative;
+    top: -1px;
+  }
+  .draft-badge__q {
+    font-weight: 400;
+  }
+</style>

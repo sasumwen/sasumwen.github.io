@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Chip from '../../components/Chip.astro';
+import Draft from '../../components/Draft.astro';
+import { notDraft } from '../../lib/drafts';
+import { breadcrumbs } from '../../lib/schema';
+import { fmtDate, profile } from '../../lib/data';
+import { readingTime } from '../../lib/utils';
+
+const posts = (await getCollection('writing', notDraft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const categories = [...new Set(posts.map((p) => p.data.category))];
+---
+
+<BaseLayout title="Writing" description={`Articles and notes by ${profile.name.preferred} on medical imaging, machine-learning engineering, AI and society, and technology policy.`} jsonLd={[breadcrumbs([{ name: 'Writing', url: '/writing/' }])]}>
+  <PageHero overline="Writing" title="Notes from the work." lede="Research notes written for an intelligent non-specialist, engineering lessons from shipping AI products, and the occasional piece on AI, policy and society. Subscribe by RSS." seed="writing" size="large">
+    <ul class="cluster cats" aria-label="Categories" data-reveal>
+      {categories.map((c) => <li><Chip>{c}</Chip></li>)}
+      <li><a class="mono rss" href="/rss.xml">RSS ↗</a></li>
+    </ul>
+  </PageHero>
+
+  <section class="section" aria-label="Articles">
+    <div class="container">
+      {posts.length === 0 && <p class="muted">First articles are in preparation.</p>}
+      <ol class="posts" data-reveal-group>
+        {posts.map((p) => (
+          <li class="post" data-reveal>
+            <div class="post__meta mono">
+              <time datetime={p.data.date.toISOString().slice(0, 10)}>{fmtDate(p.data.date)}</time>
+              <span class="faint">{p.data.external ? 'external' : `${readingTime(p.body ?? '')} min`}</span>
+            </div>
+            <div class="post__body">
+              <p class="overline overline--muted">{p.data.category}{p.data.draft && <Draft badgeOnly />}</p>
+              <h2 class="post__title"><a href={`/writing/${p.id}/`}>{p.data.title}</a></h2>
+              <p class="post__desc">{p.data.description}</p>
+              {p.data.tags.length > 0 && <p class="post__tags mono faint">{p.data.tags.map((t) => `#${t}`).join('  ')}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cats {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+  .rss {
+    text-decoration: none;
+    font-size: var(--step--2);
+  }
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .post {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--line);
+  }
+  .post:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .post__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--step--2);
+    color: var(--ink-2);
+    padding-top: 4px;
+  }
+  .post__title {
+    margin-top: var(--space-2);
+    font-size: var(--step-2);
+    line-height: 1.15;
+    max-width: 28ch;
+  }
+  .post__title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .post__title a:hover {
+    color: var(--amber);
+  }
+  .post__desc {
+    margin-top: var(--space-3);
+    color: var(--ink-2);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  .post__tags {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+  }
+  @media (max-width: 640px) {
+    .post {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+    .post__meta {
+      flex-direction: row;
+      gap: var(--space-4);
+    }
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+/**
+ * DySTTM: Dynamic Spatial-Temporal Transformer Model. Two streams (structure + function)
+ * fused for schizophrenia detection. Conceptual schematic from the thesis abstract.
+ */
+interface Props { class?: string }
+const { class: className } = Astro.props;
+---
+
+<figure class:list={['dy', className]} data-reveal>
+  <svg viewBox="0 0 880 360" role="img" aria-labelledby="dy-title dy-desc" class="dy__svg">
+    <title id="dy-title">DySTTM pipeline schematic</title>
+    <desc id="dy-desc">Structural MRI is segmented by BoRefAttnNet and passed to a spatial-attention transformer that models anatomical interdependencies. Resting-state functional MRI is windowed over time and passed to a temporal-attention transformer that models dynamic connectivity. The two representations are fused and classified, and compared against 3D ResNet and XGBoost baselines.</desc>
+    <defs>
+      <marker id="dy-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L10 5 0 10z" fill="var(--ink-3)" />
+      </marker>
+    </defs>
+
+    <!-- stream A: structure -->
+    <text x="24" y="40" class="dy__head">Structure</text>
+    <g transform="translate(24 60)">
+      <rect width="120" height="64" rx="2" fill="var(--paper-3)" stroke="var(--line-strong)" />
+      <text x="60" y="28" text-anchor="middle" class="dy__t">sMRI</text>
+      <text x="60" y="46" text-anchor="middle" class="dy__t dy__t--faint">structural volume</text>
+    </g>
+    <line x1="144" y1="92" x2="188" y2="92" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(190 60)">
+      <rect width="150" height="64" rx="2" fill="var(--amber-wash)" stroke="var(--amber)" />
+      <text x="75" y="28" text-anchor="middle" class="dy__t">BoRefAttnNet</text>
+      <text x="75" y="46" text-anchor="middle" class="dy__t dy__t--faint">subcortical segmentation</text>
+    </g>
+    <line x1="340" y1="92" x2="384" y2="92" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(386 60)"><g class="dy__tx" style="--i:0">
+      <rect width="170" height="64" rx="2" fill="var(--lagoon-wash)" stroke="var(--lagoon)" />
+      <text x="85" y="28" text-anchor="middle" class="dy__t">Spatial attention</text>
+      <text x="85" y="46" text-anchor="middle" class="dy__t dy__t--faint">anatomical interdependencies</text>
+    </g></g>
+
+    <!-- stream B: function -->
+    <text x="24" y="214" class="dy__head">Function</text>
+    <g transform="translate(24 234)">
+      <rect width="120" height="64" rx="2" fill="var(--paper-3)" stroke="var(--line-strong)" />
+      <text x="60" y="28" text-anchor="middle" class="dy__t">rs-fMRI</text>
+      <text x="60" y="46" text-anchor="middle" class="dy__t dy__t--faint">resting-state time series</text>
+    </g>
+    <line x1="144" y1="266" x2="188" y2="266" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(190 234)">
+      <rect width="150" height="64" rx="2" fill="var(--paper-2)" stroke="var(--ink-3)" />
+      <!-- little sliding windows -->
+      <g fill="none" stroke="var(--ink-2)" stroke-width="1.2">
+        <path d="M14 44c8-14 14-20 22-20s14 22 22 22 14-26 22-26 14 20 22 20 14-16 22-16" />
+      </g>
+      <g fill="var(--amber-bright)" fill-opacity=".35" stroke="var(--amber)" stroke-width=".8">
+        <rect x="26" y="14" width="30" height="40" /><rect x="66" y="14" width="30" height="40" /><rect x="106" y="14" width="30" height="40" />
+      </g>
+      <text x="75" y="12" text-anchor="middle" class="dy__t dy__t--faint">windowed connectivity</text>
+    </g>
+    <line x1="340" y1="266" x2="384" y2="266" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(386 234)"><g class="dy__tx" style="--i:1">
+      <rect width="170" height="64" rx="2" fill="var(--lagoon-wash)" stroke="var(--lagoon)" />
+      <text x="85" y="28" text-anchor="middle" class="dy__t">Temporal attention</text>
+      <text x="85" y="46" text-anchor="middle" class="dy__t dy__t--faint">dynamic connectivity patterns</text>
+    </g></g>
+
+    <!-- fusion -->
+    <path d="M556 92 H600 V162 H640" fill="none" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <path d="M556 266 H600 V196 H640" fill="none" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(642 146)"><g class="dy__tx" style="--i:2">
+      <rect width="110" height="66" rx="2" fill="var(--ink)" />
+      <text x="55" y="30" text-anchor="middle" class="dy__t dy__t--inv">Multimodal</text>
+      <text x="55" y="47" text-anchor="middle" class="dy__t dy__t--inv">fusion</text>
+    </g></g>
+    <line x1="752" y1="179" x2="796" y2="179" stroke="var(--ink-3)" marker-end="url(#dy-arrow)" />
+    <g transform="translate(798 146)">
+      <rect width="66" height="66" rx="33" fill="var(--amber-bright)" />
+      <text x="33" y="30" text-anchor="middle" class="dy__t dy__t--on-amber">SZ /</text>
+      <text x="33" y="46" text-anchor="middle" class="dy__t dy__t--on-amber">control</text>
+    </g>
+
+    <!-- baselines -->
+    <g transform="translate(642 250)">
+      <text x="0" y="0" class="dy__t dy__t--faint">compared against</text>
+      <rect x="0" y="10" width="92" height="24" rx="2" fill="none" stroke="var(--line-strong)" stroke-dasharray="3 3" />
+      <text x="46" y="26" text-anchor="middle" class="dy__t">3D ResNet</text>
+      <rect x="100" y="10" width="92" height="24" rx="2" fill="none" stroke="var(--line-strong)" stroke-dasharray="3 3" />
+      <text x="146" y="26" text-anchor="middle" class="dy__t">XGBoost</text>
+    </g>
+
+    <!-- dataset note -->
+    <text x="24" y="340" class="dy__t dy__t--faint">Data: COBRE (public), FastSurfer-processed · Training on NVIDIA L4 GPUs (GCP)</text>
+  </svg>
+  <figcaption class="mono">DySTTM fuses the segmented structural representation with dynamic functional connectivity. Spatial attention captures how regions relate anatomically; temporal attention captures how connectivity evolves over the scan.</figcaption>
+</figure>
+
+<style>
+  .dy { margin: 0; }
+  .dy__svg {
+    width: 100%;
+    height: auto;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+  }
+  .dy__head {
+    font-family: var(--font-text);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .dy__t { font-family: var(--font-mono); font-size: 11.5px; fill: var(--ink); }
+  .dy__t--faint { fill: var(--ink-3); font-size: 10px; }
+  .dy__t--inv { fill: var(--paper); }
+  .dy__t--on-amber { fill: var(--on-amber); font-weight: 500; }
+  .dy__tx { opacity: 0; transform: translateY(6px); }
+  .is-visible .dy__tx {
+    animation: dyIn .6s var(--ease-out) forwards;
+    animation-delay: calc(.3s + var(--i) * .2s);
+  }
+  @keyframes dyIn { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .dy__tx { opacity: 1; transform: none; animation: none; } }
+  figcaption { margin-top: var(--space-3); font-size: var(--step--2); color: var(--ink-2); }
+</style>

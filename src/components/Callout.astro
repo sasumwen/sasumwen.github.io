@@ -1,0 +1,61 @@
+---
+import { SHOW_DRAFTS } from '../lib/drafts';
+
+interface Props {
+  kind?: 'note' | 'method' | 'caution' | 'draft';
+  title?: string;
+  class?: string;
+}
+const { kind = 'note', title, class: className } = Astro.props;
+const labels = { note: 'Note', method: 'Method', caution: 'Caution', draft: 'Draft: awaiting confirmation' };
+// A draft callout is an internal note to the author. It must never reach the public build.
+const visible = kind !== 'draft' || SHOW_DRAFTS;
+---
+
+{visible && (
+  <aside class:list={['callout', `callout--${kind}`, className]} role="note" data-reveal>
+    <p class="callout__label mono">{title ?? labels[kind]}</p>
+    <div class="callout__body"><slot /></div>
+  </aside>
+)}
+
+<style>
+  .callout {
+    --tone: var(--lagoon);
+    --wash: var(--lagoon-wash);
+    margin: var(--space-6) 0;
+    padding: var(--space-5) var(--space-5) var(--space-5) var(--space-6);
+    border-left: 3px solid var(--tone);
+    background: var(--wash);
+    border-radius: 0 var(--radius-2) var(--radius-2) 0;
+  }
+  .callout--method {
+    --tone: var(--amber);
+    --wash: var(--amber-wash);
+  }
+  .callout--caution {
+    --tone: var(--signal-red);
+    --wash: color-mix(in srgb, var(--signal-red) 10%, var(--paper-2));
+  }
+  .callout--draft {
+    --tone: var(--amber);
+    --wash: var(--amber-wash);
+    border-left-style: dashed;
+  }
+  .callout__label {
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    /* Darkened toward ink so the small label holds 4.5:1 on the tinted wash. */
+    color: color-mix(in oklab, var(--tone) 78%, var(--ink));
+    margin-bottom: var(--space-2);
+  }
+  .callout__body {
+    font-size: var(--step--1);
+    color: var(--ink);
+  }
+  .callout__body :global(p + p) {
+    margin-top: 0.75em;
+  }
+</style>

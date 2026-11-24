@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Draft from '../components/Draft.astro';
+import { profile } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+
+const email = profile.contact.email;
+// light obfuscation: assembled in the template, readable by people, less so by naive scrapers
+const [user, domain] = email.address.split('@');
+---
+
+<BaseLayout title="Contact" description={`Get in touch with ${profile.name.preferred} about research collaboration, AI for public safety, healthcare or education, speaking and mentoring.`} jsonLd={[breadcrumbs([{ name: 'Contact', url: '/contact/' }])]}>
+  <PageHero overline="Contact" title="Let's talk." lede="Email is best. I read everything; I reply to most things within a week." seed="contact" size="large" />
+
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__main">
+        <p class="overline overline--muted">Email</p>
+        <p class="contact__email serif" data-reveal>
+          <a href={`mailto:${user}@${domain}`}><span>{user}</span><span aria-hidden="true">&#64;</span><span>{domain}</span></a>
+          {email.status === 'draft' && <Draft badgeOnly q="Q19" />}
+        </p>
+        <button type="button" class="btn btn--secondary btn--small" data-copy={email.address} data-copied-label="Address copied"><span data-copy-label>Copy address</span></button>
+
+        <p class="overline overline--muted contact__reasons-title">Good reasons to write</p>
+        <ul class="contact__reasons" data-reveal-group>
+          {profile.contact.reasons.map((r) => <li data-reveal>{r}</li>)}
+        </ul>
+      </div>
+
+      <aside class="contact__side">
+        <p class="overline overline--muted">Elsewhere</p>
+        <ul class="contact__links">
+          {profile.links.map((l) => (
+            <li><a href={l.href} rel="me noopener"><span>{l.label}</span><span class="mono faint">{l.href.replace(/^https?:\/\/(www\.)?/, '')}</span></a></li>
+          ))}
+        </ul>
+        <p class="overline overline--muted contact__org-title">Organisations</p>
+        <ul class="contact__links">
+          {profile.profiles.map((p) => (
+            <li><a href={p.href} rel="noopener"><span>{p.label}</span><span class="mono faint">{p.href.replace(/^https?:\/\/(www\.)?/, '')}</span></a></li>
+          ))}
+        </ul>
+        <p class="contact__note muted">For Xyricon engagements, use <a href="https://xyricon.com" rel="noopener">xyricon.com</a>.</p>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+  .contact__email {
+    margin: var(--space-3) 0 var(--space-5);
+    font-size: clamp(1.5rem, 1rem + 2.6vw, 3rem);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+  .contact__email a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 2px solid var(--amber-bright);
+  }
+  .contact__email a:hover {
+    color: var(--amber);
+  }
+  .contact__reasons-title {
+    margin-top: var(--space-8);
+  }
+  .contact__reasons {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+  }
+  .contact__reasons li {
+    padding: var(--space-3) 0 var(--space-3) var(--space-6);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .contact__reasons li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+  }
+  .contact__links {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+  }
+  .contact__links a {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .contact__links a:hover span:first-child {
+    color: var(--amber);
+  }
+  .contact__links .mono {
+    font-size: 12px;
+    text-align: right;
+  }
+  .contact__org-title {
+    margin-top: var(--space-7);
+  }
+  .contact__note {
+    margin-top: var(--space-5);
+    font-size: var(--step--1);
+  }
+  @media (max-width: 800px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

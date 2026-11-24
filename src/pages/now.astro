@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Draft from '../components/Draft.astro';
+import { now, fmtDate, profile } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+import { SHOW_DRAFTS } from '../lib/drafts';
+const items = now.status !== 'draft' || SHOW_DRAFTS ? now.items : [];
+---
+
+<BaseLayout title="Now" description={`What ${profile.name.preferred} is focused on right now, updated every few months.`} jsonLd={[breadcrumbs([{ name: 'Now', url: '/now/' }])]}>
+  <PageHero overline="Now" title="What I'm focused on this season." lede={`Updated ${fmtDate(now.updated, { month: 'long' })}. A /now page, in the spirit of nownownow.com.`} seed="now">
+    {now.status === 'draft' && <p data-reveal><Draft q="M7">Wording to approve before launch.</Draft></p>}
+  </PageHero>
+  <section class="section">
+    <div class="container container--narrow">
+      {items.length > 0 ? (
+        <ol class="now" data-reveal-group>
+          {items.map((it) => <li data-reveal>{it}</li>)}
+        </ol>
+      ) : (
+        <p class="muted">This page is being written. The first entry lands with the site launch.</p>
+      )}
+      <p class="muted now__foot">Want the longer version? <a href="/about/">About</a> has the story; <a href="/updates/">Updates</a> has the dates.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .now {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: n;
+  }
+  .now li {
+    counter-increment: n;
+    position: relative;
+    padding: var(--space-5) 0 var(--space-5) 72px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.35;
+    font-variation-settings: 'opsz' 24, 'SOFT' 40;
+  }
+  .now li::before {
+    content: counter(n, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--amber);
+    padding-top: 0.35em;
+  }
+  .now__foot {
+    margin-top: var(--space-6);
+  }
+</style>

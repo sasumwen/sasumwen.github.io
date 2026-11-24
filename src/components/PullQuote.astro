@@ -1,0 +1,47 @@
+---
+interface Props {
+  cite?: string;
+  class?: string;
+}
+const { cite, class: className } = Astro.props;
+---
+
+<blockquote class:list={['pullquote', className]} data-reveal>
+  <p><slot /></p>
+  {cite && <footer class="mono">{cite}</footer>}
+</blockquote>
+
+<style>
+  .pullquote {
+    margin: var(--space-8) auto;
+    padding: var(--space-6) 0;
+    max-width: 30ch;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+    position: relative;
+  }
+  .pullquote::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: 64px;
+    height: 2px;
+    background: var(--amber-bright);
+    transform: translateX(-50%);
+  }
+  .pullquote p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: 1.25;
+    font-variation-settings: 'opsz' 72, 'SOFT' 60;
+    text-wrap: balance;
+  }
+  .pullquote footer {
+    margin-top: var(--space-4);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+</style>

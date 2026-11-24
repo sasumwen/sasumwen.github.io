@@ -1,0 +1,171 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Contours from './Contours.astro';
+import Draft from './Draft.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  size?: 'default' | 'large';
+  class?: string;
+  /** Eager-load the cover (above the fold). */
+  priority?: boolean;
+}
+const { entry, size = 'default', class: className, priority = false } = Astro.props;
+const { title, tagline, organisation, role, period, kind, cover, coverAlt, accent, draft, status } = entry.data;
+const href = `/work/${entry.id}/`;
+const kindLabel: Record<string, string> = {
+  product: 'Product · Leadership',
+  venture: 'Venture',
+  policy: 'Policy',
+  consulting: 'Consulting',
+  research: 'Research',
+  career: 'Career',
+};
+---
+
+<article class:list={['work-card card card--link', `work-card--${size}`, `work-card--${accent}`, className]} data-reveal>
+  <a class="work-card__cover card__cover" href={href} aria-label={title} tabindex="-1">
+    {
+      cover ? (
+        <Image src={cover} alt={coverAlt ?? ''} widths={[480, 800, 1200]} sizes={size === 'large' ? '(max-width: 900px) 100vw, 66vw' : '(max-width: 900px) 100vw, 33vw'} loading={priority ? 'eager' : 'lazy'} />
+      ) : (
+        <div class="work-card__art" aria-hidden="true">
+          <Contours variant="rings" seed={entry.id} lines={size === 'large' ? 11 : 8} class="work-card__contours" />
+        </div>
+      )
+    }
+  </a>
+  <div class="work-card__body">
+    <p class:list={['overline', { 'overline--lagoon': accent === 'lagoon' }]}>
+      {kindLabel[kind] ?? kind}
+      {draft && <Draft badgeOnly />}
+    </p>
+    <h3 class="work-card__title"><a href={href}>{title}</a></h3>
+    <p class="work-card__tagline">{tagline}</p>
+    <p class="work-card__meta mono faint">
+      <span>{role}</span> · <span>{organisation}</span> · <span>{period}</span>
+      {status === 'in development' && <span class="work-card__status">in development</span>}
+    </p>
+  </div>
+</article>
+
+<style>
+  .work-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    height: 100%;
+    background: var(--paper-2);
+  }
+  .work-card--large {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: none;
+  }
+  .work-card__cover {
+    display: block;
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--paper-3);
+  }
+  .work-card--large .work-card__cover {
+    aspect-ratio: auto;
+    min-height: 320px;
+  }
+  .work-card__cover :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out), filter var(--dur-3) var(--ease);
+  }
+  .work-card:hover .work-card__cover :global(img) {
+    transform: scale(1.03);
+  }
+  .work-card__art {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--paper-3);
+    color: var(--ink-2);
+    overflow: hidden;
+  }
+  .work-card--lagoon .work-card__art {
+    background: var(--lagoon-wash);
+    color: var(--lagoon);
+  }
+  .work-card--amber .work-card__art {
+    background: var(--amber-wash);
+    color: var(--amber);
+  }
+  .work-card--ink .work-card__art {
+    background: var(--ink);
+    color: var(--amber-bright);
+  }
+  .work-card__contours {
+    width: 120%;
+    height: 120%;
+    transform: translate(12%, 10%);
+    transition: transform 1.4s var(--ease-out);
+  }
+  .work-card:hover .work-card__contours {
+    transform: translate(9%, 7%) scale(1.04);
+  }
+  .work-card__body {
+    padding: var(--space-5) var(--space-5) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .work-card--large .work-card__body {
+    padding: var(--space-6);
+    justify-content: center;
+  }
+  .work-card__title {
+    font-size: var(--step-3);
+    line-height: 1.2;
+    margin-top: var(--space-2);
+  }
+  .work-card--large .work-card__title {
+    font-size: var(--step-2);
+  }
+  .work-card__title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .work-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .work-card:hover .work-card__title a {
+    color: var(--amber);
+  }
+  .work-card__tagline {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    text-wrap: pretty;
+  }
+  .work-card--large .work-card__tagline {
+    font-size: var(--step-0);
+  }
+  .work-card__meta {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    font-size: var(--step--2);
+  }
+  .work-card__status {
+    margin-left: 8px;
+    color: var(--amber);
+  }
+  @media (max-width: 900px) {
+    .work-card--large {
+      grid-template-columns: 1fr;
+    }
+    .work-card--large .work-card__cover {
+      aspect-ratio: 16 / 10;
+      min-height: 0;
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+/**
+ * "Where a structure ends matters as much as where it is."
+ * Left: a region with a soft, uncertain edge (what a plain voxel classifier produces).
+ * Right: the same region with an explicitly refined boundary (what boundary attention targets).
+ * Purely conceptual: not a rendering of real MRI data.
+ */
+import { rings } from '../../lib/contours';
+const seed = 'boundary-explainer';
+const outer = rings({ seed, cx: 150, cy: 150, rings: 1, rMin: 92, rMax: 92, wobble: 0.3, aspect: 1.15, segments: 40 })[0]!;
+const inner = rings({ seed, cx: 150, cy: 150, rings: 1, rMin: 62, rMax: 62, wobble: 0.3, aspect: 1.15, segments: 40 })[0]!;
+const halo = rings({ seed, cx: 150, cy: 150, rings: 4, rMin: 100, rMax: 136, wobble: 0.3, aspect: 1.15, segments: 40 });
+interface Props { class?: string }
+const { class: className } = Astro.props;
+---
+
+<figure class:list={['bx', className]} data-reveal>
+  <svg viewBox="0 0 680 330" role="img" aria-labelledby="bx-title bx-desc" class="bx__svg">
+    <title id="bx-title">Soft region prediction versus boundary-refined segmentation</title>
+    <desc id="bx-desc">Two drawings of the same brain structure. On the left its edge is blurred and uncertain; on the right the edge is drawn sharply, with attention concentrated along the boundary.</desc>
+    <defs>
+      <radialGradient id="bx-soft" cx="50%" cy="50%" r="50%">
+        <stop offset="55%" stop-color="var(--lagoon)" stop-opacity=".55" />
+        <stop offset="80%" stop-color="var(--lagoon)" stop-opacity=".18" />
+        <stop offset="100%" stop-color="var(--lagoon)" stop-opacity="0" />
+      </radialGradient>
+      <filter id="bx-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7" /></filter>
+      <clipPath id="bx-clip"><path d={outer} /></clipPath>
+    </defs>
+
+    <!-- left: soft -->
+    <g transform="translate(20 10)">
+      <g filter="url(#bx-blur)" opacity=".9">
+        <path d={outer} fill="url(#bx-soft)" />
+        <path d={inner} fill="var(--lagoon)" fill-opacity=".35" />
+      </g>
+      <!-- scatter of uncertain voxels along the edge -->
+      <g fill="var(--lagoon)" fill-opacity=".45">
+        <circle cx="62" cy="96" r="3" /><circle cx="235" cy="120" r="2.6" /><circle cx="214" cy="212" r="3" /><circle cx="88" cy="226" r="2.4" /><circle cx="150" cy="40" r="2.8" /><circle cx="48" cy="160" r="2.2" /><circle cx="248" cy="170" r="2.4" /><circle cx="150" cy="262" r="2.2" />
+      </g>
+      <text x="150" y="296" text-anchor="middle" class="bx__label"><tspan x="150" dy="0">Voxel-wise prediction</tspan><tspan x="150" dy="14">the edge is a guess</tspan></text>
+    </g>
+
+    <!-- divider -->
+    <line x1="340" y1="24" x2="340" y2="296" stroke="var(--line)" stroke-dasharray="2 6" />
+
+    <!-- right: boundary-refined -->
+    <g transform="translate(360 10)">
+      <path d={outer} fill="var(--lagoon)" fill-opacity=".16" />
+      <g class="bx__halo" fill="none" stroke="var(--amber-bright)" stroke-width="1">
+        {halo.map((d, i) => <path d={d} style={`opacity:${0.5 - i * 0.11}`} />)}
+      </g>
+      <path class="bx__edge" d={outer} fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round" />
+      <path d={inner} fill="none" stroke="var(--ink)" stroke-width="1" stroke-opacity=".35" stroke-dasharray="3 5" />
+      <!-- attention ticks normal to the edge -->
+      <g class="bx__ticks" stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round">
+        <path d="M150 50v-14" /><path d="M234 92l12-8" /><path d="M254 150h14" /><path d="M236 214l12 8" /><path d="M150 254v14" /><path d="M66 214l-12 8" /><path d="M46 150h-14" /><path d="M66 92l-12-8" />
+      </g>
+      <text x="150" y="296" text-anchor="middle" class="bx__label"><tspan x="150" dy="0">Boundary attention</tspan><tspan x="150" dy="14">the edge is learned explicitly</tspan></text>
+    </g>
+  </svg>
+  <figcaption class="mono">Conceptual illustration. Subcortical structures such as the hippocampus and amygdala are small, with low contrast against their neighbours; errors concentrate at their boundaries.</figcaption>
+</figure>
+
+<style>
+  .bx {
+    margin: 0;
+  }
+  .bx__svg {
+    width: 100%;
+    height: auto;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+  }
+  .bx__label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    fill: var(--ink-2);
+    letter-spacing: 0.02em;
+  }
+  .bx__edge {
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+  }
+  .is-visible .bx__edge {
+    animation: bxDraw 1.8s var(--ease-out) 0.2s forwards;
+  }
+  .bx__ticks,
+  .bx__halo {
+    opacity: 0;
+  }
+  .is-visible .bx__ticks,
+  .is-visible .bx__halo {
+    animation: bxFade 0.8s var(--ease) 1.4s forwards;
+  }
+  @keyframes bxDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes bxFade {
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bx__edge { stroke-dashoffset: 0; animation: none; }
+    .bx__ticks, .bx__halo { opacity: 1; animation: none; }
+  }
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+</style>

@@ -1,0 +1,245 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Chip from '../../components/Chip.astro';
+import FactTable from '../../components/FactTable.astro';
+import Draft from '../../components/Draft.astro';
+import Callout from '../../components/Callout.astro';
+import Figure from '../../components/Figure.astro';
+import BoRefAttnNetDiagram from '../../components/diagrams/BoRefAttnNetDiagram.astro';
+import DySTTMDiagram from '../../components/diagrams/DySTTMDiagram.astro';
+import BoundaryExplainer from '../../components/diagrams/BoundaryExplainer.astro';
+import ThesisPipelineDiagram from '../../components/diagrams/ThesisPipelineDiagram.astro';
+import PublicationEntry from '../../components/PublicationEntry.astro';
+import { notDraft } from '../../lib/drafts';
+import { breadcrumbs, PERSON_ID } from '../../lib/schema';
+import { fmtDate } from '../../lib/data';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('publications', notDraft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const others = (await getCollection('publications', notDraft)).filter((e) => e.id !== entry.id).sort((a, b) => a.data.order - b.data.order);
+
+const typeLabel: Record<string, string> = { conference: 'Conference paper', journal: 'Journal article', thesis: 'MSc thesis', preprint: 'Preprint', note: 'Research note', talk: 'Talk' };
+const facts = [
+  { label: 'Type', value: typeLabel[d.type] },
+  { label: 'Venue', value: d.venue },
+  ...(d.series ? [{ label: 'Series', value: `${d.series}${d.volume ? `, ${d.volume}` : ''}` }] : []),
+  ...(d.pages ? [{ label: 'Pages', value: d.pages }] : []),
+  ...(d.publisher ? [{ label: 'Publisher', value: d.publisher }] : []),
+  { label: 'Year', value: String(d.year) },
+  ...(d.published ? [{ label: 'Published', value: fmtDate(d.published) }] : []),
+  ...(d.doi ? [{ label: 'DOI', value: d.doi, href: `https://doi.org/${d.doi}` }] : []),
+  ...(d.handle ? [{ label: 'Handle', value: d.handle.replace('https://', ''), href: d.handle }] : []),
+  ...(d.isbn.length ? [{ label: 'ISBN', value: d.isbn.join(' · ') }] : []),
+  { label: 'Access', value: d.openAccess ? 'Open access' : 'Publisher access' },
+];
+const diagram = entry.id === 'borefattnnet' ? 'bn' : entry.id === 'thesis' ? 'both' : entry.id === 'dysttm' ? 'dy' : null;
+
+const scholarly =
+  d.type === 'thesis'
+    ? { '@type': 'Thesis', name: d.title, author: { '@id': PERSON_ID }, inSupportOf: 'MSc Computer Science', sourceOrganization: { '@type': 'CollegeOrUniversity', name: 'University of Lethbridge' }, datePublished: String(d.year), url: d.handle, abstract: d.abstract, keywords: d.keywords.join(', ') }
+    : { '@type': 'ScholarlyArticle', headline: d.title, author: d.authors.map((a) => (a.me ? { '@id': PERSON_ID } : { '@type': 'Person', name: a.name })), datePublished: d.published?.toISOString().slice(0, 10) ?? String(d.year), isPartOf: { '@type': 'PublicationVolume', name: d.venue, volumeNumber: d.volume }, pagination: d.pages, publisher: d.publisher ? { '@type': 'Organization', name: d.publisher } : undefined, sameAs: d.doi ? `https://doi.org/${d.doi}` : undefined, abstract: d.abstract, keywords: d.keywords.join(', ') };
+---
+
+<BaseLayout title={d.shortTitle ?? d.title} description={d.abstract.slice(0, 155)} type="article" jsonLd={[scholarly, breadcrumbs([{ name: 'Research', url: '/research/' }, { name: d.shortTitle ?? d.title, url: `/research/${entry.id}/` }])]} publishedTime={d.published}>
+  <article class="pubpage">
+    <header class="pubpage__hero">
+      <div class="container">
+        <Breadcrumbs items={[{ name: 'Research', href: '/research/' }, { name: d.shortTitle ?? d.title, href: `/research/${entry.id}/` }]} />
+        <div class="cluster" data-reveal>
+          <Chip tone="lagoon">{typeLabel[d.type]}</Chip>
+          <Chip>{d.year}</Chip>
+          {d.openAccess && <Chip>Open access</Chip>}
+          {d.pubStatus !== 'published' && <Chip tone="amber">{d.pubStatus}</Chip>}
+          {d.draft && <Draft badgeOnly />}
+        </div>
+        <h1 class="pubpage__title" data-reveal>{d.title}</h1>
+        <p class="pubpage__authors" data-reveal>
+          {d.authors.map((a, i) => (
+            <><span class:list={{ me: a.me }}>{a.name}</span>{i < d.authors.length - 1 ? ', ' : ''}</>
+          ))}
+        </p>
+        <p class="pubpage__venue" data-reveal>{d.venue}</p>
+        <div class="cluster pubpage__actions" data-reveal>
+          {d.doi && <a class="btn btn--small" href={`https://doi.org/${d.doi}`} rel="noopener">Publisher (DOI)</a>}
+          {d.handle && <a class="btn btn--small" href={d.handle} rel="noopener">{d.type === 'thesis' ? 'Read in OPUS' : 'Repository'}</a>}
+          {d.pdf && d.pdf !== d.handle && <a class="btn btn--small btn--secondary" href={d.pdf} rel="noopener">PDF</a>}
+          {d.bibtex && <button type="button" class="btn btn--small btn--secondary" data-copy="#bibtex" data-copied-label="Copied to clipboard"><span data-copy-label>Copy BibTeX</span></button>}
+        </div>
+      </div>
+    </header>
+
+    <div class="container pubpage__layout">
+      <div class="pubpage__main">
+        <section class="pubpage__abstract" aria-labelledby="abstract-title">
+          <h2 id="abstract-title" class="overline overline--lagoon">Abstract</h2>
+          <p class="pubpage__abstract-text">{d.abstract}</p>
+          {d.keywords.length > 0 && (
+            <ul class="cluster pubpage__keywords" aria-label="Keywords">
+              {d.keywords.map((k) => <li><Chip size="small">{k}</Chip></li>)}
+            </ul>
+          )}
+        </section>
+
+        {diagram && (
+          <section class="pubpage__figures" aria-label="Figures">
+            {diagram === 'both' && <ThesisPipelineDiagram />}
+            {(diagram === 'bn' || diagram === 'both') && <BoundaryExplainer />}
+            {(diagram === 'bn' || diagram === 'both') && <BoRefAttnNetDiagram />}
+            {(diagram === 'dy' || diagram === 'both') && <DySTTMDiagram />}
+          </section>
+        )}
+
+        <div class="prose pubpage__body">
+          <Content components={{ Draft, Callout, Figure }} />
+        </div>
+
+        {d.bibtex && (
+          <section class="pubpage__cite" aria-labelledby="cite-title">
+            <h2 id="cite-title" class="overline overline--lagoon">How to cite</h2>
+            <pre id="bibtex" tabindex="0">{d.bibtex}</pre>
+            <button type="button" class="btn btn--small btn--secondary" data-copy="#bibtex" data-copied-label="Copied"><span data-copy-label>Copy BibTeX</span></button>
+          </section>
+        )}
+      </div>
+
+      <aside class="pubpage__aside">
+        <FactTable rows={facts} />
+        {d.highlights.length > 0 && (
+          <div class="pubpage__highlights">
+            <p class="overline overline--muted">Notes</p>
+            <ul>
+              {d.highlights.map((h) => <li>{h}</li>)}
+            </ul>
+          </div>
+        )}
+        {d.verification === 'draft' && d.note && (
+          <p class="mono pubpage__note"><Draft q="Q14">{d.note}</Draft></p>
+        )}
+      </aside>
+    </div>
+
+    {others.length > 0 && (
+      <section class="section" aria-labelledby="more-title">
+        <div class="container">
+          <p class="overline overline--lagoon">More</p>
+          <h2 id="more-title" class="pubpage__more-title">Other publications</h2>
+          {others.map((o) => <PublicationEntry entry={o} />)}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .pubpage__hero {
+    padding: var(--space-7) 0;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(to bottom, var(--lagoon-wash), var(--paper) 90%);
+  }
+  .pubpage__title {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    line-height: 1.1;
+    max-width: 26ch;
+  }
+  .pubpage__authors {
+    margin-top: var(--space-5);
+    font-size: var(--step-0);
+    color: var(--ink-2);
+  }
+  .pubpage__authors .me {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pubpage__venue {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    max-width: 80ch;
+  }
+  .pubpage__actions {
+    margin-top: var(--space-6);
+    gap: var(--space-3);
+  }
+  .pubpage__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+    padding: var(--space-8) var(--gutter);
+  }
+  .pubpage__main {
+    max-width: var(--measure);
+    min-width: 0;
+  }
+  .pubpage__abstract-text {
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    font-variation-settings: 'opsz' 20, 'SOFT' 20;
+    text-wrap: pretty;
+  }
+  .pubpage__keywords {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+  }
+  .pubpage__figures {
+    display: grid;
+    gap: var(--space-7);
+    margin: var(--space-8) 0;
+  }
+  .pubpage__cite {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--line);
+  }
+  .pubpage__cite pre {
+    margin: var(--space-4) 0;
+    font-size: 13px;
+  }
+  .pubpage__aside {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .pubpage__highlights ul {
+    margin: var(--space-3) 0 0;
+    padding-left: 1.1em;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .pubpage__highlights li + li {
+    margin-top: 6px;
+  }
+  .pubpage__highlights li::marker {
+    color: var(--lagoon);
+  }
+  .pubpage__note {
+    font-size: var(--step--2);
+  }
+  .pubpage__more-title {
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  @media (max-width: 1000px) {
+    .pubpage__layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pubpage__aside {
+      position: static;
+      border-top: 1px solid var(--line);
+      padding-top: var(--space-6);
+    }
+  }
+</style>

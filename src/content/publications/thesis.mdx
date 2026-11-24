@@ -1,0 +1,104 @@
+---
+title: "Advanced boundary-enhanced instance segmentation and spatial-temporal transformer models for automated schizophrenic investigation"
+shortTitle: MSc thesis
+type: thesis
+authors:
+  - name: Osasumwen Raphael Imarhiagbe
+    me: true
+venue: University of Lethbridge, Department of Mathematics and Computer Science (Master of Science thesis)
+venueShort: MSc thesis · University of Lethbridge
+year: 2025
+published: 2025-10-15
+handle: https://hdl.handle.net/10133/7170
+pdf: https://hdl.handle.net/10133/7170
+openAccess: true
+pubStatus: published
+featured: true
+order: 2
+verification: verified
+keywords:
+  - boundary-aware segmentation
+  - attention mechanisms
+  - deep learning
+  - multimodal fusion
+  - dynamic spatial-temporal modeling
+  - medical image segmentation
+  - computational psychiatry
+abstract: >-
+  Accurate segmentation and detection in neuroimaging is essential for advancing clinical
+  understanding and the diagnosis of schizophrenia. This thesis introduces Boundary-Refined
+  Attention Network (BoRefAttnNet), a novel boundary-refined 3D U-Net variant specifically designed
+  for precise segmentation of subcortical brain structures from structural magnetic resonance
+  imaging (sMRI). BoRefAttnNet incorporates multi-scale boundary attention modules that explicitly
+  highlight anatomically critical edges while suppressing background noise, significantly improving
+  segmentation accuracy for small or complex anatomical structures. Evaluations using
+  FastSurfer-processed sMRI data from the publicly available Centre for Biomedical Research
+  Excellence (COBRE) dataset demonstrate that BoRefAttnNet significantly outperforms conventional
+  3D U-Net baselines in accurately delineating key subcortical structures, including the
+  hippocampus, amygdala, and basal ganglia. Building upon this enhanced segmentation capability, we
+  further experiment with a Dynamic Spatial-Temporal Transformer Model (DySTTM) to detect
+  schizophrenia by integrating structural and functional MRI (fMRI) modalities. The DySTTM
+  leverages spatial attention to capture anatomical interdependencies from segmented sMRI data and
+  temporal attention to model dynamic brain connectivity patterns from resting-state fMRI.
+  Experimental results indicate that the integration of these multimodal imaging features using
+  DySTTM provides superior diagnostic accuracy and interpretability compared to established models
+  such as 3D ResNet and XGBoost classifiers.
+highlights:
+  - "Supervisor: Dr. John Z. Zhang. Committee: Wendy Osborn, Yllias Chali. Defended 12 August 2025."
+  - Supported by the University of Lethbridge, Alberta Innovates, the Digital Research Alliance of Canada and the Alberta Machine Intelligence Institute.
+  - Open access in the University of Lethbridge repository (OPUS); no embargo.
+bibtex: |
+  @mastersthesis{imarhiagbe2025thesis,
+    author = {Imarhiagbe, Osasumwen Raphael},
+    title  = {Advanced boundary-enhanced instance segmentation and spatial-temporal transformer models for automated schizophrenic investigation},
+    school = {University of Lethbridge},
+    year   = {2025},
+    url    = {https://hdl.handle.net/10133/7170}
+  }
+---
+
+import ThesisResults from '../../components/ThesisResults.astro';
+import Figure from '../../components/Figure.astro';
+import defenceDay from '../../assets/photos/defence-day-2025.jpg';
+
+## The question
+
+Schizophrenia leaves subtle traces in the brain: small differences in the size and shape of subcortical structures, and differences in how regions talk to each other over time. Measuring either reliably depends on segmentation that is accurate at the edges of small structures, and on models that can read structure and function together.
+
+## Two contributions
+
+**BoRefAttnNet** addresses the first problem. It is a 3D U-Net whose decoder carries multi-scale *boundary attention modules*: at each resolution the network is pushed to represent where a structure ends, not only where it is. On FastSurfer-processed sMRI from the public COBRE dataset it outperformed conventional 3D U-Net baselines, most clearly at the boundary.
+
+**DySTTM**, the Dynamic Spatial-Temporal Transformer Model, addresses the second. It takes the segmented structural representation and resting-state fMRI, applies spatial attention to anatomical interdependencies and temporal attention to the evolving connectivity patterns, fuses the two, and classifies. Against 3D ResNet and XGBoost classifiers the multimodal model gave the best accuracy and ROC-AUC.
+
+## Results
+
+The data is the public COBRE release: 174 people, 88 diagnosed with schizophrenia and 86 controls, split 70 / 15 / 15 into training, validation and test sets.
+
+### Segmentation
+
+<ThesisResults variant="segmentation" />
+
+The gain is largest where it was meant to be, at the edge. Hausdorff distance, the worst-case boundary error, falls from 7.90 mm for the plain 3D U-Net to 3.08 mm. Per structure, BoRefAttnNet reaches a Dice of 0.96 on the hippocampus, 0.95 on the amygdala and 0.97 on the basal ganglia (Table 4.3).
+
+### Detection
+
+<ThesisResults variant="classification" />
+
+DySTTM is the most accurate of the three and separates the two groups best across thresholds. It is not ahead everywhere: the 3D ResNet finds slightly more of the true cases.
+
+<ThesisResults variant="limits" />
+
+## How it was built
+
+Models were trained on a Google Cloud instance with four NVIDIA L4 GPUs. Segmentation was evaluated with Dice, Hausdorff distance and average surface distance; detection with accuracy, precision, recall, F1 and ROC-AUC. Data came from the Centre for Biomedical Research Excellence (COBRE) release, pre-processed with FastSurfer.
+
+## The defence
+
+I defended the thesis at the University of Lethbridge on 12 August 2025.
+
+<Figure src={defenceDay} alt="Osasu at the lectern in a seminar room at the University of Lethbridge, with the title slide of his thesis on the screen behind him" caption="Defence day, 12 August 2025." />
+
+## Read it
+
+The full thesis is open access at the University of Lethbridge repository: [hdl.handle.net/10133/7170](https://hdl.handle.net/10133/7170). The conference version of the segmentation work is [BoRefAttnNet (ICICT 2026)](/research/borefattnnet/).

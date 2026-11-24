@@ -1,0 +1,677 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Contours from '../components/Contours.astro';
+import Button from '../components/Button.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import WorkCard from '../components/WorkCard.astro';
+import JournalCard from '../components/JournalCard.astro';
+import PublicationEntry from '../components/PublicationEntry.astro';
+import UpdatesList from '../components/UpdatesList.astro';
+import BoundaryCompare from '../components/diagrams/BoundaryCompare.astro';
+import ThesisResults from '../components/ThesisResults.astro';
+import Draft from '../components/Draft.astro';
+import JourneyLine from '../components/JourneyLine.astro';
+import { profile, org, updates, fmtYM, roleTitle } from '../lib/data';
+import { notDraft } from '../lib/drafts';
+import portrait from '../assets/photos/portrait-suit-01.jpg';
+
+const work = (await getCollection('work', notDraft)).filter((w) => w.data.featured).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
+const pubs = (await getCollection('publications', notDraft)).filter((p) => p.data.featured).sort((a, b) => a.data.order - b.data.order);
+const spotlight = pubs[0];
+const journal = (await getCollection('journal', notDraft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2);
+const latest = updates.slice(0, 5);
+const title = profile.name.preferred;
+const description = `${profile.positioning}`;
+const words = profile.name.preferred.split(' ');
+const heroRoles = profile.heroRoles.map((r) => {
+  const ref = r.roleRef ? profile.current.find((c) => c.id === r.roleRef) : undefined;
+  const t = ref ? roleTitle(ref) : { title: r.title ?? '', draft: false };
+  const o = ref ? org(ref.organisation) : undefined;
+  return { ...r, title: r.title ?? t.title, draft: t.draft, orgName: o?.name, q: ref?.id === 'xyricon-founder' ? 'Q6' : ref?.id === 'airi-board' ? 'Q8' : undefined };
+});
+---
+
+<BaseLayout title={title} description={description} type="profile">
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__panel" aria-hidden="true">
+      <Contours variant="rings" seed="home-hero" lines={14} width={900} height={900} wobble={0.3} rMin={70} strokeWidth={1.2} class="hero__contours" animate />
+      <p class="hero__meta mono">
+        {profile.heroMeta.map((line) => <span>{line}</span>)}
+      </p>
+    </div>
+
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <p class="overline hero__overline" data-reveal>{profile.headline} · {profile.location.city}</p>
+        <h1 id="hero-title" class="display hero__title">
+          {words.map((w, i) => (
+            <span class="hero__word" style={`--i:${i}`}>{w}</span>
+          ))}
+        </h1>
+        <p class="hero__lede" data-reveal>{profile.tagline}</p>
+
+        <ul class="hero__roles" aria-label="What I do" data-reveal-group>
+          {heroRoles.map((r) => (
+            <li class="hero__role" data-reveal>
+              <span class="hero__verb overline">{r.verb}</span>
+              <a class="hero__role-title" href={r.href}>
+                {r.title}
+                {r.draft && <Draft badgeOnly q={r.q} />}
+                {r.orgName && <span class="hero__role-org">{r.orgName}</span>}
+              </a>
+              <span class="hero__role-detail">{r.detail}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="hero__cta cluster" data-reveal>
+          <Button href="/work/" arrow>See selected work</Button>
+          <Button href="/about/" variant="secondary">The story so far</Button>
+        </div>
+        <div class="hero__journey" data-reveal>
+          <JourneyLine />
+        </div>
+      </div>
+
+      <figure class="hero__portrait" data-reveal>
+        <div class="hero__frame">
+          <Image src={portrait} alt={`${profile.name.preferred}, portrait`} widths={[480, 720, 960, 1200]} sizes="(max-width: 900px) 86vw, 38vw" loading="eager" fetchpriority="high" />
+        </div>
+        <figcaption class="mono">Calgary, 2026</figcaption>
+      </figure>
+    </div>
+
+    <a class="hero__scroll mono" href="#currently" aria-label="Scroll to content">
+      <span>Scroll</span>
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v13M5 11l5 5 5-5" /></svg>
+    </a>
+  </section>
+
+  <!-- ============ CURRENTLY ============ -->
+  <section class="section currently" id="currently" aria-labelledby="currently-title">
+    <div class="container">
+      <SectionHeading index="01" overline="Currently" title="Three hats, one thread" lede="Research, product and public service. Each of them is about putting intelligent systems where the consequences are real." id="currently-title" />
+      <ol class="roles" data-reveal-group>
+        {profile.current.map((c, i) => {
+          const o = org(c.organisation);
+          const t = roleTitle(c);
+          return (
+            <li class="role card" data-reveal>
+              <span class="role__index serif" aria-hidden="true">0{i + 1}</span>
+              <div class="role__body">
+                <p class="role__org mono">{o.name}<span class="faint"> · since {fmtYM(String(c.since))}</span></p>
+                <h3 class="role__title">
+                  {t.title}
+                  {t.draft && <Draft badgeOnly q={c.id === 'xyricon-founder' ? 'Q6' : 'Q8'} />}
+                </h3>
+                <p class="role__summary">{c.summary}</p>
+                <a class="role__link" href={c.href}>More <span aria-hidden="true">→</span></a>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SELECTED WORK ============ -->
+  <section class="section" aria-labelledby="work-title">
+    <div class="container">
+      <SectionHeading index="02" overline="Selected work" title="Built, led and drafted" lede="Case studies rather than bullet points: the problem, my role, what we built and what came of it." action={{ label: 'All work', href: '/work/' }} id="work-title" />
+      <div class="work-grid" data-reveal-group>
+        {work.map((w, i) => (
+          <WorkCard entry={w} size={i === 0 ? 'large' : 'default'} class={i === 0 ? 'work-grid__lead' : ''} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section class="section research-spot" aria-labelledby="research-title">
+    <div class="container research-spot__grid">
+      <div class="research-spot__text">
+        <SectionHeading index="03" overline="Research" tone="lagoon" title="Segmenting the brain at its edges" lede="Where a structure ends matters as much as where it is. My MSc research taught a 3D U-Net to learn the boundary explicitly, and then used those boundaries to read structure and function together." id="research-title" />
+        {spotlight && <PublicationEntry entry={spotlight} variant="feature" />}
+        <div class="cluster research-spot__cta">
+          <Button href="/research/" variant="secondary" arrow>Research hub</Button>
+          <Button href="/research/thesis/" variant="text">The thesis →</Button>
+        </div>
+      </div>
+      <div class="research-spot__figure">
+        <BoundaryCompare />
+        <ThesisResults variant="headline" class="research-spot__results" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOURNAL ============ -->
+  <section class="section journal-strip" aria-labelledby="journal-title">
+    <div class="container">
+      <SectionHeading index="04" overline="Journal" title="Off the clock" lede="The person behind the work: the leap to Canada, the defence, the winters, the gym, the dragon boat, the road trips. Told in my own voice, with photographs." action={{ label: 'All stories', href: '/journal/' }} id="journal-title" />
+      <div class="journal-grid" data-reveal-group>
+        {journal.map((j, i) => (
+          <JournalCard entry={j} variant={i === 0 ? 'wide' : 'default'} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ UPDATES + ELSEWHERE ============ -->
+  <section class="section" aria-labelledby="updates-title">
+    <div class="container updates-grid">
+      <div>
+        <SectionHeading index="05" overline="Updates" title="Lately" action={{ label: 'All updates', href: '/updates/' }} id="updates-title" />
+        <UpdatesList items={latest} />
+      </div>
+      <aside class="elsewhere" aria-label="Elsewhere">
+        <p class="overline overline--muted">Elsewhere</p>
+        <ul class="elsewhere__list">
+          {profile.links.map((l) => (
+            <li><a href={l.href} rel="me noopener">{l.label}<span aria-hidden="true">↗</span></a></li>
+          ))}
+        </ul>
+        <p class="overline overline--muted elsewhere__now">Now</p>
+        <p class="elsewhere__nowtext">What I'm focused on this season, on a short page I update every few months.</p>
+        <a class="elsewhere__nowlink" href="/now/">Read /now →</a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- hero ---------- */
+  .hero {
+    --panel: var(--ink);
+    --panel-ink: #efe9df;
+    --panel-ink-2: #b3aca1;
+    --panel-line: #d98c2b;
+    --panel-start: 58%;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    align-content: center;
+    min-height: calc(100svh - 72px);
+    padding-block: clamp(var(--space-6), 4vw, var(--space-8));
+    border-bottom: 1px solid var(--line);
+  }
+  :global(:root[data-theme='dark']) .hero {
+    --panel: var(--paper-3);
+    --panel-ink: var(--ink);
+    --panel-ink-2: var(--ink-2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .hero {
+      --panel: var(--paper-3);
+      --panel-ink: var(--ink);
+      --panel-ink-2: var(--ink-2);
+    }
+  }
+  /* the ink panel: the right-hand side of the boundary */
+  .hero__panel {
+    position: absolute;
+    inset: 0 0 0 var(--panel-start);
+    background: var(--panel);
+    color: var(--panel-line);
+    overflow: hidden;
+  }
+  .hero__contours {
+    position: absolute;
+    width: 175%;
+    height: auto;
+    aspect-ratio: 1;
+    left: -48%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.75;
+    mask-image: radial-gradient(closest-side, #000 50%, transparent 100%);
+    -webkit-mask-image: radial-gradient(closest-side, #000 50%, transparent 100%);
+  }
+  .hero__meta {
+    position: absolute;
+    left: var(--space-6);
+    bottom: var(--space-5);
+    margin: 0;
+    display: grid;
+    gap: 2px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--panel-ink-2);
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-5);
+    align-items: center;
+  }
+  .hero__text {
+    grid-column: 1 / span 7;
+    padding-right: clamp(0px, 3vw, var(--space-7));
+  }
+  .hero__overline {
+    margin-bottom: var(--space-4);
+  }
+  .hero__title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.22em;
+    margin: 0 0 var(--space-5);
+    overflow: hidden;
+  }
+  .hero__word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.35em);
+    animation: wordIn 0.9s var(--ease-out) forwards;
+    animation-delay: calc(120ms + var(--i) * 140ms);
+  }
+  @keyframes wordIn {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .hero__lede {
+    font-size: var(--step-3);
+    line-height: 1.42;
+    color: var(--ink-2);
+    max-width: 34ch;
+    text-wrap: pretty;
+  }
+  /* the three dimensions, as one strip */
+  .hero__roles {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+  .hero__role {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding: var(--space-4) 0 0;
+  }
+  .hero__role::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 28px;
+    height: 2px;
+    background: var(--amber-bright);
+  }
+  .hero__verb {
+    font-size: 11px;
+  }
+  .hero__role-title {
+    display: grid;
+    justify-items: start;
+    gap: 2px;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    line-height: 1.15;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    font-variation-settings: 'opsz' 36, 'SOFT' 30;
+    text-wrap: balance;
+  }
+  .hero__role-title:hover {
+    color: var(--amber);
+  }
+  .hero__role-org {
+    font-family: var(--font-text);
+    font-size: var(--step--2);
+    font-weight: 500;
+    color: var(--ink-2);
+    letter-spacing: 0.01em;
+  }
+  .hero__role-detail {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  .hero__cta {
+    margin-top: var(--space-6);
+    gap: var(--space-3);
+  }
+  .hero__journey {
+    margin-top: var(--space-6);
+  }
+  /* the portrait sits on the boundary: part paper, part ink */
+  .hero__portrait {
+    grid-column: 8 / span 5;
+    margin: 0;
+    position: relative;
+    justify-self: stretch;
+    transform: translateX(-8%);
+  }
+  .hero__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    background: var(--paper-3);
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.55);
+  }
+  .hero__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(239, 233, 223, 0.25);
+    pointer-events: none;
+  }
+  .hero__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 18%;
+    filter: saturate(0.92) contrast(1.02);
+  }
+  .hero__portrait figcaption {
+    position: absolute;
+    right: 0;
+    bottom: calc(-1 * var(--space-6));
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--panel-ink-2);
+  }
+  .hero__scroll {
+    position: absolute;
+    left: var(--gutter);
+    bottom: var(--space-5);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+  }
+  .hero__scroll svg {
+    animation: nudge 2.2s var(--ease) infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+  @media (max-width: 1100px) {
+    .hero {
+      --panel-start: 62%;
+    }
+    .hero__text {
+      grid-column: 1 / span 7;
+    }
+    .hero__portrait {
+      grid-column: 8 / span 5;
+      transform: translateX(-4%);
+    }
+    .hero__roles {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+    .hero__role {
+      padding-top: var(--space-3);
+    }
+  }
+  @media (max-width: 900px) {
+    .hero {
+      min-height: 0;
+      padding-top: 0;
+    }
+    .hero__panel {
+      inset: 0 0 auto 0;
+      height: clamp(240px, 76vw, 420px);
+    }
+    .hero__contours {
+      width: 130%;
+      left: 32%;
+      top: 50%;
+      transform: translateY(-50%);
+      mask-image: radial-gradient(closest-side, #000 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent 100%);
+    }
+    .hero__meta {
+      display: none;
+    }
+    .hero__inner {
+      grid-template-columns: 1fr;
+    }
+    .hero__portrait {
+      grid-column: 1;
+      order: -1;
+      transform: none;
+      width: min(82%, 400px);
+      margin: var(--space-6) 0 var(--space-7);
+    }
+    .hero__frame {
+      aspect-ratio: 4 / 4.4;
+    }
+    .hero__portrait figcaption {
+      position: static;
+      display: block;
+      margin-top: var(--space-3);
+      color: var(--ink-3);
+    }
+    .hero__text {
+      grid-column: 1;
+      padding-right: 0;
+    }
+    .hero__scroll {
+      display: none;
+    }
+  }
+
+  /* ---------- currently ---------- */
+  .roles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  .role {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: var(--space-6);
+    position: relative;
+    overflow: hidden;
+  }
+  .role::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--amber-bright);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-3) var(--ease);
+  }
+  .role:hover::after {
+    transform: scaleX(1);
+  }
+  .role__index {
+    font-size: var(--step-1);
+    line-height: 1;
+    color: var(--ink-3);
+    font-variation-settings: 'opsz' 72, 'SOFT' 60;
+    margin-bottom: var(--space-6);
+  }
+  .role__org {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+  .role__title {
+    margin-top: var(--space-2);
+    font-size: var(--step-3);
+  }
+  .role__summary {
+    margin-top: var(--space-3);
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    text-wrap: pretty;
+  }
+  .role__link {
+    display: inline-block;
+    margin-top: var(--space-5);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: var(--step--1);
+  }
+  .role__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  @media (max-width: 900px) {
+    .roles {
+      grid-template-columns: 1fr;
+    }
+    .role {
+      grid-template-columns: 64px 1fr;
+      grid-template-rows: none;
+      gap: var(--space-4);
+      padding: var(--space-5);
+    }
+    .role__index {
+      font-size: var(--step-2);
+      margin: 0;
+    }
+  }
+
+  /* ---------- work grid ---------- */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  .work-grid :global(.work-grid__lead) {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 760px) {
+    .work-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- research ---------- */
+  .research-spot__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+    align-items: start;
+  }
+  .research-spot__cta {
+    margin-top: var(--space-6);
+  }
+  .research-spot__figure {
+    position: sticky;
+    top: 96px;
+  }
+  .research-spot__figure :global(.research-spot__results) {
+    margin-top: var(--space-6);
+  }
+  @media (max-width: 900px) {
+    .research-spot__grid {
+      grid-template-columns: 1fr;
+    }
+    .research-spot__figure {
+      position: static;
+    }
+  }
+
+  /* ---------- journal ---------- */
+  .journal-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-5);
+  }
+  .journal-grid > :global(:only-child) {
+    grid-column: 1 / -1;
+  }
+  .journal-grid > :global(:only-child .journal-card__media) {
+    aspect-ratio: 21 / 9;
+  }
+  @media (max-width: 760px) {
+    .journal-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- updates ---------- */
+  .updates-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+  }
+  .elsewhere {
+    border-left: 1px solid var(--line);
+    padding-left: var(--space-6);
+  }
+  .elsewhere__list {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+  .elsewhere__list li + li {
+    border-top: 1px solid var(--line);
+  }
+  .elsewhere__list a {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-3) 0;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .elsewhere__list a span {
+    color: var(--ink-3);
+    transition: transform var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+  }
+  .elsewhere__list a:hover span {
+    transform: translate(2px, -2px);
+    color: var(--amber);
+  }
+  .elsewhere__now {
+    margin-top: var(--space-7);
+  }
+  .elsewhere__nowtext {
+    margin-top: var(--space-3);
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+  .elsewhere__nowlink {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  @media (max-width: 900px) {
+    .updates-grid {
+      grid-template-columns: 1fr;
+    }
+    .elsewhere {
+      border-left: 0;
+      padding-left: 0;
+      border-top: 1px solid var(--line);
+      padding-top: var(--space-6);
+    }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'text';
+  size?: 'default' | 'small' | 'large';
+  class?: string;
+  arrow?: boolean;
+  download?: boolean | string;
+  external?: boolean;
+  type?: 'button' | 'submit';
+  [key: string]: unknown;
+}
+const { href, variant = 'primary', size = 'default', class: className, arrow = false, download, external = false, type = 'button', ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+const attrs = href
+  ? { href, download, ...(external ? { rel: 'noopener', target: '_blank' } : {}) }
+  : { type };
+---
+
+<Tag class:list={['btn', `btn--${variant}`, `btn--${size}`, className]} {...attrs} {...rest}>
+  <span class="btn__label"><slot /></span>
+  {arrow && (
+    <svg class="btn__arrow" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3.5 10h12M10.5 5l5 5-5 5" />
+    </svg>
+  )}
+</Tag>

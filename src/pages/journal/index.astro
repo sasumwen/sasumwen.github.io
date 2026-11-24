@@ -1,0 +1,91 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import JournalCard from '../../components/JournalCard.astro';
+import { notDraft, SHOW_DRAFTS } from '../../lib/drafts';
+import { breadcrumbs } from '../../lib/schema';
+import { profile } from '../../lib/data';
+
+const stories = (await getCollection('journal', notDraft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const upcoming = [
+  'Convocation, with family',
+  'Upper Bound & Inventures 2025',
+  'A conversation at Lethbridge Police HQ',
+  'Inventures 2024: meeting Ameca',
+  'Memphis by road',
+  'Where it starts: Benin City',
+];
+---
+
+<BaseLayout title="Journal" description={`Personal stories and photo essays by ${profile.name.preferred}: the move from Nigeria to Canada, the thesis defence, conferences and travel, and the ordinary days in between.`} jsonLd={[breadcrumbs([{ name: 'Journal', url: '/journal/' }])]}>
+  <PageHero overline="Journal" title="Off the clock." lede="Stories and photographs from the years around the work: the leap to Canada, the winters, the defence, the stage, the gym. First person, no polish beyond the truth." seed="journal" size="large" />
+
+  <section class="section" aria-labelledby="stories-title">
+    <div class="container">
+      <h2 id="stories-title" class="visually-hidden">Stories</h2>
+      <div class="masonry" data-reveal-group>
+        {stories.map((s, i) => <JournalCard entry={s} variant={i === 0 ? 'wide' : i % 3 === 1 ? 'tall' : 'default'} class={i === 0 ? 'masonry__lead' : ''} />)}
+      </div>
+      {stories.length === 0 && <p class="muted">Stories are being prepared.</p>}
+    </div>
+  </section>
+
+  {SHOW_DRAFTS && (
+    <section class="section" aria-labelledby="upcoming-title">
+      <div class="container">
+        <p class="overline overline--muted">Editorial calendar (preview only)</p>
+        <h2 id="upcoming-title" class="upcoming__title">Stories in the queue</h2>
+        <ul class="upcoming">
+          {upcoming.map((u) => <li class="mono">{u}</li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .masonry {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(260px, auto);
+    gap: var(--space-5);
+  }
+  .masonry :global(.masonry__lead) {
+    grid-column: span 2;
+  }
+  .masonry :global(.journal-card--tall) {
+    grid-row: span 2;
+  }
+  @media (max-width: 900px) {
+    .masonry {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    .masonry {
+      grid-template-columns: 1fr;
+    }
+    .masonry :global(.masonry__lead) {
+      grid-column: auto;
+    }
+  }
+  .upcoming__title {
+    margin: var(--space-2) 0 var(--space-5);
+  }
+  .upcoming {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-3);
+  }
+  .upcoming li {
+    padding: var(--space-4);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-2);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+</style>

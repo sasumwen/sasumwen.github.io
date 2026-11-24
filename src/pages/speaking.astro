@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Draft from '../components/Draft.astro';
+import Chip from '../components/Chip.astro';
+import { speaking, fmtYM, yearOf, profile } from '../lib/data';
+import { groupBy } from '../lib/utils';
+import { breadcrumbs } from '../lib/schema';
+
+const byYear = groupBy(speaking, (t) => yearOf(t.date));
+const roleLabel: Record<string, string> = { speaker: 'Speaker', presenter: 'Presenter', panelist: 'Panelist', showcase: 'Showcase', participant: 'Participant', organiser: 'Organiser' };
+---
+
+<BaseLayout title="Speaking" description={`Talks, presentations, panels and showcases by ${profile.name.preferred}: research presentations, founder showcases, guest talks and policy workshops.`} jsonLd={[breadcrumbs([{ name: 'Speaking', url: '/speaking/' }])]}>
+  <PageHero overline="Speaking" title="Talks, panels and stages." lede="Research presentations, founder showcases and policy workshops. I speak about medical-imaging AI, trustworthy systems for public safety, building AI products, and technology policy in emerging markets." seed="speaking" />
+
+  <section class="section" aria-label="Speaking history">
+    <div class="container">
+      {byYear.map(([year, talks]) => (
+        <div class="year" data-reveal-group>
+          <h2 class="year__label serif" data-reveal>{year}</h2>
+          <ol class="talks">
+            {talks.map((t) => (
+              <li class="talk card" data-reveal>
+                <div class="talk__when mono faint">{fmtYM(t.date)}</div>
+                <div class="talk__body">
+                  <div class="cluster talk__chips">
+                    <Chip tone={t.role === 'showcase' ? 'amber' : 'lagoon'} size="small">{roleLabel[t.role]}</Chip>
+                    {t.status === 'draft' && <Draft badgeOnly q={t.note?.match(/\((Q\d+)\)/)?.[1]} />}
+                  </div>
+                  <h3 class="talk__title">{t.title}</h3>
+                  <p class="talk__event">{t.event}{t.city && <span class="faint"> · {t.city}</span>}</p>
+                  {t.summary && <p class="talk__summary">{t.summary}</p>}
+                  {t.note && <p class="talk__note mono"><Draft>{t.note}</Draft></p>}
+                  {t.links.length > 0 && (
+                    <p class="talk__links">
+                      {t.links.map((l) => <a href={l.href} rel={l.href.startsWith('http') ? 'noopener' : undefined}>{l.label} ↗</a>)}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+      <p class="invite muted" data-reveal>Invitations for talks, panels or workshops: <a href="/contact/">get in touch</a>. A <a href="/about/#facts-title">bio kit</a> is on the About page.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .year {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--line);
+  }
+  .year__label {
+    font-size: var(--step-1);
+    line-height: 1;
+    color: var(--ink-3);
+    font-variation-settings: 'opsz' 72, 'SOFT' 60;
+  }
+  .talks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .talk {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+  .talk__when {
+    font-size: var(--step--2);
+    padding-top: 4px;
+  }
+  .talk__chips {
+    margin-bottom: var(--space-2);
+  }
+  .talk__title {
+    font-size: var(--step-3);
+    line-height: 1.25;
+  }
+  .talk__event {
+    margin-top: var(--space-2);
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+  .talk__summary {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    max-width: 60ch;
+  }
+  .talk__note {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+  }
+  .talk__links {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .talk__links a {
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  }
+  .invite {
+    margin-top: var(--space-7);
+  }
+  @media (max-width: 760px) {
+    .year {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+    .talk {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>

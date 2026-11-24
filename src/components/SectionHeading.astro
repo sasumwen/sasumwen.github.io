@@ -1,0 +1,123 @@
+---
+interface Props {
+  overline?: string;
+  title: string;
+  lede?: string;
+  action?: { label: string; href: string };
+  level?: 'h1' | 'h2' | 'h3';
+  tone?: 'amber' | 'lagoon' | 'muted';
+  id?: string;
+  align?: 'start' | 'center';
+  class?: string;
+  size?: 'default' | 'large';
+  /** Editorial chapter numeral printed faintly behind the overline, e.g. "01". */
+  index?: string;
+}
+const { overline, title, lede, action, level = 'h2', tone = 'amber', id, align = 'start', class: className, size = 'default', index } = Astro.props;
+const Heading = level;
+---
+
+<div class:list={['section-heading', `section-heading--${align}`, `section-heading--${size}`, { 'section-heading--indexed': !!index }, className]} data-reveal>
+  {index && <span class="section-heading__index serif" aria-hidden="true">{index}</span>}
+  <div class="section-heading__text">
+    {overline && <p class:list={['overline', { 'overline--lagoon': tone === 'lagoon', 'overline--muted': tone === 'muted' }]}>{overline}</p>}
+    <Heading id={id} class="section-heading__title">{title}</Heading>
+    {lede && <p class="section-heading__lede">{lede}</p>}
+    <slot />
+  </div>
+  {
+    action && (
+      <a class="section-heading__action" href={action.href}>
+        {action.label}
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.5 10h12M10.5 5l5 5-5 5" />
+        </svg>
+      </a>
+    )
+  }
+</div>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+  .section-heading--center {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .section-heading__text {
+    max-width: 60ch;
+    position: relative;
+  }
+  .section-heading--indexed {
+    position: relative;
+  }
+  .section-heading__index {
+    position: absolute;
+    left: -0.04em;
+    top: -1.02em;
+    font-size: clamp(4rem, 6.5vw, 6.25rem);
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 18%, transparent);
+    font-variation-settings: 'opsz' 144, 'SOFT' 60, 'WONK' 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  @media (max-width: 640px) {
+    .section-heading__index {
+      display: none;
+    }
+  }
+  .overline {
+    margin-bottom: var(--space-3);
+  }
+  .section-heading__title {
+    font-size: var(--step-1);
+    line-height: 1.08;
+  }
+  .section-heading--large .section-heading__title {
+    font-size: var(--step-display);
+    line-height: var(--leading-display);
+    letter-spacing: -0.025em;
+  }
+  .section-heading__lede {
+    margin-top: var(--space-4);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    color: var(--ink-2);
+    text-wrap: pretty;
+    max-width: 52ch;
+  }
+  .section-heading__action {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: var(--step--1);
+    text-decoration: none;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .section-heading__action svg {
+    transition: transform var(--dur-2) var(--ease);
+  }
+  .section-heading__action:hover svg {
+    transform: translateX(4px);
+  }
+  @media (max-width: 640px) {
+    .section-heading {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: var(--space-6);
+    }
+  }
+</style>

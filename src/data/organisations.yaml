@@ -1,0 +1,62 @@
+# Organisations referenced by roles, case studies and JSON-LD.
+# Descriptions use only what each organisation publishes about itself.
+- id: studyradar
+  name: StudyRadar
+  legalName: StudyRadar Canada
+  url: https://studyradar.ai
+  description: AI-powered exam-preparation platform for pharmacy and healthcare candidates (OSCE, EE, MCQ).
+  location: Calgary, Alberta
+  sameAs:
+    - https://studyradar.ai/team
+- id: xyricon
+  name: Xyricon Technologies
+  legalName: Xyricon Technologies Inc.
+  url: https://xyricon.com
+  description: Canadian deep-tech studio building trusted AI for life-critical operations; developer of Auron.
+  location: Calgary, Alberta
+  founded: 2025
+  sameAs:
+    - https://www.linkedin.com/company/xyricon
+- id: airi
+  name: AIRI Foundation
+  legalName: Artificial Intelligence for Responsible Inclusion Foundation
+  url: https://airifoundation.org
+  description: Alberta non-profit advancing AI literacy for underserved communities.
+  location: Lethbridge, Alberta
+  sameAs:
+    - https://airifoundation.org/about
+- id: uleth
+  name: University of Lethbridge
+  url: https://www.ulethbridge.ca
+  department: Department of Mathematics and Computer Science
+  location: Lethbridge, Alberta
+- id: biu
+  name: Benson Idahosa University
+  url: https://www.biu.edu.ng
+  location: Benin City, Nigeria
+- id: newchip
+  name: NewChip Accelerator
+  location: Austin, Texas
+- id: gygital
+  name: Gygital
+  location: Nigeria
+- id: zair
+  name: ZAIR
+  location: Nigeria
+- id: alma
+  name: ALMA Network Solutions
+  location: Nigeria
+  status: self-reported   # D10 resolved 2026-11-23
+- id: nsa
+  name: Nigeria Startup Act
+  url: https://nigeriastartupact.gov.ng
+  location: Abuja, Nigeria
+- id: alberta-innovates
+  name: Alberta Innovates
+  url: https://albertainnovates.ca
+- id: amii
+  name: Alberta Machine Intelligence Institute (Amii)
+  url: https://www.amii.ca
+- id: drac
+  name: Digital Research Alliance of Canada
+  url: https://alliancecan.ca

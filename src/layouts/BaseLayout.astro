@@ -1,0 +1,130 @@
+---
+import '@fontsource-variable/fraunces/opsz.css';
+import '@fontsource-variable/fraunces/opsz-italic.css';
+import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource-variable/instrument-sans/wght-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/global.css';
+// Preload the two fonts that paint above the fold (same files the fontsource CSS references).
+import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2?url';
+import instrumentUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
+
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { profile } from '../lib/data';
+import { graph, personNode, websiteNode } from '../lib/schema';
+import { SHOW_DRAFTS } from '../lib/drafts';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path or absolute URL of the social image. */
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'profile';
+  /** Extra JSON-LD nodes merged into the page graph. */
+  jsonLd?: Record<string, unknown>[];
+  /** Omit the default Person+WebSite nodes (when a page builds its own full graph). */
+  bareJsonLd?: boolean;
+  noindex?: boolean;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  bodyClass?: string;
+  /** Put the header on a transparent background over a dark cover (journal, about). */
+  headerOverlay?: boolean;
+  /** Override the canonical URL (e.g. an article first published elsewhere). */
+  canonical?: string;
+}
+
+const {
+  title,
+  description,
+  image = '/og/default.png',
+  imageAlt = `${profile.name.preferred}, ${profile.headline}`,
+  type = 'website',
+  jsonLd = [],
+  bareJsonLd = false,
+  noindex = false,
+  publishedTime,
+  modifiedTime,
+  bodyClass = '',
+  headerOverlay = false,
+  canonical: canonicalOverride,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://osasumwen.com');
+// Relative preview builds (see astro.config.mjs) run without the client router.
+const STATIC_PREVIEW = import.meta.env.PUBLIC_PREVIEW_RELATIVE === 'true';
+const canonical = canonicalOverride ?? new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(image, site).href;
+const siteName = `${profile.name.preferred}`;
+const fullTitle = title === siteName ? `${siteName} · ${profile.headline}` : `${title} · ${siteName}`;
+const ld = bareJsonLd ? graph(...jsonLd) : graph(personNode(), websiteNode(), ...jsonLd);
+---
+
+<!doctype html>
+<html lang="en-CA" class="no-js" data-static-preview={STATIC_PREVIEW ? '' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    <meta name="author" content={profile.name.full} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3ec" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#15130f" />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={frauncesUrl} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={instrumentUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${siteName} RSS`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content="en_CA" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${profile.identifiers.x}`} />
+    <meta name="twitter:creator" content={`@${profile.identifiers.x}`} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <slot name="head" />
+
+    {/* Theme: applied before paint to avoid a flash; persisted choice wins over system. */}
+    <script is:inline>
+      (function () {
+        document.documentElement.classList.remove('no-js');
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    {!STATIC_PREVIEW && <ClientRouter fallback="none" />}
+  </head>
+  <body class:list={[bodyClass, { 'has-overlay-header': headerOverlay, 'show-drafts': SHOW_DRAFTS }]}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header overlay={headerOverlay} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

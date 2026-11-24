@@ -1,0 +1,38 @@
+---
+title: Why boundaries matter in brain MRI segmentation
+description: Small subcortical structures are measured at their edges. A plain-language account of the problem BoRefAttnNet was built to solve, and why attention to the boundary changes the result.
+date: 2026-11-08
+category: Research notes
+tags: [medical imaging, segmentation, deep learning, schizophrenia]
+featured: true
+draft: false
+---
+
+import BoundaryExplainer from '../../components/diagrams/BoundaryExplainer.astro';
+import ThesisResults from '../../components/ThesisResults.astro';
+
+<p class="lead">If you want to know whether a brain region differs between two groups of people, you first have to decide where that region ends. That decision, repeated millions of times across a scan, is the boundary problem, and it is where segmentation models quietly fail.</p>
+
+## Small structures, soft edges
+
+The hippocampus, the amygdala and the structures of the basal ganglia are small. On a T1-weighted MRI they sit against neighbours of similar intensity, so the transition from one structure to the next is not a line but a gradient a few voxels wide. A network that classifies each voxel independently does fine in the interior and hesitates at the rim, and because these structures are small, the rim is a large fraction of the whole.
+
+<BoundaryExplainer />
+
+## Attending to the edge
+
+BoRefAttnNet keeps the familiar 3D U-Net encoder–decoder but adds *boundary attention modules* at each decoder scale. Each module learns to emphasise voxels that look like an anatomical edge and to suppress the texture of the background, and because this happens at several resolutions, coarse shape and fine edge detail are refined together. The result is a mask that follows anatomy, which is what a downstream analysis of volumes, shapes or connectivity needs.
+
+## What changed when we measured it
+
+Two numbers describe a segmentation. Dice says how much of the predicted structure overlaps the reference, and it is dominated by the interior. Hausdorff distance says how far off the worst point of the predicted edge is, in millimetres. A model can score well on the first and still be wrong where it matters.
+
+<ThesisResults variant="segmentation" />
+
+On the held-out test scans the overlap score moved a little, from 0.943 to 0.969. The worst-case edge error fell by more than half, from 7.90 mm to 3.08 mm. In a structure a few centimetres long, that is the difference between an outline you can measure from and one you cannot.
+
+There is a caveat worth stating plainly. The reference outlines came from FastSurfer, an automated tool, not from a radiologist's hand. The numbers say the network agrees with FastSurfer more closely at the edges. Whether it agrees with an expert is the next experiment.
+
+## Why it matters beyond the paper
+
+Better boundaries mean more trustworthy measurements. And more trustworthy measurements mean that a model built on top of them, like DySTTM, which fuses structure with resting-state function to detect schizophrenia, is learning from anatomy rather than from segmentation noise.

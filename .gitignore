@@ -1,11 +1,36 @@
-# project
-_site
-.sass-cache
-.vagrant
+# build output
+dist/
+.astro/
 
-# general
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# editor / OS
 .DS_Store
 Thumbs.db
-ehthumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
 
-vendor/
+# logs
+npm-debug.log*
+*.log
+
+# local inbox used to hand the redesign branch over (not part of the site)
+.redesign-inbox/
+
+# private photo masters never belong in the public repository
+private/
+dist-portable/
+
+# private chat exports and handoff records used as reference for the rebuild (never publish)
+revamp/
+
+# planning notes, audits and the discrepancy register: working papers, kept local
+docs/
+WEBSITE_AUDIT.md

@@ -1,0 +1,233 @@
+# ---------------------------------------------------------------------------
+# profile.yaml: identity, headline, bios, identifiers, contact.
+# Every page (hero, About facts, footer, JSON-LD, resume, llms.txt) reads from here.
+# Keys marked `status: draft` are hidden in production builds until confirmed.
+# Facts register: docs/redesign/01-profile-and-facts.md
+# ---------------------------------------------------------------------------
+
+name:
+  full: Osasumwen Raphael Imarhiagbe
+  preferred: Osasu Imarhiagbe
+  first: Osasu
+  scholarly: Osasumwen R. Imarhiagbe
+  pronunciation: # e.g. "oh-SAH-soo", optional (Q22)
+
+# Q5: one public headline, used in the hero overline, <title>, JSON-LD and llms.txt.
+headline: AI researcher, technology executive and founder
+headlineLong: "AI researcher, technology executive and founder. Chief Technology Officer at StudyRadar; founder of Xyricon Technologies; MSc Computer Science, University of Lethbridge."
+tagline: "I build AI systems that have to work outside the lab: in healthcare, public safety and education."
+
+location:
+  city: Calgary
+  region: Alberta
+  country: Canada
+  display: Calgary, Alberta, Canada
+origin:
+  city: Benin City
+  region: Edo State
+  country: Nigeria
+
+# One-sentence positioning used in the hero and in metadata (04-content-strategy §1)
+positioning: >-
+  Osasu Imarhiagbe is an AI engineer, researcher and founder who builds trustworthy intelligent
+  systems for healthcare, public safety and education. He is Chief Technology Officer at
+  StudyRadar, founder of Xyricon Technologies, and the author of research on boundary-aware
+  brain-MRI segmentation at the University of Lethbridge.
+
+# Bios (third person). `short`/`medium` are drafts derived from verified facts (M7).
+# `long` is the organiser bio used for the 15 November 2026 seminar.
+# All three stay `draft` until approved for the site.
+bios:
+  short:
+    status: draft
+    text: >-
+      Osasu Imarhiagbe is an AI engineer, researcher and founder based in Calgary. He is Chief
+      Technology Officer at StudyRadar and the founder of Xyricon Technologies, and he holds an
+      MSc in Computer Science from the University of Lethbridge, where his research focused on
+      boundary-aware brain-MRI segmentation for schizophrenia analysis.
+  medium:
+    status: draft
+    text: >-
+      Osasu Imarhiagbe is an AI engineer, researcher and founder. As Chief Technology Officer at
+      StudyRadar he leads the engineering of an AI-powered exam-preparation platform for
+      healthcare candidates; as founder of Xyricon Technologies he is developing Auron, a
+      real-time AI co-pilot for emergency response. His MSc research at the University of
+      Lethbridge introduced BoRefAttnNet, a boundary-refined 3D U-Net for subcortical brain
+      segmentation, published in the ICICT 2026 proceedings (Springer). Earlier he worked as a
+      software engineer and data scientist in Nigeria and served on the drafting team of the
+      Nigeria Startup Act. He sits on the Board of Directors of the AIRI Foundation.
+  long:
+    status: draft
+    text: >-
+      Osasu Imarhiagbe is a computer scientist, AI researcher and technology entrepreneur based in
+      Calgary, Alberta. He serves as the Chief Technology Officer of StudyRadar, an Alberta-based
+      company developing AI-powered learning and clinical simulation tools to help healthcare
+      students prepare for professional licensing examinations. He is also the founder of Xyricon
+      Technologies, a Canadian deep-tech company developing Auron, an edge-AI co-pilot designed to
+      support real-time 911 call triage, emergency incident coordination, and faster, more informed
+      dispatch decisions. At StudyRadar, Osasu leads the company's technical strategy and AI
+      development, including its engagement with the Alberta Machine Intelligence Institute (Amii)
+      through the Level Up program. Osasu holds a Master of Science in Computer Science from the
+      University of Lethbridge, where his research focused on advanced deep learning techniques,
+      including boundary-enhanced medical image segmentation and spatial-temporal transformer
+      models for automated schizophrenia analysis. Part of his research was presented at the 11th
+      International Congress on Information and Communication Technology (ICICT 2026) and published
+      in the conference proceedings by Springer Nature. His research has earned competitive
+      academic and provincial funding, including the Alberta Innovates Graduate Student Scholarship
+      and the University of Lethbridge Graduate Research Award. In 2025, he was selected as one of
+      ten Canadian representatives to attend the International High-Performance Computing Summer
+      School (IHPCSS) in Lisbon, Portugal, where he further developed his expertise in
+      high-performance computing, parallel programming, and computational research. Beyond his
+      technical and entrepreneurial work, Osasu
+      serves on the Board of the AIRI Foundation (Artificial Intelligence for Responsible
+      Inclusion), a Canadian nonprofit committed to advancing AI literacy, responsible adoption,
+      and inclusive access to emerging technologies. His work sits at the intersection of
+      artificial intelligence research, software engineering, entrepreneurship, and the practical
+      application of emerging technologies to solve real-world problems.
+
+# Hero role strip: the three dimensions, side by side. `roleRef` pulls the title (and its
+# draft/safe handling) from `current` below so a title is only ever edited in one place.
+heroRoles:
+  - verb: Leads
+    roleRef: studyradar-cto
+    detail: Runs engineering, ML and product for an AI exam-preparation platform used by healthcare candidates.
+    href: /work/
+  - verb: Builds
+    roleRef: xyricon-founder
+    detail: Auron, a real-time AI co-pilot for emergency response, at the Calgary deep-tech studio I founded.
+    href: /work/xyricon/
+  - verb: Researches
+    title: Medical-imaging AI
+    detail: Boundary-aware brain-MRI segmentation and multimodal detection for schizophrenia. MSc, ULethbridge; published by Springer.
+    href: /research/
+
+# Short identity line printed on the hero panel (mono). Coordinates are Calgary's city centre.
+heroMeta:
+  - Osasumwen Raphael Imarhiagbe
+  - Calgary, Alberta · 51.05° N, 114.07° W
+
+# Proof chips (kept for other placements)
+proof:
+  - label: CTO · StudyRadar
+    href: /work/
+  - label: Founder · Xyricon
+    href: /work/xyricon/
+  - label: MSc CS · ULethbridge 2025
+    href: /research/thesis/
+  - label: Board · AIRI Foundation
+    href: /about/#service
+
+# Current roles (summary cards on Home → "Currently"); details in experience.yaml
+current:
+  - id: studyradar-cto
+    title: Chief Technology Officer
+    organisation: studyradar
+    since: 2026-07
+    summary: "Leading engineering of an AI exam-preparation platform for pharmacy and healthcare candidates: web, mobile, a voice-based OSCE simulator and AI-assisted assessment."
+    href: /work/
+    status: verified
+  - id: xyricon-founder
+    title: Founder & Principal
+    organisation: xyricon
+    since: 2025-04
+    summary: A Calgary deep-tech studio building Auron, a real-time AI co-pilot for emergency response, and delivering applied-AI and cloud engineering.
+    href: /work/xyricon/
+    status: verified
+  - id: airi-board
+    title: Member, Board of Directors
+    titleStatus: draft    # D6: Board of Directors (AIRI site) vs Board of Trustees (LinkedIn). Confirm (Q8)
+    titleSafe: Board of Directors   # AIRI's own public wording (airifoundation.org/about)
+    organisation: airi
+    since: 2026-03
+    summary: AI literacy for underserved communities in Alberta; advising on AI and technology.
+    href: /about/#service
+    status: verified
+
+contact:
+  email:
+    address: osasu@xyricon.com
+    status: verified
+  reasons:
+    - Collaboration on medical-imaging or multimodal AI research
+    - AI for public safety, healthcare or education
+    - Speaking, panels and mentoring
+    - Xyricon engagements, via xyricon.com
+
+identifiers:
+  orcid: 0000-0003-4193-8444
+  scholar: q2cFimsAAAAJ
+  github: sasumwen
+  linkedin: osasumwen
+  x: Osasu_AI
+  medium: osasu
+
+# `sameAs` for JSON-LD and the Elsewhere/Contact rows. Order = display order.
+links:
+  - id: linkedin
+    label: LinkedIn
+    href: https://www.linkedin.com/in/osasumwen
+  - id: scholar
+    label: Google Scholar
+    href: https://scholar.google.com/citations?user=q2cFimsAAAAJ
+  - id: orcid
+    label: ORCID
+    href: https://orcid.org/0000-0003-4193-8444
+  - id: github
+    label: GitHub
+    href: https://github.com/sasumwen
+  - id: x
+    label: X
+    href: https://x.com/Osasu_AI
+  - id: medium
+    label: Medium
+    href: https://osasu.medium.com
+
+# Third-party pages that describe you (used in sameAs + About facts)
+profiles:
+  - label: "AIRI Foundation: Board of Directors"
+    href: https://airifoundation.org/about
+  - label: "StudyRadar: Team"
+    href: https://studyradar.ai/team
+  - label: Xyricon Technologies
+    href: https://xyricon.com
+
+# Working principles shown on About → "How I work". Drafted in your voice from your public
+# writing; approve or rewrite before launch (hidden in production while status is draft).
+values:
+  status: draft
+  items:
+    - lead: Evidence first.
+      text: Every claim on this site links to its source; every model I ship has an evaluation harness.
+    - lead: Humans in charge.
+      text: From triage systems to exam feedback, the person stays accountable and the machine stays legible.
+    - lead: Build for the people having the worst day.
+      text: Reliability over novelty.
+    - lead: Write it down.
+      text: Architecture, decisions and the reasons behind them, before the team grows.
+    - lead: Send the elevator back down.
+      text: Mentoring, boards and community are part of the job, not after it.
+
+knowsAbout:
+  - Medical image segmentation
+  - Multimodal deep learning
+  - Computational psychiatry
+  - Large language model evaluation
+  - Machine learning engineering
+  - AI for public safety
+  - Educational technology
+  - Technology policy
+
+languages:
+  - English
+
+interests:
+  - Strength training
+  - Football
+  - Dragon boat racing
+  - Paintball
+  - Flying (private pilot's licence in progress)
+  - Road trips
+  - Food and restaurants
+  - Kayaking and hiking
+  - Fiction
+  - Music

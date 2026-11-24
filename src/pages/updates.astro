@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import UpdatesList from '../components/UpdatesList.astro';
+import { updates, profile } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+---
+
+<BaseLayout title="Updates" description={`News and milestones from ${profile.name.preferred}: publications, roles, talks and recognitions, in order.`} jsonLd={[breadcrumbs([{ name: 'Updates', url: '/updates/' }])]}>
+  <PageHero overline="Updates" title="What happened, when." lede="A dated record of publications, roles, talks and milestones. Also available as RSS." seed="updates">
+    <p class="mono" data-reveal><a href="/rss.xml">RSS feed ↗</a></p>
+  </PageHero>
+  <section class="section">
+    <div class="container container--narrow">
+      <UpdatesList items={updates} groupYears />
+    </div>
+  </section>
+</BaseLayout>

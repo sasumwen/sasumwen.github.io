@@ -1,0 +1,205 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Chip from '../../components/Chip.astro';
+import Draft from '../../components/Draft.astro';
+import Callout from '../../components/Callout.astro';
+import Figure from '../../components/Figure.astro';
+import PullQuote from '../../components/PullQuote.astro';
+import Button from '../../components/Button.astro';
+import { notDraft } from '../../lib/drafts';
+import { breadcrumbs, PERSON_ID } from '../../lib/schema';
+import { fmtDate, profile } from '../../lib/data';
+import { readingTime } from '../../lib/utils';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('writing', notDraft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const minutes = readingTime(entry.body ?? '');
+const toc = headings.filter((h) => h.depth === 2);
+const others = (await getCollection('writing', notDraft)).filter((e) => e.id !== entry.id).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
+const jsonLd = [
+  {
+    '@type': 'Article',
+    headline: d.title,
+    description: d.description,
+    datePublished: d.date.toISOString().slice(0, 10),
+    ...(d.updated ? { dateModified: d.updated.toISOString().slice(0, 10) } : {}),
+    author: { '@id': PERSON_ID },
+    articleSection: d.category,
+    keywords: d.tags.join(', '),
+    url: d.canonical ?? `https://osasumwen.com/writing/${entry.id}/`,
+  },
+  breadcrumbs([{ name: 'Writing', url: '/writing/' }, { name: d.title, url: `/writing/${entry.id}/` }]),
+];
+---
+
+<BaseLayout title={d.title} description={d.description} type="article" jsonLd={jsonLd} publishedTime={d.date} modifiedTime={d.updated} canonical={d.canonical}>
+  <ReadingProgress />
+  <article class="article" data-progress-target>
+    <header class="article__hero">
+      <div class="container container--narrow">
+        <Breadcrumbs items={[{ name: 'Writing', href: '/writing/' }, { name: d.title, href: `/writing/${entry.id}/` }]} />
+        <div class="cluster" data-reveal>
+          <Chip tone="amber">{d.category}</Chip>
+          {d.draft && <Draft badgeOnly />}
+        </div>
+        <h1 class="article__title" data-reveal>{d.title}</h1>
+        <p class="article__desc" data-reveal>{d.description}</p>
+        <p class="article__meta mono" data-reveal>
+          <span>{profile.name.preferred}</span> · <time datetime={d.date.toISOString().slice(0, 10)}>{fmtDate(d.date)}</time> · <span>{minutes} min read</span>
+          {d.updated && <span> · updated {fmtDate(d.updated)}</span>}
+        </p>
+        {d.external && (
+          <div class="article__external" data-reveal>
+            <Button href={d.external.href} external arrow>{d.external.label}</Button>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="container article__layout">
+      {toc.length > 1 && (
+        <nav class="toc" aria-label="On this page">
+          <p class="overline overline--muted">On this page</p>
+          <ol>
+            {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ol>
+        </nav>
+      )}
+      <div class="prose article__body">
+        <Content components={{ Draft, Callout, Figure, PullQuote }} />
+        {d.tags.length > 0 && (
+          <p class="article__tags mono faint">{d.tags.map((t) => `#${t}`).join('  ')}</p>
+        )}
+      </div>
+    </div>
+
+    {others.length > 0 && (
+      <section class="section" aria-labelledby="more-title">
+        <div class="container container--narrow">
+          <p class="overline">More writing</p>
+          <h2 id="more-title" class="article__more-title">Keep reading</h2>
+          <ul class="more">
+            {others.map((o) => (
+              <li><a href={`/writing/${o.id}/`}>{o.data.title}</a><span class="mono faint">{fmtDate(o.data.date)}</span></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .article__hero {
+    padding: var(--space-7) 0 var(--space-6);
+    border-bottom: 1px solid var(--line);
+  }
+  .article__title {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    line-height: 1.08;
+  }
+  .article__desc {
+    margin-top: var(--space-4);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  .article__meta {
+    margin-top: var(--space-5);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+  .article__external {
+    margin-top: var(--space-5);
+  }
+  .article__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--measure)) minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+  .toc {
+    grid-column: 1;
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    justify-self: end;
+    max-width: 220px;
+    font-size: var(--step--2);
+  }
+  .toc ol {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+  .toc li a {
+    display: block;
+    padding: 6px 0 6px var(--space-4);
+    color: var(--ink-2);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
+  }
+  .toc li a:hover {
+    color: var(--ink);
+    border-left-color: var(--amber-bright);
+  }
+  .article__body {
+    grid-column: 2;
+  }
+  .article__tags {
+    margin-top: var(--space-7);
+    font-size: var(--step--2);
+  }
+  .article__more-title {
+    margin: var(--space-2) 0 var(--space-5);
+  }
+  .more {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .more li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--line);
+  }
+  .more a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+  }
+  .more a:hover {
+    color: var(--amber);
+  }
+  @media (max-width: 1100px) {
+    .article__layout {
+      grid-template-columns: minmax(0, var(--measure));
+      justify-content: center;
+    }
+    .toc {
+      grid-column: 1;
+      position: static;
+      justify-self: start;
+      max-width: none;
+    }
+    .article__body {
+      grid-column: 1;
+    }
+  }
+</style>

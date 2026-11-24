@@ -1,0 +1,591 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import FactTable from '../components/FactTable.astro';
+import Button from '../components/Button.astro';
+import Draft from '../components/Draft.astro';
+import Contours from '../components/Contours.astro';
+import BoundaryCompare from '../components/diagrams/BoundaryCompare.astro';
+import { profile, education, org, awards, memberships, now, fmtYM, fmtDate, roleTitle } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+import { SHOW_DRAFTS } from '../lib/drafts';
+import candid from '../assets/photos/candid-bw.jpg';
+import sweater from '../assets/photos/portrait-sweater.jpg';
+import gym from '../assets/photos/gym.jpg';
+import convocation from '../assets/photos/convocation-regalia.jpg';
+import stage from '../assets/photos/bbva-stage-speaker.jpg';
+import minds from '../assets/photos/meeting-of-the-minds-2025.jpg';
+
+const msc = education.find((e) => e.id === 'msc-uleth')!;
+const bsc = education.find((e) => e.id === 'bsc-biu')!;
+// Draft bios are shown (badged) in preview builds only.
+const bios = Object.entries(profile.bios).filter(([, b]) => b.status !== 'draft' || SHOW_DRAFTS);
+const showNow = now.status !== 'draft' || SHOW_DRAFTS;
+const values = profile.values && (profile.values.status !== 'draft' || SHOW_DRAFTS) ? profile.values : null;
+const title = 'About';
+const description = `${profile.name.preferred}, from Benin City to Lethbridge to Calgary: the story behind the research, the companies and the public service. Facts, bios and a press kit.`;
+
+const chapters = [
+  {
+    id: 'benin-city',
+    overline: 'Chapter 01 · Benin City',
+    title: 'Where it starts',
+    body: [
+      `I grew up in Benin City, Edo State, and studied computer science at Benson Idahosa University. Before I ever wrote a line of research code I spent eight years building software in Nigeria: enterprise back-ends, data-science models for churn, and the unglamorous integration work that keeps companies running.`,
+      `Along the way I became part of the country's startup community, and in 2021 that led to a seat on the drafting team of the Nigeria Startup Act, which became law in October 2022.`,
+    ],
+    image: null,
+    placeholder: 'Nigeria / early years: photo wanted (M4)',
+    marker: { kicker: 'Benin City, Edo State', big: '6.34° N', lines: ['Benson Idahosa University, BSc Computer Science', 'Eight years of software and data work in Nigeria', 'Nigeria Startup Act drafting team, 2021–2022'] },
+    link: { label: 'The Startup Act story', href: '/work/nigeria-startup-act/' },
+  },
+  {
+    id: 'lethbridge',
+    overline: 'Chapter 02 · Lethbridge',
+    title: 'The leap',
+    body: [
+      `In September 2023 I left everything familiar behind and moved to southern Alberta for an MSc in Computer Science at the University of Lethbridge, supported by an Alberta Innovates Graduate Student Scholarship. I taught five terms as a teaching assistant (discrete structures, statistics, programming) and learned what a prairie winter means.`,
+      `Two years later I defended a thesis on boundary-aware brain-MRI segmentation and multimodal detection for schizophrenia, and convocated in October 2025.`,
+    ],
+    image: convocation,
+    imageAlt: 'Convocation at the University of Lethbridge, October 2025',
+    imagePosition: 'center 20%',
+    link: { label: 'Two years, three hours: the journal story', href: '/journal/two-years-three-hours/' },
+  },
+  {
+    id: 'research',
+    overline: 'Chapter 03 · Research',
+    title: 'What the thesis found',
+    body: [
+      `Small brain structures are measured at their edges, and that is where segmentation networks fail. BoRefAttnNet teaches a 3D U-Net to attend to the boundary explicitly; DySTTM then reads the segmented structure together with resting-state function to detect schizophrenia. The segmentation work was published in Springer's ICICT 2026 proceedings; the thesis is open access.`,
+    ],
+    image: null,
+    figure: 'compare',
+    link: { label: 'Research hub', href: '/research/' },
+  },
+  {
+    id: 'building',
+    overline: 'Chapter 04 · Building',
+    title: 'From engineer to CTO',
+    body: [
+      `While finishing the degree I joined StudyRadar as a machine-learning engineer, working on the AI behind an exam-preparation platform for pharmacy and healthcare candidates. I led the technical team from September 2025 and became Chief Technology Officer in July 2026.`,
+      `In 2025 I founded Xyricon Technologies in Calgary to build trusted AI for life-critical operations. Its first product, Auron, is being built to answer overflow emergency calls when dispatchers are saturated: triage at the edge, with humans in charge.`,
+    ],
+    image: stage,
+    imageAlt: 'Presenting Auron on stage at the BBVA Innovation Expo 2026',
+    imagePosition: 'center 60%',
+    link: { label: 'Selected work', href: '/work/' },
+  },
+  {
+    id: 'service',
+    overline: 'Chapter 05 · Service',
+    title: 'Boards, mentoring, community',
+    body: [
+      `I sit on the Board of Directors of the AIRI Foundation, an Alberta non-profit bringing AI literacy to underserved communities, after a stretch as a board advisor. At the University of Lethbridge I was a graduate representative on the Graduate Students' Association council and helped organise Meeting of the Minds, its graduate research conference. Earlier I mentored founders through the NewChip Accelerator, and I still show up for the communities that shaped me, including the Edo Global Art Foundation's advocacy on the restitution of Benin artefacts.`,
+    ],
+    image: minds,
+    imageAlt: 'At the lectern at Meeting of the Minds, the University of Lethbridge graduate research conference, March 2025',
+    imagePosition: 'center 30%',
+    marker: { kicker: 'Service', big: '03', lines: ['AIRI Foundation, Board of Directors', 'NewChip Accelerator, startup mentor', 'Edo Global Art Foundation, volunteer'] },
+    link: { label: 'Speaking & community', href: '/speaking/' },
+  },
+  {
+    id: 'off-the-clock',
+    overline: 'Chapter 06 · Off the clock',
+    title: 'The rest of life',
+    body: [
+      `Strength training most mornings, and football when there's a pitch. I have raced dragon boats and played paintball, and I'm working towards my private pilot's licence.`,
+      `I love road trips and I'm always on the road: British Columbia, Ottawa and Montreal so far. Kayaking and hiking in the summer; fiction, music and a long-running project to eat at every restaurant worth the drive the rest of the year. The journal is where those stories live.`,
+    ],
+    image: gym,
+    imageAlt: 'At the gym, December 2025',
+    imagePosition: 'center 12%',
+    link: { label: 'The journal', href: '/journal/' },
+  },
+];
+
+const facts = [
+  { label: 'Full name', value: profile.name.full },
+  { label: 'Goes by', value: profile.name.preferred },
+  { label: 'Based in', value: profile.location.display },
+  { label: 'From', value: `${profile.origin.city}, ${profile.origin.region}, ${profile.origin.country}` },
+  { label: 'Roles', value: profile.current.map((c) => `${roleTitle(c).title}, ${org(c.organisation).name}`).join(' · '), draft: profile.current.some((c) => roleTitle(c).draft) },
+  { label: 'Education', value: `${msc.degree}, ${org(msc.institution).name} (${fmtYM(msc.end).slice(-4)}) · ${bsc.degree}, ${org(bsc.institution).name} (${fmtYM(bsc.end).slice(-4)})` },
+  { label: 'ORCID', value: profile.identifiers.orcid, href: `https://orcid.org/${profile.identifiers.orcid}` },
+  { label: 'Languages', value: profile.languages.join(', ') },
+  { label: 'Works on', value: profile.knowsAbout.slice(0, 5).join(' · ') },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="profile"
+  headerOverlay
+  jsonLd={[{ '@type': 'ProfilePage', mainEntity: { '@id': 'https://osasumwen.com/#person' }, dateModified: new Date().toISOString().slice(0, 10) }, breadcrumbs([{ name: 'About', url: '/about/' }])]}
+>
+  <!-- cinematic cover -->
+  <section class="cover" aria-label="Introduction">
+    <Image src={candid} alt={`${profile.name.preferred}, candid portrait`} widths={[800, 1200, 1800, 2400]} sizes="100vw" loading="eager" fetchpriority="high" class="cover__img" />
+    <div class="cover__scrim" aria-hidden="true"></div>
+    <div class="container cover__text">
+      <p class="overline cover__overline" data-reveal>About</p>
+      <h1 class="display cover__title" data-reveal>A builder shaped by Benin City, Lethbridge and Calgary.</h1>
+      <p class="cover__lede" data-reveal>{profile.positioning}</p>
+    </div>
+  </section>
+
+  <!-- chapters -->
+  <section class="section chapters" aria-label="The story, in chapters">
+    <div class="container">
+      {chapters.map((c, i) => (
+        <article class:list={['chapter', { 'chapter--flip': i % 2 === 1 }]} id={c.id}>
+          <div class="chapter__media" data-reveal>
+            {c.image ? (
+              <Image src={c.image} alt={c.imageAlt ?? ''} widths={[480, 800, 1200]} sizes="(max-width: 900px) 100vw, 45vw" class="chapter__img" style={`object-position:${c.imagePosition ?? 'center'}`} />
+            ) : c.figure === 'compare' ? (
+              <BoundaryCompare caption="What the thesis is about, in one gesture: drag to compare a plain voxel-wise prediction with a boundary-refined one." />
+            ) : (
+              <div class="chapter__marker">
+                <Contours variant="rings" seed={c.id} lines={9} class="chapter__contours" />
+                <div class="chapter__marker-text">
+                  <p class="overline">{c.marker?.kicker}</p>
+                  <p class="chapter__marker-big serif">{c.marker?.big}</p>
+                  <ul class="chapter__marker-lines mono">
+                    {c.marker?.lines.map((l) => <li>{l}</li>)}
+                  </ul>
+                </div>
+                {SHOW_DRAFTS && c.placeholder && <span class="mono chapter__ph"><span class="draft-badge">photo wanted</span> {c.placeholder}</span>}
+              </div>
+            )}
+          </div>
+          <div class="chapter__text">
+            <p class="overline" data-reveal>{c.overline}</p>
+            <h2 class="chapter__title" data-reveal>{c.title}</h2>
+            <div class="chapter__body prose" data-reveal>
+              {c.body.map((p) => <p>{p}</p>)}
+            </div>
+            <a class="chapter__link" href={c.link.href} data-reveal>{c.link.label} <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- now + values (both are draft wording until approved; hidden in production while draft) -->
+  {(showNow || values) && (
+    <section class="section" aria-labelledby="now-title">
+      <div class="container two-col">
+        {showNow && (
+          <div>
+            <SectionHeading overline="Now" title="This season" id="now-title" />
+            <ul class="now-list" data-reveal-group>
+              {now.items.map((it) => <li data-reveal>{it}</li>)}
+            </ul>
+            <p class="mono faint now-updated">Updated {fmtDate(now.updated)} {now.status === 'draft' && <Draft badgeOnly q="M7" />}</p>
+          </div>
+        )}
+        {values && (
+          <div>
+            <SectionHeading overline="Values" title="How I work" />
+            {values.status === 'draft' && <p class="mono faint values-note"><Draft badgeOnly q="M7" /> Drafted in your voice: approve or rewrite.</p>}
+            <ol class="values" data-reveal-group>
+              {values.items.map((v) => (
+                <li data-reveal><strong>{v.lead}</strong> {v.text}</li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- facts + bio kit -->
+  <section class="section" aria-labelledby="facts-title">
+    <div class="container two-col">
+      <div>
+        <SectionHeading overline="Facts" title="For people and machines" lede="The plain version, kept consistent with LinkedIn, Scholar and ORCID." id="facts-title" />
+        <FactTable rows={facts} />
+        <div class="cluster facts__links">
+          {profile.links.map((l) => <a class="mono" href={l.href} rel="me noopener">{l.label} ↗</a>)}
+        </div>
+      </div>
+      <div>
+        {bios.length > 0
+          ? <SectionHeading overline="Bio kit" title="Ready-made bios" lede="For event organisers and editors. Copy the length you need." />
+          : <SectionHeading overline="Bio kit" title="Need a bio or a photo?" lede="For event organisers and editors: tell me the length you need and I will send it, with a portrait." />}
+        <div class="bios" data-reveal-group>
+          {bios.map(([key, b]) => (
+            <article class="bio card" data-reveal>
+              <header class="bio__head">
+                <p class="overline overline--muted">{key} bio · {b.text.split(/\s+/).length} words {b.status === 'draft' && <Draft badgeOnly q="M7" />}</p>
+                <button type="button" class="bio__copy mono" data-copy={`#bio-${key}`} data-copied-label="Copied"><span data-copy-label>Copy</span></button>
+              </header>
+              <p id={`bio-${key}`} class="bio__text">{b.text}</p>
+            </article>
+          ))}
+          <figure class="bio-portrait card" data-reveal>
+            <Image src={sweater} alt={`${profile.name.preferred}, casual portrait`} widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
+            <figcaption class="mono faint">{SHOW_DRAFTS ? 'Approved portraits for press use will be downloadable here (M4).' : `${profile.name.preferred}, Calgary`}</figcaption>
+          </figure>
+        </div>
+        <div class="cluster bio-kit__cta">
+          <Button href="/resume/" variant="secondary" arrow>Resume</Button>
+          <Button href="/contact/" variant="text">Get in touch →</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- recognition + memberships -->
+  <section class="section" aria-labelledby="recognition-title">
+    <div class="container two-col">
+      <div>
+        <SectionHeading overline="Recognition" title="Grants, awards, fellowships" id="recognition-title" />
+        <ul class="plain-list" data-reveal-group>
+          {awards.filter((a) => !a.minor).map((a) => (
+            <li data-reveal>
+              <span class="mono faint plain-list__date">{fmtYM(a.date)}</span>
+              <span>
+                <strong>{a.title}</strong>, {a.issuer}
+                {a.status === 'draft' && <Draft badgeOnly q="Q17" />}
+                {a.summary && <span class="muted"> · {a.summary}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <SectionHeading overline="Membership" title="Professional bodies & community" />
+        <ul class="tags" data-reveal>
+          {memberships.professional.map((m) => <li>{m.url ? <a href={m.url} rel="noopener">{m.name}</a> : m.name}</li>)}
+        </ul>
+        <p class="overline overline--muted volunteering__title">Volunteering</p>
+        <ul class="plain-list plain-list--tight" data-reveal>
+          {memberships.volunteering.map((v) => <li><span>{v.name}{v.role && <span class="muted">: {v.role}</span>}</span></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cover {
+    position: relative;
+    min-height: min(92vh, 900px);
+    display: flex;
+    align-items: flex-end;
+    background: #15130f;
+    overflow: hidden;
+  }
+  .cover :global(.cover__img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    filter: grayscale(1) contrast(1.05);
+    opacity: 0.9;
+  }
+  .cover__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(21, 19, 15, 0.92) 0%, rgba(21, 19, 15, 0.45) 45%, rgba(21, 19, 15, 0.15) 100%);
+  }
+  .cover__text {
+    position: relative;
+    padding-top: var(--space-10);
+    padding-bottom: clamp(var(--space-7), 6vw, var(--space-9));
+    color: #efe9df;
+  }
+  .cover__overline {
+    color: #f0b759;
+    margin-bottom: var(--space-4);
+  }
+  .cover__title {
+    color: #fffdf9;
+    max-width: 16ch;
+  }
+  .cover__lede {
+    margin-top: var(--space-5);
+    font-size: var(--step-3);
+    line-height: 1.45;
+    color: #d9d3c8;
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(var(--space-6), 6vw, var(--space-10));
+    align-items: center;
+    padding: clamp(var(--space-7), 5vw, var(--space-9)) 0;
+  }
+  .chapter + .chapter {
+    border-top: 1px solid var(--line);
+  }
+  .chapter--flip .chapter__media {
+    order: 2;
+  }
+  .chapter__media :global(.chapter__img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-2);
+  }
+  .chapter__marker {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    display: grid;
+    align-content: end;
+    border-radius: var(--radius-2);
+    background: var(--paper-3);
+    color: var(--amber-bright);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    padding: var(--space-6);
+  }
+  .chapter__contours {
+    position: absolute;
+    right: -35%;
+    top: -30%;
+    width: 120%;
+    height: auto;
+    aspect-ratio: 1;
+    opacity: 0.8;
+  }
+  .chapter__marker-text {
+    position: relative;
+    color: var(--ink);
+  }
+  .chapter__marker-big {
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin: var(--space-3) 0 var(--space-5);
+    font-variation-settings: 'opsz' 144, 'SOFT' 60;
+  }
+  .chapter__marker-lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+  .chapter__marker-lines li {
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+  }
+  .chapter__ph {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    font-size: 11px;
+    color: var(--ink-2);
+    background: color-mix(in srgb, var(--paper-2) 85%, transparent);
+    padding: 4px 8px;
+    border-radius: var(--radius-1);
+  }
+  .chapter__title {
+    margin-top: var(--space-3);
+    font-size: var(--step-1);
+  }
+  .chapter__body {
+    margin-top: var(--space-5);
+    color: var(--ink-2);
+  }
+  .chapter__body p {
+    color: var(--ink);
+  }
+  .chapter__link {
+    display: inline-block;
+    margin-top: var(--space-5);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 4px;
+  }
+  @media (max-width: 900px) {
+    .chapter {
+      grid-template-columns: 1fr;
+    }
+    .chapter--flip .chapter__media {
+      order: 0;
+    }
+    .chapter__media :global(.chapter__img),
+    .chapter__marker {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+  @media (max-width: 900px) {
+    .two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+  .now-list,
+  .values {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .now-list li {
+    padding: var(--space-3) 0 var(--space-3) var(--space-6);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    font-size: var(--step-0);
+  }
+  .now-list li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1.05em;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--amber-bright);
+  }
+  .now-updated {
+    margin-top: var(--space-4);
+    font-size: var(--step--2);
+  }
+  .values-note {
+    margin: calc(-1 * var(--space-3)) 0 var(--space-4);
+    font-size: var(--step--2);
+  }
+  .values {
+    counter-reset: v;
+  }
+  .values li {
+    counter-increment: v;
+    padding: var(--space-4) 0 var(--space-4) 56px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    color: var(--ink-2);
+  }
+  .values li strong {
+    color: var(--ink);
+  }
+  .values li::before {
+    content: counter(v, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1;
+    color: var(--amber);
+    font-variation-settings: 'opsz' 48, 'SOFT' 60;
+  }
+  .facts__links {
+    margin-top: var(--space-5);
+    gap: var(--space-2) var(--space-5);
+  }
+  .facts__links a {
+    text-decoration: none;
+    font-size: var(--step--2);
+  }
+  .bios {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .bio {
+    padding: var(--space-5);
+  }
+  .bio__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .bio__copy {
+    font-size: var(--step--2);
+    color: var(--amber);
+    border-bottom: 1px solid currentColor;
+  }
+  .bio__copy.is-copied {
+    color: var(--lagoon);
+  }
+  .bio__text {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .bio-portrait {
+    margin: 0;
+    padding: var(--space-4);
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .bio-portrait :global(img) {
+    width: 120px;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-1);
+  }
+  .bio-portrait figcaption {
+    font-size: var(--step--2);
+  }
+  .bio-kit__cta {
+    margin-top: var(--space-6);
+  }
+  .plain-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .plain-list li {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step--1);
+  }
+  .plain-list--tight li {
+    grid-template-columns: 1fr;
+  }
+  .plain-list__date {
+    font-size: var(--step--2);
+    padding-top: 3px;
+  }
+  .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tags li {
+    font-size: var(--step--2);
+    font-family: var(--font-mono);
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-1);
+    background: var(--paper-2);
+  }
+  .tags a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .tags a:hover {
+    color: var(--amber);
+  }
+  .volunteering__title {
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-2);
+  }
+</style>

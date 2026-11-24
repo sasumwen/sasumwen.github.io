@@ -1,0 +1,57 @@
+---
+/**
+ * A whole section (heading + body) that only exists as a plan.
+ * Preview builds: heading, a badge and the placeholder text in a dashed box.
+ * Production builds: nothing at all: no orphan heading.
+ *
+ *   <DraftSection title="Convocation" q="M4">Two paragraphs on October 2025…</DraftSection>
+ */
+import { SHOW_DRAFTS } from '../lib/drafts';
+
+interface Props {
+  title: string;
+  q?: string;
+  level?: 2 | 3;
+}
+const { title, q, level = 2 } = Astro.props;
+const Tag = level === 3 ? 'h3' : 'h2';
+---
+
+{
+  SHOW_DRAFTS && (
+    <section class="draft-section">
+      <Tag>
+        {title} <span class="draft-badge" title={q ? `Draft: awaiting material (${q})` : 'Draft'}>to write{q && <span class="draft-section__q">{q}</span>}</span>
+      </Tag>
+      <div class="draft-section__body mono">
+        <slot />
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .draft-section h2,
+  .draft-section h3 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .draft-section__q {
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .draft-section__body {
+    margin-top: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-2);
+    background:
+      linear-gradient(135deg, transparent 48%, var(--line) 48%, var(--line) 52%, transparent 52%) 0 0 / 24px 24px,
+      var(--paper-3);
+    color: var(--ink-2);
+    font-size: var(--step--2);
+    line-height: 1.6;
+  }
+</style>

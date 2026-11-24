@@ -1,0 +1,110 @@
+# ---------------------------------------------------------------------------
+# research-results.yaml: the measured results of the MSc thesis.
+# Every number here was transcribed on 2026-11-23 from the deposited thesis PDF
+# (University of Lethbridge OPUS, https://hdl.handle.net/10133/7170), with the
+# table or section it comes from. Do not add a figure without its table.
+# ---------------------------------------------------------------------------
+source:
+  label: MSc thesis, University of Lethbridge, 2025
+  url: https://hdl.handle.net/10133/7170
+
+dataset:
+  name: COBRE
+  longName: Centre for Biomedical Research Excellence
+  subjects: 174
+  patients: 88
+  controls: 86
+  split: 70 / 15 / 15
+  ref: thesis §4.2.1
+
+# Three headline figures for Home and the Research hub.
+headline:
+  - value: "0.969"
+    label: Macro Dice, BoRefAttnNet
+    compare: 3D U-Net baseline 0.943
+    ref: Table 4.2
+  - value: "3.08"
+    unit: mm
+    label: Hausdorff distance
+    compare: down from 7.90 mm for the baseline
+    ref: Table 4.2
+  - value: "0.94"
+    label: ROC-AUC, DySTTM
+    compare: 3D ResNet 0.90 · XGBoost 0.88
+    ref: Table 5.1
+
+segmentation:
+  ref: Table 4.2
+  caption: Segmentation on the held-out test set. Dice is the macro average over six classes; lower is better for both distances.
+  rows:
+    - model: 3D U-Net
+      loss: Cross-entropy
+      dice: 0.9425
+      hd: 7.90
+      asd: 0.29
+    - model: 3D U-Net
+      loss: Cross-entropy + boundary
+      dice: 0.9540
+      hd: 6.45
+      asd: 0.23
+    - model: BoRefAttnNet
+      loss: Cross-entropy
+      dice: 0.9655
+      hd: 4.57
+      asd: 0.18
+      ours: true
+    - model: BoRefAttnNet
+      loss: Cross-entropy + boundary
+      dice: 0.9691
+      hd: 3.08
+      asd: 0.16
+      ours: true
+      best: true
+
+perClass:
+  ref: Table 4.3
+  caption: Per-class Dice for BoRefAttnNet with the boundary loss.
+  rows:
+    - structure: Hippocampus
+      dice: 0.9616
+    - structure: Ventricles
+      dice: 0.9698
+    - structure: Amygdala
+      dice: 0.9462
+    - structure: Basal ganglia
+      dice: 0.9702
+    - structure: Thalamus
+      dice: 0.9688
+
+classification:
+  ref: Table 5.1
+  caption: Schizophrenia versus control. The best value in each column is in bold, including the two where the baseline wins.
+  rows:
+    - model: DySTTM
+      accuracy: 0.92
+      precision: 0.89
+      recall: 0.88
+      f1: 0.885
+      auc: 0.94
+      ours: true
+    - model: 3D ResNet
+      accuracy: 0.89
+      precision: 0.88
+      recall: 0.91
+      f1: 0.895
+      auc: 0.90
+    - model: XGBoost
+      accuracy: 0.85
+      precision: 0.83
+      recall: 0.74
+      f1: 0.785
+      auc: 0.88
+  tests:
+    ref: thesis §5.4
+    note: "Paired t-tests on accuracy, 25 degrees of freedom: t = 3.45, p < 0.01 against 3D ResNet; t = 5.12, p < 0.001 against XGBoost."
+
+limits:
+  - COBRE is a single-site dataset of 174 people, which is small for deep learning.
+  - The segmentation labels were generated with FastSurfer rather than drawn by hand, so Dice measures agreement with FastSurfer.
+  - DySTTM leads on accuracy, precision and ROC-AUC, but the 3D ResNet has slightly better recall (0.91 against 0.88).
+  - These are research results. Nothing here is a diagnostic tool.

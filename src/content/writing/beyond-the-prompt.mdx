@@ -1,0 +1,79 @@
+---
+title: "Beyond the prompt: from AI prototype to real-world product"
+description: Claude can help you build an app in an afternoon. What makes that app useful, reliable and ready for real people is a different kind of work. Notes from a guest talk to first-time builders.
+date: 2026-11-15
+category: Engineering
+tags: [AI products, building with LLMs, evaluation, StudyRadar]
+featured: true
+draft: false
+---
+
+import PullQuote from '../../components/PullQuote.astro';
+
+<p class="lead">On 15 November 2026 I gave a short guest talk at an online seminar called From Idea to App with Claude, hosted by Chigozie Ezemba. He showed people how to build their first application. My job was to talk about what happens next. This is that talk, written down.</p>
+
+## The new starting line
+
+For years, turning an idea into an application meant learning to code, hiring a developer, or spending months with unfamiliar tools. Today you can open Claude, explain what you want to build, ask questions in ordinary language, and watch your idea take shape.
+
+So I want to ask a slightly different question. What happens after the code is written and your app appears to work?
+
+A demo that works on your laptop is not the same as an app people can trust and keep using.
+
+## What StudyRadar taught me
+
+At StudyRadar we build AI-powered tools that help healthcare students prepare for clinical and professional examinations. One feature lets a learner practise a simulated clinical encounter by speaking with an AI patient, and then receive feedback on how they did.
+
+Imagine a student preparing late at night. They can practise asking questions, explaining clinical decisions and communicating clearly, without having to schedule a partner for every session. AI makes that kind of preparation more accessible.
+
+At first, a system that can hold a conversation feels like magic. When people begin relying on it, other questions appear. Did it understand the student correctly? Does it respond appropriately? Is the feedback useful and consistent? Is it responsive enough to feel natural? How are sensitive details handled?
+
+A beautiful interface cannot answer those questions. Testing, thoughtful design and sound engineering decisions can. Tools like Claude can dramatically speed up the building. They do not remove our responsibility for what we build.
+
+## Start with a problem, not a prompt
+
+Instead of saying "I want to build an AI app", ask: whose problem do I understand, and what is the smallest thing I could build to help?
+
+A small business that needs appointment reminders. Students who need a practice quiz. A community group trying to share events. These are specific problems, and specific problems can be tested.
+
+Before you open Claude, write down three things: who this is for, what they are struggling with, and what success would look like. If you cannot explain those answers simply, make the idea smaller.
+
+AI is very good at proposing solutions. Choosing a problem worth solving is still your job.
+
+## Treat AI as a partner, not an autopilot
+
+Ask Claude to sketch a screen, explain unfamiliar code, design a simple database, suggest tests or find a bug. Then ask it to challenge your plan. One prompt I find useful: "What could go wrong with this idea, and what have I forgotten?"
+
+Generated code can contain errors. A feature can fail when someone enters something unexpected. A polished signup form can mishandle personal details. A login screen can look perfect while hiding a security problem.
+
+So after every major change, test what should work, what might fail, and what a first-time user might do. Never put passwords or private customer information into public code. When your application touches healthcare, money or anything else sensitive, apply extra care and get expert review.
+
+The goal is not to distrust AI. It is to combine its speed with your own judgment.
+
+<PullQuote>Fast code is useful. Dependable software is better.</PullQuote>
+
+## Let people test the reality
+
+Your first users matter more than your first hundred prompts.
+
+We know where every button is in our own apps. New users do not. They misread an instruction, get lost, or try something we never imagined. That is not a problem with the users. It is information about the product.
+
+If you build something this weekend, do not polish it in isolation. Put it in front of a few people. Give them one real task and watch them try it. Do not explain every button. Notice where they hesitate, and ask what they expected to happen.
+
+You may discover that your favourite feature is not the one they need. That discovery can save weeks of work.
+
+## Your first thirty days
+
+- **Days 1 to 3.** Choose one person to help and one problem to solve. Pick a single action to make easier, like booking an appointment or practising five quiz questions.
+- **Days 4 to 10.** Use Claude to build the smallest version that does that one thing, and ask it to explain what it is doing. You do not need ten features. You need one that works.
+- **Days 11 to 17.** Test it. Try incomplete forms, wrong inputs and unexpected actions. Check where information is stored, and whether you are collecting data you do not need.
+- **Days 18 to 24.** Invite five people to try it. Watch what helps them and what confuses them.
+- **The last week.** Fix the most important thing you found, share the improved version, and decide what deserves to be built next.
+
+At the end of the month the goal is not to say "I used AI to generate thousands of lines of code". The goal is to say "I built something small that solved a real problem for someone".
+
+## Your advantage is your judgment
+
+As these tools improve, more people will build software: students, nurses, teachers, artists, entrepreneurs, people who have never written a line of code. If everyone has access to powerful building tools, the difference will not be who can generate an app fastest. It will be who understands a problem, listens to users, asks good questions, and keeps improving the result.
+
+AI has dramatically reduced the cost of building software. It has not reduced the importance of building the right software.

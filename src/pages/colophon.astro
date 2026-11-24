@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Contours from '../components/Contours.astro';
+import { profile } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+---
+
+<BaseLayout title="Colophon" description="How osasumwen.com is built: Astro, self-hosted fonts, no trackers, and a contour-line motif borrowed from boundary-aware segmentation." jsonLd={[breadcrumbs([{ name: 'Colophon', url: '/colophon/' }])]}>
+  <PageHero overline="Colophon" title="How this site is made." seed="colophon" />
+  <section class="section">
+    <div class="container container--narrow prose">
+      <p class="lead">This site is a static build: plain HTML and CSS, a few kilobytes of script for the theme toggle, reveals and the image viewer, and nothing that follows you around.</p>
+      <h2>Stack</h2>
+      <ul>
+        <li><strong>Astro</strong> generates every page at build time from Markdown, MDX and YAML files; the source is on <a href="https://github.com/sasumwen/sasumwen.github.io" rel="noopener">GitHub</a>.</li>
+        <li><strong>GitHub Pages</strong> serves it from the existing domain.</li>
+        <li>Structured data (JSON-LD), a sitemap, an RSS feed and an <code>/llms.txt</code> file help search engines and AI assistants describe me accurately.</li>
+      </ul>
+      <h2>Type</h2>
+      <p><a href="https://github.com/undercasetype/Fraunces" rel="noopener">Fraunces</a> for display, <a href="https://github.com/Instrument/instrument-sans" rel="noopener">Instrument Sans</a> for text and <a href="https://github.com/IBM/plex" rel="noopener">IBM Plex Mono</a> for dates, metadata and code. All three are open-licensed and self-hosted, so no font requests leave the site.</p>
+      <h2>The lines</h2>
+      <p>The contour lines on these pages are generated at build time from a seeded function, a nod to the boundary-attention idea at the centre of my research. They are decoration; the research pages carry the real diagrams.</p>
+      <p>The photographs are real and none of them is generated. Where a screen in a photograph showed another person or internal work, it has been blurred.</p>
+      <figure class="colophon__fig">
+        <Contours variant="rings" seed="colophon-sample" lines={12} width={600} height={360} rMax={160} class="colophon__contours" />
+        <figcaption>Twelve rings, seed “colophon-sample”.</figcaption>
+      </figure>
+      <h2>Privacy</h2>
+      <p>No analytics scripts, no cookies, no third-party embeds. Photographs have their location metadata removed before publication, and anyone pictured has agreed to appear.</p>
+      <h2>Colour & accessibility</h2>
+      <p>Warm paper and ink, one amber accent and a lagoon label colour; a dark theme follows your system setting and can be toggled. Text contrast meets WCAG 2.2 AA, every interactive element works with a keyboard, and motion is reduced when you ask your system for that.</p>
+      <p class="mono faint">© {new Date().getFullYear()} {profile.name.full}. Text and photographs are mine unless credited; code is available on GitHub.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .colophon__fig {
+    color: var(--amber-bright);
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+    padding: var(--space-4);
+  }
+  .colophon__contours {
+    width: 100%;
+    height: auto;
+  }
+</style>

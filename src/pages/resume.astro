@@ -1,0 +1,333 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import Draft from '../components/Draft.astro';
+import { profile, experience, education, awards, certifications, memberships, org, fmtRange, fmtYM } from '../lib/data';
+import { breadcrumbs } from '../lib/schema';
+
+const roles = experience;
+const teaching = roles.filter((r) => r.kind === 'teaching');
+const main = roles.filter((r) => r.kind !== 'teaching');
+const skills = [
+  { group: 'Machine learning', items: 'Medical image segmentation · multimodal transformers · LLM & agent evaluation · RAG · speech · MLflow · TensorFlow · PyTorch' },
+  { group: 'Engineering', items: 'Python · TypeScript · React / React Native · Google Cloud · Docker · Cloud Run · data pipelines · edge & real-time systems' },
+  { group: 'Leadership', items: 'Technical strategy · team building · research partnerships · founder & board experience · policy drafting · mentoring' },
+];
+---
+
+<BaseLayout title="Resume" description={`Resume of ${profile.name.full}. ${profile.headlineLong}`} jsonLd={[breadcrumbs([{ name: 'Resume', url: '/resume/' }])]}>
+  <section class="resume container">
+    <header class="resume__head">
+      <div>
+        <p class="overline">Resume</p>
+        <h1 class="resume__name">{profile.name.full}</h1>
+        <p class="resume__headline">{profile.headlineLong}</p>
+        <p class="resume__contact mono">
+          {profile.location.display} · <a href={`mailto:${profile.contact.email.address}`}>{profile.contact.email.address}</a>{profile.contact.email.status === 'draft' && <Draft badgeOnly q="Q19" />} · <span class="print-only">osasumwen.com · </span><a href="https://www.linkedin.com/in/osasumwen" rel="noopener">linkedin.com/in/osasumwen</a> · <a href={`https://orcid.org/${profile.identifiers.orcid}`} rel="noopener">ORCID</a>
+        </p>
+      </div>
+      <div class="resume__actions no-print">
+        <Button href="/resume.pdf" download="Osasu-Imarhiagbe-Resume.pdf" arrow>Download PDF</Button>
+        <Button href="/contact/" variant="secondary">Contact</Button>
+        <p class="mono faint resume__pdfnote">The PDF is printed from this page, so the two always agree. <Draft q="Q21">Made by npm run resume:pdf. Say if you would rather serve your own designed PDF.</Draft></p>
+      </div>
+    </header>
+
+    <div class="resume__grid">
+      <div class="resume__main">
+        <section aria-labelledby="exp-title">
+          <h2 id="exp-title" class="resume__h2">Experience</h2>
+          <ol class="rlist">
+            {main.map((r) => (
+              <li class="ritem">
+                <div class="ritem__when mono faint">{fmtRange(r.start, r.end)}</div>
+                <div>
+                  <h3 class="ritem__title">{r.title}{(r.status === 'draft' || r.titleIsProposed) && <Draft badgeOnly />}</h3>
+                  <p class="ritem__org">{org(r.organisation).name}{r.location && <span class="faint"> · {r.location}</span>}</p>
+                  <p class="ritem__summary">{r.summary}</p>
+                  {r.bullets.length > 0 && <ul class="ritem__bullets">{r.bullets.map((b) => <li>{b}</li>)}</ul>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section aria-labelledby="edu-title">
+          <h2 id="edu-title" class="resume__h2">Education</h2>
+          <ol class="rlist">
+            {education.map((e) => (
+              <li class="ritem">
+                <div class="ritem__when mono faint">{fmtRange(e.start, e.end)}</div>
+                <div>
+                  <h3 class="ritem__title">{e.degree}</h3>
+                  <p class="ritem__org">{org(e.institution).name}{e.gpa && <span class="faint"> · GPA {e.gpa.value}</span>}</p>
+                  {e.thesis && <p class="ritem__summary">Thesis: <a href={e.thesis.page ?? e.thesis.url}>{e.thesis.title}</a></p>}
+                  {e.details.length > 0 && <ul class="ritem__bullets">{e.details.map((d) => <li>{d}</li>)}</ul>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section aria-labelledby="teach-title">
+          <h2 id="teach-title" class="resume__h2">Teaching</h2>
+          <ol class="rlist">
+            {teaching.map((r) => (
+              <li class="ritem">
+                <div class="ritem__when mono faint">{fmtRange(r.start, r.end)}</div>
+                <div>
+                  <h3 class="ritem__title">{r.title}</h3>
+                  <p class="ritem__org">{org(r.organisation).name}</p>
+                  <p class="ritem__summary">{r.summary}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+
+      <aside class="resume__side">
+        <section aria-labelledby="skills-title">
+          <h2 id="skills-title" class="resume__h2">Skills</h2>
+          {skills.map((s) => (
+            <p class="side__item"><strong>{s.group}</strong><br /><span class="muted">{s.items}</span></p>
+          ))}
+        </section>
+        <section aria-labelledby="awards-title">
+          <h2 id="awards-title" class="resume__h2">Grants & awards</h2>
+          <ul class="side__list">
+            {awards.filter((a) => !a.minor).map((a) => <li><span class="mono faint">{fmtYM(a.date)}</span> {a.title}, {a.issuer}{a.status === 'draft' && <Draft badgeOnly />}</li>)}
+          </ul>
+        </section>
+        <section aria-labelledby="certs-title">
+          <h2 id="certs-title" class="resume__h2">Certifications</h2>
+          <ul class="side__list">
+            {certifications.filter((c) => c.featured || c.status === 'draft').map((c) => <li><span class="mono faint">{fmtYM(c.issued)}</span> {c.url ? <a href={c.url} rel="noopener">{c.title}</a> : c.title}, {c.issuer}{c.status === 'draft' && <Draft badgeOnly />}</li>)}
+          </ul>
+        </section>
+        <section aria-labelledby="mem-title">
+          <h2 id="mem-title" class="resume__h2">Memberships</h2>
+          <p class="muted side__item">{memberships.professional.map((m) => m.name).join(' · ')}</p>
+        </section>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .resume {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+  .resume__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: var(--space-7);
+    align-items: start;
+    padding-bottom: var(--space-6);
+    border-bottom: 2px solid var(--ink);
+  }
+  .resume__name {
+    margin-top: var(--space-3);
+    font-size: var(--step-1);
+  }
+  .resume__headline {
+    margin-top: var(--space-3);
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    max-width: 60ch;
+  }
+  .resume__contact {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--ink-2);
+  }
+  .resume__actions {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .resume__pdfnote {
+    font-size: 11px;
+  }
+  .resume__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: var(--space-9);
+    margin-top: var(--space-6);
+  }
+  .resume__h2 {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: var(--space-7) 0 var(--space-4);
+  }
+  .resume__main section:first-child .resume__h2,
+  .resume__side section:first-child .resume__h2 {
+    margin-top: 0;
+  }
+  .rlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ritem {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--line);
+  }
+  .ritem__when {
+    font-size: var(--step--2);
+    padding-top: 4px;
+  }
+  .ritem__title {
+    font-family: var(--font-text);
+    font-size: var(--step-0);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .ritem__org {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+  .ritem__summary {
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+  }
+  .ritem__bullets {
+    margin: var(--space-2) 0 0;
+    padding-left: 1.1em;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .ritem__bullets li::marker {
+    color: var(--amber);
+  }
+  .side__item {
+    font-size: var(--step--1);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--line);
+  }
+  .side__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+  .side__list li {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--line);
+  }
+  .side__list .mono {
+    font-size: 11px;
+  }
+  @media (max-width: 900px) {
+    .resume__head,
+    .resume__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .ritem {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+  /* Print: this page is also the source of /resume.pdf (npm run resume:pdf). */
+  @page {
+    margin: 13mm 15mm;
+  }
+  @media print {
+    .resume {
+      padding: 0;
+      max-width: none;
+    }
+    .resume__head {
+      display: block;
+      padding-bottom: 10pt;
+      border-bottom-width: 1.5pt;
+    }
+    .resume__head .overline {
+      display: none;
+    }
+    .resume__name {
+      margin-top: 0;
+      font-size: 25pt;
+      line-height: 1.05;
+    }
+    .resume__headline {
+      margin-top: 5pt;
+      font-size: 9.5pt;
+      line-height: 1.4;
+      max-width: none;
+    }
+    .resume__contact {
+      margin-top: 5pt;
+      font-size: 7.6pt;
+    }
+    .resume__grid {
+      display: block;
+      margin-top: 10pt;
+    }
+    .resume__h2 {
+      margin: 10pt 0 3pt;
+      font-size: 7.4pt;
+      color: #7a4610;
+      break-after: avoid;
+    }
+    .ritem {
+      grid-template-columns: 92pt minmax(0, 1fr);
+      gap: 12pt;
+      padding: 4pt 0;
+      break-inside: avoid;
+    }
+    .ritem__when {
+      font-size: 7.4pt;
+      padding-top: 2pt;
+    }
+    .ritem__title {
+      font-size: 10pt;
+      line-height: 1.25;
+    }
+    .ritem__org,
+    .ritem__summary,
+    .ritem__bullets {
+      font-size: 8.6pt;
+      line-height: 1.42;
+    }
+    .ritem__summary,
+    .ritem__bullets {
+      margin-top: 2pt;
+    }
+    .resume__side {
+      columns: 3;
+      column-gap: 18pt;
+      margin-top: 4pt;
+    }
+    .resume__side section {
+      break-inside: avoid;
+    }
+    .resume__side section:first-child .resume__h2 {
+      margin-top: 12pt;
+    }
+    .side__item,
+    .side__list {
+      font-size: 8.4pt;
+      line-height: 1.42;
+    }
+    .side__item {
+      padding: 4pt 0;
+      break-inside: avoid;
+    }
+    .side__list li {
+      padding: 3pt 0;
+      break-inside: avoid;
+    }
+    .side__list .mono {
+      font-size: 7pt;
+    }
+  }
+</style>

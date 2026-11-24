@@ -1,0 +1,38 @@
+{
+  "name": "osasumwen.com",
+  "private": true,
+  "version": "2.0.0-alpha.1",
+  "description": "Personal website of Osasu Imarhiagbe \u2014 built with Astro",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "lint:links": "node scripts/check-links.mjs",
+    "verify": "npm run check && npm run build && npm run lint:links",
+    "resume:pdf": "node scripts/resume-pdf.mjs",
+    "build:preview": "PUBLIC_SHOW_DRAFTS=true astro build",
+    "build:portable": "PREVIEW_RELATIVE=true PUBLIC_SHOW_DRAFTS=true astro build --outDir dist-portable && node scripts/relativize.mjs dist-portable"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.1.3",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "astro": "^7.4.7",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@rollup/plugin-yaml": "^5.0.1",
+    "typescript": "^5.9.0"
+  }
+}
