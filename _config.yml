@@ -4,7 +4,7 @@
 # baseurl is the website's URL without the hostname
 
 # If you are building a simple GitHub user page (http://username.github.io) then use these settings:
-url: "https://sasumwen.github.io"
+url: "https://osasumwen.com"
 baseurl: ""
 
 # If you are building a GitHub project page then use these settings:
@@ -17,7 +17,7 @@ baseurl: ""
 title: Osasumwen Imarhiagbe
 
 # Short description of your site
-description: Research
+description: AI engineer, researcher and founder
 
 # --- Navigation bar options --- #
 
@@ -43,7 +43,7 @@ avatar: "/static/img/headshot1.jpg"
 # Important: you must keep the "name" parameter, everything else you can remove
 author:
   name: Osasu Imarhiagbe
-  email: "imarhiagbe@uleth.ca"
+  email: "osasu@xyricon.com"
   github: sasumwen    # eg. daattali
   linkedin: osasumwen
   twitter: Osasu_AI
@@ -72,29 +72,21 @@ footer-links-active:
 share-links-active:
   twitter: true
   facebook: false
-  google: true
   linkedin: false
 
 # How to display the link to the website in the footer
 # Remove this if you don't want a link in the footer
-url-pretty: "sasumwen.github.io"  # eg. "deanattali.com/beautiful-jekyll"
+url-pretty: "osasumwen.com"
 
 # --- Misc --- #
 # Fill in your Disqus shortname (NOT the userid) if you want to support Disqus comments
 #disqus: "desh2608-github-io"
-
-# Fill in your Google Analytics ID to track your website using GA
-google_analytics: "G-MBMZ051LW0"
 
 # Google Tag Manager ID
 #gtm: ""
 
 # Facebook App ID
 # fb_app_id: ""
-
-# Excerpt Word Length
-# Truncates the excerpt to the specified number of words on the index page
-excerpt_length: 50
 
 # Character used to separate site title and description in HTML document title
 # and RSS feed title
@@ -108,7 +100,6 @@ markdown: kramdown
 mathjax: true
 highlighter: rouge
 permalink: /:year-:month-:day-:title/
-paginate: 5
 
 kramdown:
   input: GFM
@@ -130,9 +121,6 @@ defaults:
       layout: "page"
       show-avatar: true
 
-# Use tags pages (not recommended if you are deploying via GitHub pages, only set to true if deploying locally with ruby)
-link-tags: false
-
 # Exclude these files from production site
 exclude:
   - CHANGELOG.md
@@ -148,63 +136,13 @@ exclude:
   - LICENSE
   - README.md
   - Vagrantfile
+  - docs/
+  - WEBSITE_AUDIT.md
+  - .bundle/
+  - vendor/
 
-# prose.io config
-prose:
-  rooturl: '_posts'
-  media: 'img'
-  ignore:
-    - 404.html
-    - LICENSE
-    - feed.xml
-    - _config.yml
-    - /_layouts
-    - /_includes
-    - /css
-    - /img
-    - /js
-  metadata:
-    _posts:
-      - name: "layout"
-        field:
-          element: "hidden"
-          value: "post"
-      - name: "title"
-        field:
-          element: "text"
-          label: "Post title"
-          placeholder: "Title"
-          alterable: true
-      - name: "subtitle"
-        field:
-          element: "textarea"
-          label: "Subtitle"
-          placeholder: "A description of your post."
-          alterable: true
-      - name: "date"
-        field:
-          element: "text"
-          label: "Date"
-          help: "Enter date of post."
-          placeholder: "yyyy-mm-dd"
-          alterable: true
-      - name: "image"
-        field:
-          element: "text"
-          label: "Image"
-          help: "Add a thumbnail image to your post."
-          placeholder: "Thumbnail"
-          alterable: true
-      - name: "published"
-        field:
-          element: "checkbox"
-          label: "Publish"
-          help: "Check to publish post, uncheck to hide."
-
-gems:
-  - jekyll-paginate
+plugins:
+  - jekyll-sitemap
 
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
-
-theme: 

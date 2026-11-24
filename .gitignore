@@ -9,3 +9,7 @@ Thumbs.db
 ehthumbs.db
 
 vendor/
+
+# local Jekyll and Bundler state
+.jekyll-metadata
+.bundle/
