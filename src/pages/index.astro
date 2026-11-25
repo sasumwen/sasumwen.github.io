@@ -26,7 +26,7 @@ const lead = stories.find((j) => j.data.featured) ?? stories[0];
 const journal = lead ? [lead, ...stories.filter((j) => j.id !== lead.id).slice(0, 2)] : [];
 const latest = updates.slice(0, 5);
 const title = profile.name.preferred;
-const description = profile.positioning.replace(profile.name.preferred, `${profile.name.preferred} (${profile.name.full})`);
+const description = `${profile.positioning.replace(profile.name.preferred, `${profile.name.preferred} (${profile.name.full})`)} His call sign is ${profile.name.handle}.`;
 const words = profile.name.preferred.split(' ');
 const heroRoles = profile.heroRoles.map((r) => {
   const ref = r.roleRef ? profile.current.find((c) => c.id === r.roleRef) : undefined;
@@ -54,6 +54,7 @@ const heroRoles = profile.heroRoles.map((r) => {
             <>{i > 0 && ' '}<span class="hero__word" style={`--i:${i}`}>{w}</span></>
           ))}
         </h1>
+        <p class="hero__sign mono" data-reveal>Call sign <span class="hero__handle">{profile.name.handle}</span></p>
         <p class="hero__lede" data-reveal>{profile.tagline}</p>
 
         <ul class="hero__roles" aria-label="What I do" data-reveal-group>
@@ -228,8 +229,18 @@ const heroRoles = profile.heroRoles.map((r) => {
     display: flex;
     flex-wrap: wrap;
     gap: 0 0.22em;
-    margin: 0 0 var(--space-5);
+    margin: 0 0 var(--space-2);
     overflow: hidden;
+  }
+  .hero__sign {
+    margin: 0 0 var(--space-5);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .hero__handle {
+    color: var(--ink);
   }
   .hero__word {
     display: inline-block;

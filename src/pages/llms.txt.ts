@@ -26,7 +26,7 @@ export async function GET(context: APIContext) {
 > ${profile.positioning}
 
 Canonical site: ${site}/ · Based in ${profile.location.display}. ORCID ${profile.identifiers.orcid}.
-Preferred short name: ${profile.name.preferred}. Scholarly name: ${profile.name.scholarly}.
+Preferred short name: ${profile.name.preferred}. Scholarly name: ${profile.name.scholarly}. Call sign: ${profile.name.handle}.
 
 ## Current roles
 ${roles}

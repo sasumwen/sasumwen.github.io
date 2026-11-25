@@ -19,7 +19,7 @@ export function personNode(opts: { image?: string } = {}): Node {
     '@type': 'Person',
     '@id': PERSON_ID,
     name: profile.name.full,
-    alternateName: [profile.name.preferred, ...profile.name.variants, profile.name.scholarly],
+    alternateName: [profile.name.preferred, ...profile.name.variants, profile.name.scholarly, profile.name.handle],
     givenName: 'Osasumwen',
     additionalName: 'Raphael',
     familyName: 'Imarhiagbe',
@@ -32,7 +32,10 @@ export function personNode(opts: { image?: string } = {}): Node {
     knowsAbout: profile.knowsAbout,
     homeLocation: { '@type': 'Place', name: profile.location.display },
     nationality: { '@type': 'Country', name: profile.origin.country },
-    identifier: { '@type': 'PropertyValue', propertyID: 'ORCID', value: profile.identifiers.orcid },
+    identifier: [
+      { '@type': 'PropertyValue', propertyID: 'ORCID', value: profile.identifiers.orcid },
+      { '@type': 'PropertyValue', propertyID: 'call sign', value: profile.name.handle, url: `https://github.com/${profile.identifiers.github}` },
+    ],
     sameAs: [...profile.links.map((l) => l.href), ...profile.profiles.map((p) => p.href)],
   };
 }

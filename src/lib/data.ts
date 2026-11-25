@@ -34,6 +34,7 @@ const profileSchema = z.object({
     first: z.string(),
     scholarly: z.string(),
     variants: z.array(z.string()).default([]),
+    handle: z.string(),
     pronunciation: z.string().nullish(),
   }),
   headline: z.string(),
